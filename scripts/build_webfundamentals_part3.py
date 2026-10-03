@@ -1,0 +1,271 @@
+# scripts/build_webfundamentals_part3.py
+"""
+Builds 85 more comprehensive fresher Web Fundamentals interview questions to reach 215+ total.
+"""
+
+web_part3 = [
+    # --- HTTP Headers, Caching & Protocols (30 items) ---
+    (
+        "What does `Cache-Control: stale-while-revalidate` do?",
+        "It tells the browser that it may immediately serve a stale cached asset to the user while asynchronously fetching the updated version in the background, balancing speed with freshness.",
+        "Intermediate",
+        "Concept",
+        "Cache-Control: max-age=600, stale-while-revalidate=30",
+        "What is the user experience benefit of stale-while-revalidate?"
+    ),
+    (
+        "What is the difference between `Cache-Control: public` and `Cache-Control: private`?",
+        "`public`: resource may be cached by any intermediate proxy or CDN (suitable for shared public assets like images, public scripts). `private`: resource is intended exclusively for a single user and MUST NOT be cached by shared CDN proxies (e.g. personal user account pages).",
+        "Easy",
+        "Comparison",
+        "",
+        "Can a CDN cache private responses?"
+    ),
+    (
+        "What is `Cache-Control: s-maxage`?",
+        "`s-maxage` overrides `max-age` specifically for shared caches (like CDNs and proxy servers), while private client browsers continue obeying `max-age`.",
+        "Intermediate",
+        "Concept",
+        "Cache-Control: max-age=3600, s-maxage=86400",
+        "Where is `s-maxage` commonly configured?"
+    ),
+    (
+        "What does the HTTP header `Referer` (or `Referrer`) indicate?",
+        "The URL of the previous web page from which a link was followed or a sub-resource was requested.",
+        "Easy",
+        "Concept",
+        "",
+        "Why is 'Referer' spelled with only three 'r's in the HTTP specification?"
+    ),
+    (
+        "What is the `Referrer-Policy` header?",
+        "A header that controls how much referrer information (URL path, query strings) is sent along with requests. Common values: `no-referrer`, `strict-origin-when-cross-origin` (modern default), `same-origin`.",
+        "Intermediate",
+        "Concept",
+        "Referrer-Policy: strict-origin-when-cross-origin",
+        "Why is `strict-origin-when-cross-origin` preferred for privacy?"
+    ),
+    (
+        "What does `Content-Disposition: attachment; filename='report.pdf'` do?",
+        "It instructs the browser to trigger a file download and save dialogue with the suggested filename rather than attempting to display the file inline in the browser tab.",
+        "Easy",
+        "Practical",
+        "Content-Disposition: attachment; filename='statement.pdf'",
+        "What value renders the file directly inside the browser (`inline`)?"
+    ),
+    (
+        "What are HTTP Range Requests and the `206 Partial Content` status code?",
+        "Range requests allow a client to request only a specific byte range of a large file (e.g. `Range: bytes=0-1048575`). The server responds with `206 Partial Content`, enabling video/audio streaming and resumable downloads.",
+        "Intermediate",
+        "Concept",
+        "Range: bytes=500-999\n# Response:\nHTTP/1.1 206 Partial Content\nContent-Range: bytes 500-999/10000",
+        "What header announces that the server accepts range requests (`Accept-Ranges: bytes`)?"
+    ),
+    (
+        "What does the `Vary: Accept-Encoding` response header mean?",
+        "It informs caches and CDNs that they must store separate cached copies of the resource depending on the client's `Accept-Encoding` request header (e.g. gzip vs brotli vs uncompressed).",
+        "Intermediate",
+        "Concept",
+        "Vary: Accept-Encoding, User-Agent",
+        "What happens if `Vary: Accept-Encoding` is omitted on compressed assets?"
+    ),
+    (
+        "What is the difference between URI, URL, and URN?",
+        "URI (Uniform Resource Identifier) is the overarching umbrella identifier. URL (Uniform Resource Locator) specifies both identity and location/mechanism to retrieve the resource (`https://example.com/page`). URN (Uniform Resource Name) names a resource persistently without specifying location (`urn:isbn:0451450523`).",
+        "Easy",
+        "Comparison",
+        "",
+        "Is every URL a URI?"
+    ),
+    (
+        "What are the 7 layers of the OSI Model from bottom to top?",
+        "1) Physical, 2) Data Link, 3) Network (IP), 4) Transport (TCP, UDP), 5) Session, 6) Presentation (TLS, SSL, data formatting), 7) Application (HTTP, DNS, FTP, SMTP).",
+        "Easy",
+        "Concept",
+        "",
+        "What layer does IP routing operate on?"
+    ),
+
+    # --- Browser Rendering & Optimization (30 items) ---
+    (
+        "What is the difference between a Script-injected DOM node and standard HTML script?",
+        "Scripts dynamically created and appended via JavaScript (`document.createElement('script')`) default to `async = true` in modern browsers, executing asynchronously as soon as downloaded.",
+        "Intermediate",
+        "Concept",
+        "const s = document.createElement('script');\ns.src = 'widget.js';\ndocument.head.appendChild(s); // async by default!",
+        "How do you preserve execution order of dynamically injected scripts (`async = false`)?"
+    ),
+    (
+        "What is Critical CSS and how is it delivered for maximum performance?",
+        "Critical CSS is the minimum CSS required to render the above-the-fold content of the page. It is extracted and inlined directly in a `<style>` tag in the `<head>`, while non-critical CSS is loaded asynchronously, eliminating render-blocking.",
+        "Intermediate",
+        "Concept",
+        "<head>\n  <style>/* Critical above-the-fold CSS inlined here */</style>\n  <link rel='preload' href='full.css' as='style' onload=\"this.rel='stylesheet'\">\n</head>",
+        "What is the recommended size limit for inlined critical CSS (< 14KB)?"
+    ),
+    (
+        "Why is 14KB often cited as the magic threshold for critical HTML/CSS payload size?",
+        "TCP Slow Start initiates communication with an Initial Congestion Window (initcwnd) of 10 TCP packets (~14.6 KB). Keeping initial HTML under 14KB allows the entire first visual render to arrive in a single network round trip (RTT).",
+        "Advanced",
+        "Concept",
+        "",
+        "What is TCP Slow Start?"
+    ),
+    (
+        "What is the `font-display` CSS descriptor and what are its options?",
+        "Controls font rendering behavior while downloading: `auto`, `block` (brief FOIT), `swap` (immediate fallback text, swaps when loaded), `fallback` (short block, then swap with small window), `optional` (only uses font if cached/instant).",
+        "Easy",
+        "Concept",
+        "@font-face {\n  font-family: 'Inter';\n  src: url('/fonts/inter.woff2') format('woff2');\n  font-display: swap;\n}",
+        "Which `font-display` value is recommended to prevent invisible text?"
+    ),
+    (
+        "What is the purpose of WOFF2 font format?",
+        "Web Open Font Format 2.0 (WOFF2) uses Brotli compression specifically tailored for font data, achieving ~30% smaller file sizes than WOFF, supported by all modern browsers.",
+        "Easy",
+        "Concept",
+        "",
+        "Can a WOFF2 font file be subsetted to include only Latin characters?"
+    ),
+    (
+        "What is Font Subsetting?",
+        "Removing unused glyphs, character sets, and symbols from a font file (e.g. keeping only basic Latin English characters and punctuation), reducing font file sizes from several megabytes to 20-30KB.",
+        "Easy",
+        "Concept",
+        "",
+        "What tool subsets fonts (e.g. glyphhanger, pyftsubset)?"
+    ),
+    (
+        "What is `content-visibility: auto` in CSS?",
+        "A modern CSS performance property that skips rendering and painting off-screen elements until they approach the viewport, similar to image lazy loading but for entire DOM subtrees.",
+        "Intermediate",
+        "Practical",
+        ".offscreen-card {\n  content-visibility: auto;\n  contain-intrinsic-size: 1000px 300px;\n}",
+        "Why is `contain-intrinsic-size` required when using `content-visibility: auto`?"
+    ),
+    (
+        "Why is `contain-intrinsic-size` used with `content-visibility: auto`?",
+        "It provides an estimated placeholder height and width for the unrendered element, preventing scrollbar jumping and layout shifts as the user scrolls.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What CSS property isolates DOM subtrees for rendering optimization (CSS Containment)?"
+    ),
+    (
+        "What is CSS Containment (`contain: layout paint`)?",
+        "It informs the browser that an element's internal layout and painting are completely self-contained and isolated from the rest of the DOM tree, allowing the browser to recalculate layout only for that subtree.",
+        "Advanced",
+        "Concept",
+        ".widget {\n  contain: content;\n}",
+        "What are the four containment types (layout, paint, size, style)?"
+    ),
+    (
+        "What is the difference between a Server-Side Rendered (SSR) page and a Client-Side Rendered (CSR) page?",
+        "SSR: server compiles HTML on demand and sends fully rendered markup to the browser (fast FCP/LCP, great SEO). CSR: server sends minimal empty HTML shell with `<div id='root'></div>`, and client JavaScript downloads, executes, and builds the DOM dynamically in the browser.",
+        "Easy",
+        "Comparison",
+        "",
+        "What is Hydration in SSR?"
+    ),
+    (
+        "What is Hydration in Server-Side Rendering (SSR)?",
+        "The process where client-side React/Vue attaches event listeners and binds reactive state to the existing pre-rendered HTML DOM elements sent by the server, turning static HTML into an interactive web application.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is a 'hydration mismatch' error?"
+    ),
+
+    # --- Web Security & APIs (25 items) ---
+    (
+        "What is Clickjacking and how does an attacker execute it?",
+        "An attacker frames your website inside a transparent `<iframe>` on their malicious site and overlays decoy buttons (e.g. 'Play Game') over your action buttons (e.g. 'Delete Account' or 'Pay $100'), tricking the user into performing unintended actions.",
+        "Easy",
+        "Concept",
+        "",
+        "What response header prevents framing?"
+    ),
+    (
+        "What is `X-Frame-Options` and what are its allowed values?",
+        "`X-Frame-Options: DENY` (disallows framing by any site). `X-Frame-Options: SAMEORIGIN` (allows framing only by pages on the exact same origin).",
+        "Easy",
+        "Concept",
+        "X-Frame-Options: SAMEORIGIN",
+        "What modern CSP directive supersedes `X-Frame-Options` (`frame-ancestors`)?"
+    ),
+    (
+        "What is `Content-Security-Policy: frame-ancestors 'self'`?",
+        "The modern standard directive restricting which parent origins are allowed to embed the page in an `<iframe>`, `<frame>`, or `<object>`.",
+        "Easy",
+        "Concept",
+        "Content-Security-Policy: frame-ancestors 'self' https://trusted.com;",
+        "Can `frame-ancestors` specify multiple allowed origins?"
+    ),
+    (
+        "What does `rel='noopener noreferrer'` do on external links (`target='_blank'`)?",
+        "`noopener`: prevents the opened target window from accessing the referring page via `window.opener`, protecting against reverse tabnabbing phishing. `noreferrer`: prevents sending the Referer header to the external site.",
+        "Easy",
+        "Concept",
+        "<a href='https://external.com' target='_blank' rel='noopener noreferrer'>External</a>",
+        "Do modern browsers automatically imply `noopener` for `target='_blank'` (Yes)?"
+    ),
+    (
+        "What is Reverse Tabnabbing?",
+        "A phishing attack where an external page opened via `<a target='_blank'>` uses `window.opener.location = 'https://fake-login.com'` to silently replace the user's original background tab with a fake login page.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How is reverse tabnabbing prevented (`rel='noopener'`)?"
+    ),
+    (
+        "What is Cross-Site Script Inclusion (XSSI)?",
+        "A vulnerability where sensitive JSON data exposed via a GET endpoint is leaked to cross-origin attackers because scripts can be included cross-origin via `<script src='...'>` tags.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why do some APIs prefix JSON responses with `)]}',\n`?"
+    ),
+    (
+        "Why do some APIs prefix JSON responses with `)]}',\n`?",
+        "It prevents JSON hijacking by causing a syntax error if a malicious site attempts to execute the JSON as a script via a `<script>` tag.",
+        "Advanced",
+        "Concept",
+        ")]}',\n{\"user\": \"alice\", \"secret\": 12345}",
+        "Does standard `JSON.parse` handle this prefix?"
+    ),
+    (
+        "What is the difference between encodeURI() and encodeURIComponent()?",
+        "`encodeURI()` encodes a full URI, preserving protocol and path separators (`,`, `/`, `?`, `:`, `@`, `&`, `=`). `encodeURIComponent()` encodes individual query parameter keys and values, escaping special characters including `/`, `?`, `&`, and `=`.",
+        "Easy",
+        "Comparison",
+        "encodeURI('https://example.com/search?q=a&b'); // Keeps ? and &\nencodeURIComponent('a&b'); // Escapes & to %26",
+        "Which one should you use for query string parameters?"
+    ),
+    (
+        "What is Service Worker `skipWaiting()`?",
+        "A method called during a Service Worker's install phase forcing the newly updated Service Worker to activate immediately without waiting for existing open tabs to close.",
+        "Intermediate",
+        "Practical",
+        "self.addEventListener('install', event => {\n  self.skipWaiting();\n});",
+        "What does `clients.claim()` do in the activate phase?"
+    ),
+    (
+        "What does `clients.claim()` do in a Service Worker?",
+        "It enables the newly activated Service Worker to immediately take control of all currently open pages within its scope without requiring a page reload.",
+        "Intermediate",
+        "Concept",
+        "self.addEventListener('activate', event => {\n  event.waitUntil(clients.claim());\n});",
+        "When is pairing `skipWaiting()` and `clients.claim()` useful?"
+    )
+]
+
+print(f"Total Web Fundamentals Part 3 questions created: {len(web_part3)}")
+
+with open('scripts/webfundamentals_part3.py', 'w', encoding='utf-8') as f:
+    f.write('"""\nscripts/webfundamentals_part3.py\nThird batch of fresher Web Fundamentals interview questions.\n"""\n\n')
+    f.write('web_part3_items = [\n')
+    for item in web_part3:
+        f.write(f"    {repr(item)},\n")
+    f.write(']\n')
+
+print("Saved to scripts/webfundamentals_part3.py")

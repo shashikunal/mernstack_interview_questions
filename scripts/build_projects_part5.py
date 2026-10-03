@@ -1,0 +1,816 @@
+# scripts/build_projects_part5.py
+import json
+
+part5_questions = [
+    # System flow & request lifecycle
+    (
+        "Trace the complete lifecycle of a user login request from the frontend to the database in your project.",
+        "1) The user inputs credentials and submits a React form. 2) The submit handler validates inputs and fires an HTTP POST request via Axios or fetch. 3) The Express server receives the request, parses the JSON body with body-parser middleware, and routes it to the auth controller. 4) The controller queries the database (e.g., MongoDB/PostgreSQL) to find the user by email. 5) bcrypt compares the hashed password with the plaintext input. 6) If valid, a signed JWT is generated and returned in a secure HTTP-only cookie or JSON payload. 7) The frontend stores the token or user profile in app state and redirects to the dashboard.",
+        "Intermediate",
+        "Scenario",
+        "// Controller handler example\nconst login = async (req, res) => {\n  const { email, password } = req.body;\n  const user = await User.findOne({ email });\n  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {\n    return res.status(401).json({ message: 'Invalid credentials' });\n  }\n  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });\n  res.json({ token, user: { id: user._id, name: user.name } });\n};",
+        "How would you handle network disconnection while the login request is pending?"
+    ),
+    (
+        "How did you implement role-based access control (RBAC) in your project?",
+        "Role-based access was implemented using middleware in Express and protected wrapper components in React. Each user record in the database contains a 'role' field (e.g., 'user', 'admin'). In Express, an authorize middleware checks if req.user.role matches the allowed roles before calling next(). In React, an AdminRoute component checks the authenticated user's role from Context; if unauthorized, it redirects to an access-denied page or dashboard.",
+        "Intermediate",
+        "Practical",
+        "// Express authorization middleware\nconst authorize = (...allowedRoles) => {\n  return (req, res, next) => {\n    if (!req.user || !allowedRoles.includes(req.user.role)) {\n      return res.status(403).json({ message: 'Access forbidden: Insufficient permissions' });\n    }\n    next();\n  };\n};",
+        "Why must role verification happen on the backend even if the UI already hides admin links?"
+    ),
+    (
+        "How did you handle file and image uploads in your full-stack project?",
+        "Used Multer middleware on the Express server to parse multipart/form-data. For local development, files were saved into an 'uploads/' folder and served statically via express.static. For production deployments, Multer passed the buffer to cloud storage (such as Cloudinary or AWS S3), and only the resulting secure URL was persisted in the database record.",
+        "Intermediate",
+        "Practical",
+        "const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit\nrouter.post('/avatar', upload.single('image'), async (req, res) => {\n  const result = await cloudinary.uploader.upload(req.file.path);\n  await User.findByIdAndUpdate(req.user.id, { avatarUrl: result.secure_url });\n  res.json({ url: result.secure_url });\n});",
+        "What validations did you apply to prevent malicious file uploads?"
+    ),
+    (
+        "How did you implement search and debouncing in your project frontend?",
+        "To prevent sending an API request on every keystroke, a custom debounce hook or setTimeout was used in React. When the user types in the search input, a timer is set (e.g., 300ms). If the user types again before the timer expires, the previous timer is cleared. Only when typing pauses does the debounced query trigger the API request.",
+        "Easy",
+        "Coding",
+        "useEffect(() => {\n  const timer = setTimeout(() => {\n    fetchSearchResults(searchQuery);\n  }, 300);\n  return () => clearTimeout(timer);\n}, [searchQuery]);",
+        "What happens if an earlier slow search request resolves after a newer fast search request?"
+    ),
+    (
+        "How did you handle pagination in your project: client-side or server-side?",
+        "Server-side pagination was implemented using query parameters 'page' and 'limit'. The backend queries the database with .skip((page - 1) * limit).limit(limit) in MongoDB (or OFFSET/LIMIT in SQL) and returns the subset of records along with metadata: totalItems, totalPages, and currentPage. This prevents fetching thousands of rows into client memory.",
+        "Intermediate",
+        "Concept",
+        "const page = parseInt(req.query.page) || 1;\nconst limit = parseInt(req.query.limit) || 10;\nconst total = await Product.countDocuments();\nconst items = await Product.find().skip((page - 1) * limit).limit(limit);\nres.json({ items, total, totalPages: Math.ceil(total / limit), page });",
+        "When does offset-based pagination become inefficient in large databases?"
+    ),
+    (
+        "How did you handle global errors and crash prevention in your Express backend?",
+        "A centralized error-handling middleware with 4 arguments (err, req, res, next) was registered at the end of the middleware pipeline. All asynchronous route handlers either used express-async-errors or try/catch blocks that pass errors to next(err). The error handler formats a consistent JSON error response, logs details for debugging, and hides stack traces in production.",
+        "Intermediate",
+        "Practical",
+        "// Global error handler\napp.use((err, req, res, next) => {\n  console.error(err.stack);\n  const status = err.statusCode || 500;\n  res.status(status).json({\n    success: false,\n    message: err.message || 'Internal Server Error',\n    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })\n  });\n});",
+        "Why must an Express error-handling middleware have exactly 4 parameters?"
+    ),
+    (
+        "How did you handle component crash prevention in your React frontend?",
+        "Implemented React Error Boundaries around critical application modules like the feed, checkout, or profile views. A class component implementing componentDidCatch and getDerivedStateFromError catches JavaScript runtime errors in child component trees, logs them, and renders a fallback UI (like a 'Something went wrong. Please reload' card) instead of unmounting the whole app.",
+        "Intermediate",
+        "Practical",
+        "class ErrorBoundary extends React.Component {\n  state = { hasError: false };\n  static getDerivedStateFromError(error) { return { hasError: true }; }\n  componentDidCatch(error, info) { console.error('UI Crash:', error, info); }\n  render() {\n    if (this.state.hasError) return <div>Failed to load module. <button onClick={() => window.location.reload()}>Reload</button></div>;\n    return this.props.children;\n  }\n}",
+        "Can React Error Boundaries catch errors inside asynchronous callbacks or event handlers?"
+    ),
+    (
+        "How did you store and manage API tokens securely on the frontend?",
+        "Preferred approach is storing session tokens in HTTP-only, Secure, SameSite cookies sent automatically by the browser, making them inaccessible to malicious client scripts (mitigating XSS). If storing in memory or localStorage during development, the token is passed in the Authorization header ('Bearer <token>') via an Axios interceptor.",
+        "Intermediate",
+        "Comparison",
+        "// Axios request interceptor\napi.interceptors.request.use((config) => {\n  const token = localStorage.getItem('token');\n  if (token) {\n    config.headers.Authorization = `Bearer ${token}`;\n  }\n  return config;\n});",
+        "What is the main vulnerability of storing JWT tokens in localStorage?"
+    ),
+    (
+        "How did you handle expired JWT tokens on the client without forcing the user to log in repeatedly?",
+        "Implemented an Axios response interceptor that listens for 401 Unauthorized status codes. When a 401 is received, the interceptor attempts to call a '/api/auth/refresh' endpoint using a long-lived refresh token stored in an HTTP-only cookie. If refresh succeeds, the new access token is stored and the original failed request is retried seamlessly.",
+        "Advanced",
+        "Practical",
+        "api.interceptors.response.use(\n  (response) => response,\n  async (error) => {\n    if (error.response?.status === 401 && !error.config._retry) {\n      error.config._retry = true;\n      const { data } = await axios.post('/api/auth/refresh');\n      setToken(data.accessToken);\n      error.config.headers.Authorization = `Bearer ${data.accessToken}`;\n      return api(error.config);\n    }\n    return Promise.reject(error);\n  }\n);",
+        "What happens if the refresh token endpoint itself returns 401?"
+    ),
+    (
+        "How did you structure your backend project folders and why?",
+        "Adopted a layered MVC / Controller-Service-Repository architecture: 1) 'config/' for database and environment setup. 2) 'models/' for Mongoose/Sequelize schemas. 3) 'routes/' for URL mapping. 4) 'controllers/' for HTTP request/response orchestration. 5) 'services/' for reusable business logic. 6) 'middlewares/' for authentication, validation, and error handling. This separation keeps files modular, testable, and maintainable.",
+        "Easy",
+        "Concept",
+        "src/\n  ├── config/      # db.js, env.js\n  ├── controllers/ # userController.js\n  ├── middlewares/ # auth.js, errorHandler.js\n  ├── models/      # User.js\n  ├── routes/      # userRoutes.js\n  └── server.js",
+        "Why is it bad practice to write database queries directly inside route definitions?"
+    ),
+    (
+        "How did you structure your React frontend folders and why?",
+        "Organized code by feature or component responsibility: 1) 'components/' for shared atomic UI elements (Buttons, Modal, Input). 2) 'pages/' or 'views/' for route-level containers (HomePage, LoginPage). 3) 'context/' or 'store/' for global state management. 4) 'hooks/' for reusable custom logic (e.g., useDebounce, useAuth). 5) 'services/' or 'api/' for Axios instances and endpoints. 6) 'assets/' for styles, fonts, and images.",
+        "Easy",
+        "Concept",
+        "src/\n  ├── components/ # Navbar, Card, Modal\n  ├── pages/      # Home, Dashboard, Profile\n  ├── hooks/      # useAuth.js, useFetch.js\n  ├── context/    # AuthContext.js\n  ├── services/   # api.js\n  └── App.jsx",
+        "When would you choose feature-based folders over type-based folders?"
+    ),
+    (
+        "How did you handle CORS issues when connecting your React frontend to your Express backend?",
+        "During local development, React ran on port 3000 and Express on port 5000, triggering cross-origin browser restrictions. Installed and configured the 'cors' middleware on Express specifying allowed origins, methods, and credentials headers. Alternatively, configured a proxy in package.json or vite.config.js so frontend requests to '/api' were forwarded transparently.",
+        "Easy",
+        "Debugging",
+        "// Express server CORS configuration\nconst cors = require('cors');\napp.use(cors({\n  origin: ['http://localhost:3000', 'https://my-domain.com'],\n  credentials: true,\n  methods: ['GET', 'POST', 'PUT', 'DELETE']\n}));",
+        "Why does CORS only block requests in browsers but not when testing with Postman?"
+    ),
+    (
+        "How did you validate incoming request bodies in your Node/Express project?",
+        "Used schema validation libraries such as Joi or Zod inside a validation middleware. Before the request reaches the controller, the middleware validates req.body against a strict schema (e.g. required email format, password min length). If validation fails, it immediately returns a 400 Bad Request with structured error messages, preventing malformed data from touching the database.",
+        "Intermediate",
+        "Practical",
+        "const validate = (schema) => (req, res, next) => {\n  const { error } = schema.validate(req.body);\n  if (error) return res.status(400).json({ error: error.details[0].message });\n  next();\n};",
+        "Why is client-side validation alone insufficient for data integrity?"
+    ),
+    (
+        "How did you prevent SQL injection or NoSQL injection in your project?",
+        "For MongoDB, avoided passing raw req.body into queries and used Mongoose schemas with strict types, sanitizing inputs using mongo-sanitize to strip '$' operators. For SQL, always used parameterized queries with placeholders ($1, ?) or an ORM like Prisma/Sequelize, never concatenating user input directly into query strings.",
+        "Intermediate",
+        "Practical",
+        "// SAFE: Parameterized SQL\nconst query = 'SELECT * FROM users WHERE email = $1 AND password_hash = $2';\nawait pool.query(query, [email, hashedPass]);\n\n// UNSAFE:\n// `SELECT * FROM users WHERE email = '${email}'`",
+        "What is a sample payload that exploits NoSQL injection in Express with MongoDB?"
+    ),
+    (
+        "How did you handle sensitive credentials like database URIs and API keys in your project?",
+        "All secrets (MongoDB connection string, JWT secret, third-party API keys) were stored in a '.env' file loaded via dotenv during startup. The '.env' file was added to '.gitignore' so credentials were never committed to GitHub. In production platforms (Render, Railway, Vercel), secrets were injected via platform Environment Variables.",
+        "Easy",
+        "Practical",
+        "// .gitignore\nnode_modules/\n.env\n\n// server.js\nrequire('dotenv').config();\nconst dbUri = process.env.MONGO_URI;",
+        "What should you do immediately if you accidentally commit an API secret to a public Git repository?"
+    ),
+    (
+        "How did you implement optimistic UI updates in your project?",
+        "When a user performs an action like 'Like post' or 'Delete task', the React state is updated immediately before waiting for the backend HTTP response. If the network request succeeds, the state remains. If the request fails, a catch block reverts the state back to its original value and displays an error toast.",
+        "Intermediate",
+        "Practical",
+        "const handleLike = async (postId) => {\n  const prevLikes = likes;\n  setLikes(likes + 1); // Optimistic update\n  try {\n    await api.post(`/posts/${postId}/like`);\n  } catch (err) {\n    setLikes(prevLikes); // Revert on failure\n    toast.error('Failed to register like');\n  }\n};",
+        "What are the user experience benefits and risks of optimistic updates?"
+    ),
+    (
+        "How did you handle loading and empty states across your application pages?",
+        "Created reusable UI components: <Spinner /> or skeleton placeholders for loading states, and <EmptyState title='No orders found' icon={...} /> when data arrays return empty. Handled conditionally in JSX: if (isLoading) return <SkeletonLoader />; if (data.length === 0) return <EmptyState />; return <DataList items={data} />.",
+        "Easy",
+        "Practical",
+        "if (loading) return <ProductSkeleton count={6} />;\nif (!products.length) return <EmptyView message='No products match your filter' />;\nreturn <div className='grid'>{products.map(p => <ProductCard key={p.id} item={p} />)}</div>;",
+        "Why are skeleton loaders generally preferred over generic spinning wheels on content feeds?"
+    ),
+    (
+        "How did you implement real-time features like live chat or order notifications?",
+        "Used Socket.io. On the Express server, attached Socket.io to the HTTP server instance. When a client connects with their JWT token, the server registers the socket into private or room channels (e.g. socket.join(`room_${orderId}`)). When a new message or status change occurs, the server emits an event (io.to(...).emit('new_message', data)), and React listens via socket.on() inside a useEffect hook.",
+        "Intermediate",
+        "Practical",
+        "// Client listener\nuseEffect(() => {\n  socket.on('notification', (msg) => {\n    setNotifications(prev => [msg, ...prev]);\n  });\n  return () => socket.off('notification');\n}, []);",
+        "Why is it essential to clean up socket listeners in the useEffect return function?"
+    ),
+    (
+        "How did you handle database schema design: embedding vs referencing in MongoDB?",
+        "Used embedding for data that is tightly coupled, bounded in size, and always read together (e.g., shipping address inside a user document, items inside an immutable historical order). Used referencing (ObjectId with ref) for data that grows unbounded or is queried independently (e.g., reviews for a product, comments on a post) to avoid exceeding the 16MB document limit.",
+        "Intermediate",
+        "Comparison",
+        "// Embedding\nconst orderSchema = new mongoose.Schema({\n  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },\n  items: [{ productId: String, title: String, price: Number, qty: Number }],\n  total: Number\n});",
+        "What is the performance implication of using Mongoose .populate() on large datasets?"
+    ),
+    (
+        "How did you manage application state between React Context and local state?",
+        "Kept state as local as possible (using useState or useReducer in the nearest common parent). Reserved React Context strictly for truly global data that changes infrequently and is required by many deeply nested components: authenticated user session, active theme (dark/light), and shopping cart count. This prevented unnecessary re-renders of the entire component tree.",
+        "Intermediate",
+        "Concept",
+        "export const AuthContext = createContext(null);\nexport const AuthProvider = ({ children }) => {\n  const [user, setUser] = useState(null);\n  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;\n};",
+        "Why does updating a Context value cause all consumer components to re-render?"
+    ),
+    (
+        "How did you handle form state and form validations in React?",
+        "For small forms (e.g., login, newsletter), used controlled components with useState and custom validation functions. For complex multi-field forms (e.g., checkout, registration), used React Hook Form or Formik with Yup/Zod schema validation. This drastically reduced boilerplate and avoided re-rendering the whole form on every keystroke.",
+        "Easy",
+        "Practical",
+        "const { register, handleSubmit, formState: { errors } } = useForm();\nconst onSubmit = (data) => api.post('/register', data);\nreturn (\n  <form onSubmit={handleSubmit(onSubmit)}>\n    <input {...register('username', { required: 'Username is required' })} />\n    {errors.username && <span>{errors.username.message}</span>}\n  </form>\n);",
+        "What is the difference between controlled and uncontrolled form inputs in React?"
+    ),
+    (
+        "How did you test your REST APIs during development?",
+        "Used Postman and Thunder Client (VS Code extension) to manually test endpoints with diverse request bodies, query params, and authorization headers. Organized tests into collections with environment variables for dev and prod URLs. Automated integration tests were written with Jest and Supertest to verify status codes and JSON response bodies.",
+        "Easy",
+        "Practical",
+        "// Supertest example\nconst request = require('supertest');\nconst app = require('../app');\ntest('GET /api/products returns 200 and list', async () => {\n  const res = await request(app).get('/api/products');\n  expect(res.statusCode).toBe(200);\n  expect(Array.isArray(res.body.items)).toBe(true);\n});",
+        "Why should automated API tests run against a separate test database rather than your development database?"
+    ),
+    (
+        "How did you optimize slow database queries in your project?",
+        "1) Added database indexes on frequently queried or filtered fields (e.g. email, category, createdAt). 2) Used projection (.select('name price') in Mongoose or SELECT specific columns in SQL) to avoid transferring unused fields. 3) Used .lean() in Mongoose for read-only queries to skip creating full Mongoose document instances. 4) Added pagination to restrict large result sets.",
+        "Intermediate",
+        "Practical",
+        "// Indexing in Mongoose\nproductSchema.index({ category: 1, price: -1 });\n// Lean query with projection\nconst items = await Product.find({ category: 'books' })\n  .select('title price author')\n  .lean();",
+        "What is the downside of having too many indexes on a database collection?"
+    ),
+    (
+        "What was the most challenging bug you encountered in your project and how did you resolve it?",
+        "Explain with the STAR framework: 1) Situation: State desynchronization during cart checkout where total price calculated on client didn't match backend. 2) Task: Ensure cart price integrity and prevent race conditions. 3) Action: Moved total calculation entirely to server, fetching authoritative product prices from DB; added Axios interceptor to handle out-of-stock items. 4) Result: Eliminated calculation mismatches and prevented invalid orders.",
+        "Intermediate",
+        "Scenario",
+        "// Server authoritative calculation\nconst orderTotal = cartItems.reduce(async (accPromise, item) => {\n  const acc = await accPromise;\n  const dbProduct = await Product.findById(item.productId);\n  return acc + (dbProduct.price * item.quantity);\n}, Promise.resolve(0));",
+        "Why should you never trust item prices sent directly from the client request body?"
+    ),
+    (
+        "How did you deploy your project to production?",
+        "Separated frontend and backend deployments: The React client was deployed to Vercel/Netlify connected to the GitHub repository for automatic CI/CD builds on git push. The Express server was deployed to Render/Railway using environment variables configured in their dashboard. The database was hosted on MongoDB Atlas with IP allowlisting and encrypted connection strings.",
+        "Easy",
+        "Practical",
+        "// Sample build command in package.json\n\"scripts\": {\n  \"build\": \"vite build\",\n  \"start\": \"node server.js\"\n}",
+        "What are the benefits of hosting static frontend assets on a CDN (Vercel/Netlify) versus serving them from Express?"
+    ),
+    (
+        "How did you implement user logout in your authentication system?",
+        "If using HTTP-only cookies, the server cleared the cookie with res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'strict' }). On the client, the React auth state was reset to null, and cached user queries were purged. For token blacklisting, stored revoked JWT tokens or user token versions in Redis/database until expiry.",
+        "Easy",
+        "Practical",
+        "app.post('/api/auth/logout', (req, res) => {\n  res.clearCookie('token');\n  res.status(200).json({ success: true, message: 'Logged out successfully' });\n});",
+        "Can a client truly revoke a stateless JWT if it is stored in localStorage without server tracking?"
+    ),
+    (
+        "How did you handle responsive design across mobile, tablet, and desktop devices?",
+        "Adopted a mobile-first design approach using CSS media queries and modern layout systems (Flexbox and CSS Grid). Created responsive container breakpoints (sm: 640px, md: 768px, lg: 1024px). Ensured all images used max-width: 100% and touch targets were at least 44x44 pixels for mobile usability.",
+        "Easy",
+        "Practical",
+        "/* Mobile first grid */\n.product-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n}\n@media (min-width: 768px) {\n  .product-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media (min-width: 1024px) {\n  .product-grid {\n    grid-template-columns: repeat(4, 1fr);\n  }\n}",
+        "Why is mobile-first CSS styling generally cleaner than desktop-first overrides?"
+    ),
+    (
+        "How did you prevent double form submissions or double payments when a user clicks repeatedly?",
+        "Applied dual protection: 1) Frontend: disabled submit buttons immediately upon click and displayed a loading spinner until the async operation completed. 2) Backend: generated a unique idempotency key or checked if an identical pending transaction existed for that user within a short time window before processing payment.",
+        "Intermediate",
+        "Practical",
+        "const [isSubmitting, setIsSubmitting] = useState(false);\nconst handleSubmit = async () => {\n  if (isSubmitting) return;\n  setIsSubmitting(true);\n  try {\n    await processPayment(orderData);\n  } finally {\n    setIsSubmitting(false);\n  }\n};",
+        "What is an idempotency key in payment processing and how does it protect against network duplicates?"
+    ),
+    (
+        "How did you structure your Git workflow when working on project features?",
+        "Followed feature branching: Kept 'main' branch stable and deployable. For every new feature or bugfix, branched out with descriptive names: 'feature/auth-jwt' or 'fix/cart-count'. Made small, atomic commits with clear messages. Created Pull Requests to review code and merge into main after verification.",
+        "Easy",
+        "Practical",
+        "git checkout -b feature/user-profile\ngit add .\ngit commit -m \"feat: add profile picture upload and bio update\"\ngit push origin feature/user-profile",
+        "Why is it risky to commit directly to the 'main' branch in a shared team repository?"
+    ),
+    (
+        "How did you implement filter, sort, and search combination on the backend?",
+        "Constructed a dynamic MongoDB query object based on incoming query parameters: req.query.category, req.query.minPrice, req.query.search, req.query.sort. Only appended conditions if the parameter was present. Applied sort({ [sortField]: sortOrder }) before pagination to ensure ordered results.",
+        "Intermediate",
+        "Practical",
+        "const query = {};\nif (req.query.category) query.category = req.query.category;\nif (req.query.search) query.title = { $regex: req.query.search, $options: 'i' };\nif (req.query.minPrice) query.price = { $gte: Number(req.query.minPrice) };\n\nconst items = await Product.find(query).sort({ price: req.query.sort === 'desc' ? -1 : 1 });",
+        "Why must you escape special regex characters when using $regex with user search input?"
+    ),
+    (
+        "How did you handle date and time zones in your project?",
+        "Always stored dates and timestamps in UTC format in the database (e.g. ISO 8601 strings or MongoDB Date objects). In the frontend, converted UTC strings to the user's local timezone using JavaScript's Intl.DateTimeFormat or lightweight libraries like date-fns/dayjs.",
+        "Easy",
+        "Concept",
+        "// Server saves UTC\nconst createdAt = new Date().toISOString();\n// Client formats local\nconst formatted = new Date(item.createdAt).toLocaleDateString(navigator.language, {\n  year: 'numeric', month: 'short', day: 'numeric'\n});",
+        "What common bug happens when server and client assume different local time zones?"
+    ),
+    (
+        "What would you refactor or improve in your project if given two more weeks?",
+        "1) Add comprehensive automated unit and integration tests with Jest and Playwright. 2) Implement Redis caching for frequently accessed read-heavy endpoints like product listings. 3) Migrate frontend to TypeScript for end-to-end type safety between API contracts and UI components. 4) Set up a CI/CD pipeline with automated linting and test runs on every pull request.",
+        "Intermediate",
+        "Scenario",
+        "Refactoring priorities:\n- TypeScript migration\n- Redis caching layer\n- Automated E2E testing\n- CI/CD workflow automation",
+        "How do you prioritize tech debt refactoring versus adding new features?"
+    ),
+    (
+        "How did you handle user notifications (toasts, alerts) in your React UI?",
+        "Used a toast notification library (like react-hot-toast or custom React Context toast provider). When an API action resolves or fails, toast.success('Profile updated!') or toast.error(errorMessage) is called. Toasts automatically auto-dismiss after 3-4 seconds without blocking user interaction.",
+        "Easy",
+        "Practical",
+        "import toast from 'react-hot-toast';\ntry {\n  await api.post('/tasks', newTask);\n  toast.success('Task created successfully');\n} catch (err) {\n  toast.error(err.response?.data?.message || 'Failed to create task');\n}",
+        "Why are toast notifications generally better than window.alert() in modern web apps?"
+    ),
+    (
+        "How did you protect against Cross-Site Scripting (XSS) in your web application?",
+        "1) Relied on React's automatic HTML escaping when rendering variables in JSX. 2) Avoided using dangerouslySetInnerHTML unless sanitized with DOMPurify. 3) Configured Helmet middleware in Express to set secure HTTP headers (Content-Security-Policy, X-XSS-Protection, X-Content-Type-Options).",
+        "Intermediate",
+        "Concept",
+        "const helmet = require('helmet');\napp.use(helmet());\n\n// In React, always sanitize if rendering HTML strings:\nimport DOMPurify from 'dompurify';\n<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userContent) }} />",
+        "What is the difference between Stored XSS and Reflected XSS?"
+    ),
+    (
+        "How did you handle cascading deletes or orphaned records in your database?",
+        "In MongoDB, used Mongoose pre('remove') or pre('findOneAndDelete') middleware hooks to delete associated child documents (e.g. deleting all comments when a post is removed). In relational SQL databases, configured FOREIGN KEY constraints with ON DELETE CASCADE to ensure the database engine enforces referential integrity automatically.",
+        "Intermediate",
+        "Practical",
+        "// SQL foreign key with cascade\nFOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;\n\n// Mongoose hook\nuserSchema.pre('deleteOne', { document: true }, async function(next) {\n  await Order.deleteMany({ userId: this._id });\n  next();\n});",
+        "What is the danger of relying purely on application-level logic for cascading deletes instead of database constraints?"
+    ),
+    (
+        "How did you implement password reset functionality in your project?",
+        "1) User enters registered email. 2) Server generates a crypto-random hex token and saves its hash with a short expiry (e.g. 15 minutes) on the user record. 3) Server sends an email with a reset link containing the raw token. 4) User clicks link, navigates to reset password page, and submits new password with the token. 5) Server verifies token, updates hashed password, and clears reset token fields.",
+        "Intermediate",
+        "Scenario",
+        "const crypto = require('crypto');\nconst resetToken = crypto.randomBytes(32).toString('hex');\nuser.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');\nuser.passwordResetExpires = Date.now() + 15 * 60 * 1000;\nawait user.save();",
+        "Why should you never email a user their existing plaintext password?"
+    ),
+    (
+        "How did you handle dark mode and theme switching in your frontend?",
+        "Stored the user's preference in localStorage with a fallback to window.matchMedia('(prefers-color-scheme: dark)'). Applied a 'dark' class to the root <html> or <body> element. Styled UI using CSS variables or Tailwind dark: modifiers, swapping primary colors, background surfaces, and text contrast dynamically.",
+        "Easy",
+        "Practical",
+        ":root {\n  --bg-color: #ffffff;\n  --text-color: #111827;\n}\n[data-theme='dark'] {\n  --bg-color: #0f172a;\n  --text-color: #f8fafc;\n}\nbody { background-color: var(--bg-color); color: var(--text-color); }",
+        "How do you prevent a 'flash of white/incorrect theme' on initial page reload?"
+    ),
+    (
+        "How did you prevent unauthorized users from editing or deleting resources created by other users?",
+        "Enforced resource ownership checks on the backend. When a PUT or DELETE request arrives, the server fetches the target resource and verifies that resource.createdBy.toString() === req.user.id (or req.user.role === 'admin'). If IDs do not match, the server returns a 403 Forbidden status.",
+        "Intermediate",
+        "Practical",
+        "const post = await Post.findById(req.params.id);\nif (!post) return res.status(404).json({ message: 'Post not found' });\nif (post.author.toString() !== req.user.id && req.user.role !== 'admin') {\n  return res.status(403).json({ message: 'Not authorized to modify this post' });\n}\nawait post.deleteOne();",
+        "Why is hiding edit buttons in the frontend UI insufficient for resource authorization?"
+    ),
+    (
+        "How did you optimize bundle size in your React application?",
+        "1) Used React.lazy() and Suspense for code-splitting routes so users only download code for the page they visit. 2) Analyzed bundle using rollup-plugin-visualizer or webpack-bundle-analyzer. 3) Replaced heavy libraries with lighter alternatives (e.g., date-fns instead of Moment.js). 4) Configured tree-shaking for icons by importing specific icons directly.",
+        "Intermediate",
+        "Practical",
+        "import React, { Suspense, lazy } from 'react';\nconst Dashboard = lazy(() => import('./pages/Dashboard'));\nconst Profile = lazy(() => import('./pages/Profile'));\n\nfunction App() {\n  return (\n    <Suspense fallback={<div>Loading...</div>}>\n      <Routes>\n        <Route path='/dashboard' element={<Dashboard />} />\n        <Route path='/profile' element={<Profile />} />\n      </Routes>\n    </Suspense>\n  );\n}",
+        "What is tree shaking and how does ES6 module syntax enable it?"
+    ),
+    (
+        "How did you implement breadcrumbs and page title updates in your Single Page Application?",
+        "Updated document.title dynamically in a useEffect hook whenever the route or active item changes (or using react-helmet-async). Built breadcrumb navigation by splitting location.pathname (e.g., /products/electronics/laptops) and rendering clickable link segments.",
+        "Easy",
+        "Practical",
+        "useEffect(() => {\n  document.title = product ? `${product.name} | MyStore` : 'Loading... | MyStore';\n}, [product]);",
+        "Why is dynamic document.title important for user experience and browser history navigation?"
+    ),
+    (
+        "How did you handle environment variables differently across local development, staging, and production?",
+        "Locally, used '.env.local' with localhost database URLs and test credentials. In staging and production hosting environments (e.g. Render/Vercel), configured environment variables through dashboard settings. The application code references process.env.KEY (or import.meta.env.VITE_KEY) without changing any source code files.",
+        "Easy",
+        "Concept",
+        "// In code:\nconst API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';\n// Local .env.local: REACT_APP_API_URL=http://localhost:5000/api\n// Production env: REACT_APP_API_URL=https://api.myproject.com/api",
+        "Why should production databases never share the same database credentials as local test environments?"
+    ),
+    (
+        "How did you handle rate limiting on your API to prevent spam or DDoS abuse?",
+        "Implemented 'express-rate-limit' middleware on sensitive routes like login, registration, and password reset. Configured rules such as allowing a maximum of 5 login attempts per 15-minute window per IP. Exceeding the threshold returns a 429 Too Many Requests status with a Retry-After header.",
+        "Intermediate",
+        "Practical",
+        "const rateLimit = require('express-rate-limit');\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 5, // Limit each IP to 5 requests per window\n  message: { error: 'Too many login attempts, please try again in 15 minutes' }\n});\napp.use('/api/auth/login', authLimiter);",
+        "Why is IP-based rate limiting alone sometimes problematic for users behind corporate NAT proxies?"
+    ),
+    (
+        "How did you handle modal dialogs and backdrop dismissals in React?",
+        "Created a reusable Modal component rendered via ReactDOM.createPortal into document.body to avoid CSS z-index and overflow clipping issues. Attached an event listener to close when clicking the backdrop overlay or pressing the Escape key, while preventing backdrop click propagation on the modal body.",
+        "Easy",
+        "Practical",
+        "return ReactDOM.createPortal(\n  <div className='modal-backdrop' onClick={onClose}>\n    <div className='modal-content' onClick={(e) => e.stopPropagation()}>\n      {children}\n      <button onClick={onClose}>Close</button>\n    </div>\n  </div>,\n  document.body\n);",
+        "Why should modal dialogs be rendered through React Portals?"
+    ),
+    (
+        "How did you test your frontend UI components?",
+        "Used React Testing Library and Jest/Vitest. Focused on testing user behavior rather than implementation details: verifying that clicking buttons triggers expected API calls, form inputs reflect typed text, and error messages appear when invalid data is submitted.",
+        "Intermediate",
+        "Practical",
+        "import { render, screen, fireEvent } from '@testing-library/react';\ntest('renders error message when email is missing', () => {\n  render(<LoginForm />);\n  fireEvent.click(screen.getByRole('button', { name: /login/i }));\n  expect(screen.getByText(/email is required/i)).toBeInTheDocument();\n});",
+        "Why is testing user behavior preferred over testing component internal state?"
+    ),
+    (
+        "How did you handle database indexing for composite search filters?",
+        "When filtering products by both category and status while sorting by price, created a compound index in MongoDB: { category: 1, status: 1, price: -1 }. Following the Equality, Sort, Range (ESR) rule ensures the database engine resolves the query using a single B-tree index scan without an in-memory sort.",
+        "Intermediate",
+        "Practical",
+        "// Compound index following ESR rule\nproductSchema.index({ category: 1, status: 1, price: -1 });",
+        "What is the Equality, Sort, Range (ESR) rule in database indexing?"
+    ),
+    (
+        "How did you handle image aspect ratios and lazy loading on the frontend?",
+        "Used native HTML loading='lazy' attribute on <img> tags so browser delays downloading off-screen images until scrolled near viewport. Styled image containers with aspect-ratio: 16 / 9 (or fixed aspect ratios) and object-fit: cover to prevent Cumulative Layout Shift (CLS) as images load.",
+        "Easy",
+        "Practical",
+        "<img\n  src={product.imageUrl}\n  alt={product.title}\n  loading='lazy'\n  style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }}\n/>",
+        "What is Cumulative Layout Shift (CLS) and how do missing image dimensions cause it?"
+    ),
+    (
+        "How did you handle optimistic locking or concurrent edit conflicts in your project?",
+        "Used document versioning (such as Mongoose's default __v field). When updating a document, query by both ID and version: findOneAndUpdate({ _id: id, __v: version }, { ...updates, $inc: { __v: 1 } }). If another user updated it concurrently, the version check fails, alerting the user to refresh before overwriting.",
+        "Advanced",
+        "Concept",
+        "const updateDoc = async (id, currentVersion, data) => {\n  const updated = await Doc.findOneAndUpdate(\n    { _id: id, __v: currentVersion },\n    { ...data, $inc: { __v: 1 } },\n    { new: true }\n  );\n  if (!updated) throw new Error('Concurrent modification detected. Refresh and try again.');\n  return updated;\n};",
+        "What is the difference between optimistic locking and pessimistic locking?"
+    ),
+    (
+        "How did you implement pagination controls (Next, Prev, Page numbers) in React?",
+        "Computed totalPages = Math.ceil(totalCount / itemsPerPage). Rendered page buttons dynamically and disabled 'Previous' when currentPage === 1 and 'Next' when currentPage === totalPages. Clicking a page number triggers an API call or updates the '?page=X' URL query parameter.",
+        "Easy",
+        "Coding",
+        "<div className='pagination'>\n  <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>\n  <span>Page {page} of {totalPages}</span>\n  <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>\n</div>",
+        "Why is syncing pagination state with URL search parameters better than keeping it only in component state?"
+    ),
+    (
+        "How did you ensure clean code and consistent formatting across your team project?",
+        "Set up ESLint for code quality linting (catching unused variables, missing hook dependencies) and Prettier for automatic code formatting. Added a pre-commit hook using Husky and lint-staged so staged files were automatically formatted and checked before every commit.",
+        "Easy",
+        "Practical",
+        "// package.json lint-staged config\n\"lint-staged\": {\n  \"*.{js,jsx}\": [\"eslint --fix\", \"prettier --write\"]\n}",
+        "What is the purpose of Husky in a modern JavaScript project repository?"
+    ),
+    (
+        "How did you handle multi-step forms (wizards) in your frontend?",
+        "Maintained an activeStep index (0, 1, 2) in state along with a single form data object. Rendered step components conditionally (e.g. Step 1: Account Info, Step 2: Shipping, Step 3: Payment). Clicking 'Next' validated current step inputs before advancing, and final submit sent the combined object.",
+        "Intermediate",
+        "Practical",
+        "const [step, setStep] = useState(1);\nconst [formData, setFormData] = useState({});\n\nreturn (\n  <div>\n    {step === 1 && <StepOne next={() => setStep(2)} update={setFormData} />}\n    {step === 2 && <StepTwo prev={() => setStep(1)} next={() => setStep(3)} />}\n    {step === 3 && <ReviewStep prev={() => setStep(2)} submit={handleFinalSubmit} />}\n  </div>\n);",
+        "How do you persist multi-step form progress if the user accidentally refreshes the browser?"
+    ),
+    (
+        "How did you sanitize user inputs on the backend to prevent stored HTML injection?",
+        "Used input sanitization libraries like xss or sanitize-html on fields where users submit rich text or descriptions. Stripped unwanted <script> and dangerous attributes (onload, onerror) while allowing safe tags like <b> and <p> before saving to the database.",
+        "Intermediate",
+        "Practical",
+        "const sanitizeHtml = require('sanitize-html');\nconst cleanDescription = sanitizeHtml(req.body.description, {\n  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p'],\n  allowedAttributes: { 'a': ['href'] }\n});",
+        "Why is sanitizing on write (input) generally safer than sanitizing only on read (render)?"
+    ),
+    (
+        "How did you handle file size and file type restrictions during uploads?",
+        "Enforced restrictions in Multer by specifying limits: { fileSize: 2 * 1024 * 1024 } (2MB) and a fileFilter function that checks mimetype (e.g. image/jpeg, image/png). Any violation immediately throws an error that is returned as a 400 Bad Request to the user.",
+        "Easy",
+        "Practical",
+        "const upload = multer({\n  limits: { fileSize: 2 * 1024 * 1024 },\n  fileFilter: (req, file, cb) => {\n    if (['image/jpeg', 'image/png'].includes(file.mimetype)) cb(null, true);\n    else cb(new Error('Only JPEG and PNG images are allowed'), false);\n  }\n});",
+        "Why should you never trust file extensions alone (like .jpg) without checking MIME types or magic bytes?"
+    ),
+    (
+        "How did you handle user session persistence when refreshing a React app?",
+        "On initial app mount (in the root App or AuthProvider useEffect), fired a '/api/auth/me' endpoint (or verified existing token in cookie/localStorage). While verifying, rendered a full-screen loading spinner. Once verified, stored user details in state; if verification failed, cleared state.",
+        "Easy",
+        "Practical",
+        "useEffect(() => {\n  const checkAuth = async () => {\n    try {\n      const { data } = await api.get('/auth/me');\n      setUser(data.user);\n    } catch (err) {\n      setUser(null);\n    } finally {\n      setIsLoading(false);\n    }\n  };\n  checkAuth();\n}, []);",
+        "Why does an SPA lose in-memory React state when the user presses F5 or reloads?"
+    ),
+    (
+        "How did you handle database connection pooling in your backend?",
+        "In MongoDB with Mongoose, connection pooling is managed automatically via mongoose.connect(uri, { maxPoolSize: 10 }). In PostgreSQL or MySQL with pg/mysql2, created a Pool instance (new Pool({ max: 20 })) and reused it across queries to avoid the heavy overhead of creating a new TCP socket per request.",
+        "Intermediate",
+        "Concept",
+        "// PostgreSQL connection pool\nconst { Pool } = require('pg');\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 20 });\nmodule.exports = { query: (text, params) => pool.query(text, params) };",
+        "What happens to incoming server requests if all connections in a database pool are exhausted?"
+    ),
+    (
+        "How did you prevent memory leaks in your React components?",
+        "1) Always returned cleanup functions in useEffect hooks to cancel timers (clearTimeout/clearInterval) and unsubscribe from WebSockets or event listeners. 2) Used AbortController to cancel pending fetch requests if the component unmounts before response arrives.",
+        "Intermediate",
+        "Practical",
+        "useEffect(() => {\n  const controller = new AbortController();\n  fetch('/api/data', { signal: controller.signal })\n    .then(res => res.json())\n    .then(setData)\n    .catch(err => { if (err.name !== 'AbortError') setError(err); });\n  return () => controller.abort();\n}, []);",
+        "What warning in older React versions indicated an unmounted component state update?"
+    ),
+    (
+        "How did you structure your API response format across all controllers?",
+        "Standardized responses using a consistent JSON schema: { success: boolean, message: string, data: any }. Success responses return success: true with payload in data. Error responses return success: false with error details in message. This made client-side error handling uniform and predictable.",
+        "Easy",
+        "Practical",
+        "// Success response\nres.status(200).json({ success: true, message: 'Item retrieved', data: item });\n// Error response\nres.status(404).json({ success: false, message: 'Item not found', data: null });",
+        "Why is having a standardized API response schema beneficial for frontend developers?"
+    ),
+    (
+        "How did you implement search auto-complete / suggestions in your UI?",
+        "Rendered a floating dropdown beneath the search input when the user types. As the user types, a debounced query fetches top 5 matching items from an endpoint like '/api/products/suggest?q=term'. Clicking a suggestion fills the search bar and navigates directly to the target item.",
+        "Easy",
+        "Practical",
+        "<div className='search-container'>\n  <input value={query} onChange={e => setQuery(e.target.value)} />\n  {suggestions.length > 0 && (\n    <ul className='suggestions-list'>\n      {suggestions.map(s => <li key={s.id} onClick={() => select(s)}>{s.title}</li>)}\n    </ul>\n  )}\n</div>",
+        "How do you handle keyboard arrow navigation (Up/Down/Enter) in an auto-complete dropdown?"
+    ),
+    (
+        "How did you ensure your web application was accessible (a11y) to users with disabilities?",
+        "1) Used semantic HTML elements (<button>, <nav>, <main>, <header>) instead of generic <div> tags. 2) Provided descriptive alt attributes for all images. 3) Ensured color contrast ratios met WCAG 2.1 AA standards. 4) Added aria-labels to icon-only buttons so screen readers can describe their action.",
+        "Easy",
+        "Concept",
+        "<button aria-label='Close modal' onClick={onClose}>\n  <CloseIcon />\n</button>",
+        "Why is using a native <button> better for keyboard accessibility than <div onClick={...}>?"
+    ),
+    (
+        "How did you handle database transactions for operations that touch multiple tables/collections?",
+        "Used database transactions. In MongoDB, created a session via await mongoose.startSession() and wrapped operations in session.withTransaction(). In SQL, used BEGIN, COMMIT, and ROLLBACK. If any step fails (e.g. deducting inventory or creating order), the entire transaction aborts, ensuring data consistency.",
+        "Advanced",
+        "Practical",
+        "const session = await mongoose.startSession();\nsession.startTransaction();\ntry {\n  await Order.create([orderData], { session });\n  await Inventory.updateOne({ _id: prodId }, { $inc: { stock: -qty } }, { session });\n  await session.commitTransaction();\n} catch (err) {\n  await session.abortTransaction();\n  throw err;\n} finally {\n  session.endSession();\n}",
+        "What ACID property does rolling back a transaction enforce?"
+    ),
+    (
+        "How did you implement infinite scrolling in your frontend feed?",
+        "Used the Intersection Observer API. Placed an invisible sentinel element at the bottom of the feed list. When the observer detects that the sentinel has intersected the viewport, it increments the page counter and fetches the next batch of items, appending them to existing state.",
+        "Intermediate",
+        "Practical",
+        "const sentinelRef = useRef();\nuseEffect(() => {\n  const observer = new IntersectionObserver(([entry]) => {\n    if (entry.isIntersecting && hasMore && !loading) setPage(p => p + 1);\n  });\n  if (sentinelRef.current) observer.observe(sentinelRef.current);\n  return () => observer.disconnect();\n}, [hasMore, loading]);",
+        "Why is Intersection Observer preferred over window.addEventListener('scroll') for infinite scroll?"
+    ),
+    (
+        "How did you handle soft deletes vs hard deletes in your project models?",
+        "Used soft deletes for critical business data (users, orders, posts) by adding an 'isDeleted: { type: Boolean, default: false }' and 'deletedAt: Date' field. When deleting, set isDeleted = true instead of removing the document. All normal queries filter with { isDeleted: false }, allowing easy recovery and audit compliance.",
+        "Easy",
+        "Concept",
+        "// Soft delete endpoint\napp.delete('/api/posts/:id', async (req, res) => {\n  await Post.findByIdAndUpdate(req.params.id, { isDeleted: true, deletedAt: new Date() });\n  res.json({ message: 'Post archived' });\n});",
+        "When is hard delete legally required (e.g., GDPR 'Right to be Forgotten')?"
+    ),
+    (
+        "How did you manage environment configuration across frontend and backend in a monorepo or single repo?",
+        "Maintained separate '.env' files in the client and server directories: 'server/.env' for backend secrets (database passwords, private keys), and 'client/.env' with VITE_ or REACT_APP_ prefixes for public client variables (API base URL). Never exposed server-side secrets to the client bundle.",
+        "Easy",
+        "Practical",
+        "project-root/\n  ├── client/\n  │   └── .env      # VITE_API_URL=http://localhost:5000\n  └── server/\n      └── .env      # DB_PASSWORD=secret123, JWT_SECRET=keyxyz",
+        "Why do frontend environment variables always get embedded into client-side JavaScript bundles?"
+    ),
+    (
+        "How did you implement password hashing and salting during registration?",
+        "Used bcrypt. When a user submits their registration form, generated a salt with 10 rounds using await bcrypt.genSalt(10). Hashed the plaintext password with bcrypt.hash(password, salt) before saving to the database. Plaintext passwords were never logged or stored.",
+        "Easy",
+        "Practical",
+        "userSchema.pre('save', async function(next) {\n  if (!this.isModified('password')) return next();\n  const salt = await bcrypt.genSalt(10);\n  this.password = await bcrypt.hash(this.password, salt);\n  next();\n});",
+        "What is the role of the 'salt' in password hashing?"
+    ),
+    (
+        "How did you prevent duplicate accounts when users register simultaneously?",
+        "Applied a UNIQUE constraint / index on the email column in the database (e.g. { email: { type: String, unique: true } } in Mongoose). If two simultaneous registration requests arrive, the database rejects the second one with a duplicate key error (code 11000 in Mongo), which the controller catches and maps to a 409 Conflict.",
+        "Intermediate",
+        "Practical",
+        "try {\n  await newUser.save();\n} catch (err) {\n  if (err.code === 11000) {\n    return res.status(409).json({ message: 'Email already registered' });\n  }\n  throw err;\n}",
+        "Why is checking User.findOne({ email }) before saving not completely safe against race conditions?"
+    ),
+    (
+        "How did you handle user authorization on the frontend to show or hide UI buttons?",
+        "Created an authorization utility or custom hook 'useHasPermission(requiredRole)' that compares the current user's role against permissions. Conditionally rendered action buttons: {user?.role === 'admin' && <DeleteButton onClick={handleDelete} />} so standard users cannot see privileged controls.",
+        "Easy",
+        "Practical",
+        "const { user } = useAuth();\nreturn (\n  <div>\n    <h1>Dashboard</h1>\n    {user?.role === 'admin' && <button onClick={openSettings}>Admin Settings</button>}\n  </div>\n);",
+        "Why must permission checks still be strictly enforced on backend endpoints even if buttons are hidden?"
+    ),
+    (
+        "How did you handle tab or browser window synchronization in your frontend?",
+        "Used the browser's 'storage' event listener window.addEventListener('storage', ...). When a user logs out in one browser tab, localStorage is cleared or updated with a logout flag; all other open tabs detect the event and redirect the user to the login screen immediately.",
+        "Intermediate",
+        "Practical",
+        "useEffect(() => {\n  const syncLogout = (e) => {\n    if (e.key === 'logout') window.location.href = '/login';\n  };\n  window.addEventListener('storage', syncLogout);\n  return () => window.removeEventListener('storage', syncLogout);\n}, []);",
+        "Does the window 'storage' event fire in the same tab that modified localStorage?"
+    ),
+    (
+        "How did you test edge cases in your forms (e.g. empty fields, long strings, special characters)?",
+        "Tested boundary conditions: 1) Empty inputs to verify required error messages. 2) Strings exceeding maximum column lengths to check truncation or rejection. 3) XSS payloads like '<script>alert(1)</script>' to ensure proper escaping. 4) Invalid email and phone formats. 5) Negative numbers in price or quantity fields.",
+        "Easy",
+        "Practical",
+        "// Testing boundary conditions in test suite\ntest('rejects negative quantity', async () => {\n  const res = await request(app).post('/cart').send({ productId: '123', qty: -5 });\n  expect(res.statusCode).toBe(400);\n});",
+        "Why should numeric inputs be validated for both minimum and maximum bounds?"
+    ),
+    (
+        "How did you handle file cleanup when a user deletes a profile or replaces an image?",
+        "When an avatar or file is replaced, the backend deletes the old asset from storage (using Cloudinary uploader.destroy or AWS S3 deleteObject) before or immediately after updating the database record. This prevents orphaned files from accumulating and inflating cloud storage costs.",
+        "Intermediate",
+        "Practical",
+        "if (user.avatarPublicId) {\n  await cloudinary.uploader.destroy(user.avatarPublicId);\n}\nconst uploadRes = await cloudinary.uploader.upload(req.file.path);\nuser.avatarPublicId = uploadRes.public_id;\nuser.avatarUrl = uploadRes.secure_url;\nawait user.save();",
+        "What happens if file deletion fails during avatar replacement?"
+    ),
+    (
+        "How did you implement copy-to-clipboard functionality in your project?",
+        "Used the modern asynchronous Clipboard API: navigator.clipboard.writeText(text). Handled errors with try/catch and provided immediate visual feedback (e.g., changing button text from 'Copy Link' to 'Copied!' for 2 seconds).",
+        "Easy",
+        "Coding",
+        "const copyToClipboard = async (text) => {\n  try {\n    await navigator.clipboard.writeText(text);\n    setCopied(true);\n    setTimeout(() => setCopied(false), 2000);\n  } catch (err) {\n    toast.error('Failed to copy');\n  }\n};",
+        "Why does navigator.clipboard only work on HTTPS or localhost origins?"
+    ),
+    (
+        "How did you handle database seed data for local testing?",
+        "Created a 'seed.js' script using libraries like Faker.js or predefined mock JSON data. The script connects to the local database, drops existing collections, inserts 50 realistic users, products, and categories, and logs success before exiting. Added an npm script 'npm run seed'.",
+        "Easy",
+        "Practical",
+        "// seed.js\nconst seedDB = async () => {\n  await User.deleteMany({});\n  await User.insertMany(mockUsers);\n  console.log('Database seeded successfully');\n  process.exit();\n};",
+        "Why should seed scripts contain safety checks to prevent running against production databases?"
+    ),
+    (
+        "How did you structure your Git commit messages across the project?",
+        "Followed Conventional Commits convention: prefixing commits with type: 'feat: add filter by category', 'fix: resolve cart total calculation', 'docs: update API README', 'refactor: modularize auth middleware'. This made the git commit history clear, easy to search, and ready for automated changelog generation.",
+        "Easy",
+        "Concept",
+        "feat: add Stripe webhook payment verification\nfix: prevent double booking on checkout button click\nchore: upgrade express and mongoose dependencies",
+        "What is the difference between 'feat' and 'fix' commit prefixes in Conventional Commits?"
+    ),
+    (
+        "How did you handle CSS styling across your project: Tailwind, CSS Modules, or Vanilla CSS?",
+        "Explain your choice based on project needs: CSS Modules provide scoped styles without class name collisions in large teams; Tailwind CSS speeds up development with utility classes and zero dead CSS in production; Vanilla CSS offers complete control without external dependencies or build tooling.",
+        "Easy",
+        "Comparison",
+        "/* styles.module.css - CSS Modules */\n.card {\n  padding: 16px;\n  border-radius: 8px;\n}\n\n// In React:\nimport styles from './styles.module.css';\n<div className={styles.card}>Card</div>",
+        "How do CSS Modules guarantee that class names will not collide between components?"
+    ),
+    (
+        "How did you debug a frontend state bug where a component was re-rendering unnecessarily?",
+        "Used React Developer Tools Profiler to record renders and inspect the 'Why did this render?' flamegraph. Identified that an inline object or anonymous function was being recreated on every render, triggering child re-renders. Solved it by wrapping handlers in useCallback and derived objects in useMemo.",
+        "Intermediate",
+        "Practical",
+        "// Preventing child re-render with useCallback\nconst handleDelete = useCallback((id) => {\n  setItems(prev => prev.filter(item => item.id !== id));\n}, []);",
+        "Why is wrapping every single function in useCallback actually a bad practice?"
+    ),
+    (
+        "How did you handle API request cancellation if a user navigates away before the response arrives?",
+        "Created an AbortController instance inside useEffect and passed its signal to the Axios or fetch request config. In the useEffect cleanup function, called controller.abort(). This cancels the network request in flight and avoids updating state on an unmounted component.",
+        "Intermediate",
+        "Practical",
+        "useEffect(() => {\n  const controller = new AbortController();\n  axios.get('/api/users', { signal: controller.signal })\n    .then(res => setUsers(res.data))\n    .catch(err => {\n      if (!axios.isCancel(err)) console.error(err);\n    });\n  return () => controller.abort();\n}, []);",
+        "What status code or error name does a browser produce when a fetch is aborted?"
+    ),
+    (
+        "How did you prevent sensitive user information (like password hashes or reset tokens) from leaking in API responses?",
+        "1) Used Mongoose schema option 'select: false' on sensitive fields like password. 2) Implemented a 'toJSON' transform method on schemas to strip sensitive keys before serializing. 3) Explicitly projected required fields in SQL/Mongoose queries rather than returning the raw database row.",
+        "Easy",
+        "Practical",
+        "userSchema.set('toJSON', {\n  transform: (doc, ret) => {\n    delete ret.password;\n    delete ret.__v;\n    return ret;\n  }\n});",
+        "Why is relying solely on deleting properties in the controller prone to human error?"
+    ),
+    (
+        "How did you handle nested comments or replies in a discussion board feature?",
+        "Used a parentId reference in MongoDB comment documents: each comment has an optional 'parentId' pointing to another comment. When fetching comments for a post, fetched all comments and reconstructed the tree hierarchy on client or server using a recursive helper or hash map.",
+        "Intermediate",
+        "Practical",
+        "const commentSchema = new mongoose.Schema({\n  postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },\n  parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },\n  content: String,\n  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }\n});",
+        "What are the trade-offs of embedding sub-comments directly vs referencing parent IDs?"
+    ),
+    (
+        "How did you implement bookmarking or saving favorites in your project?",
+        "Created a separate 'bookmarks' collection with fields { userId, itemId, createdAt } with a compound unique index on { userId: 1, itemId: 1 }. When user clicks bookmark, if record exists, delete it (unbookmark); if not, insert it (bookmark). This enables fast queries and prevents duplicate bookmarks.",
+        "Easy",
+        "Practical",
+        "router.post('/bookmarks/:itemId', auth, async (req, res) => {\n  const existing = await Bookmark.findOne({ userId: req.user.id, itemId: req.params.itemId });\n  if (existing) {\n    await existing.deleteOne();\n    return res.json({ bookmarked: false });\n  }\n  await Bookmark.create({ userId: req.user.id, itemId: req.params.itemId });\n  res.json({ bookmarked: true });\n});",
+        "Why is storing bookmarks in a separate collection better than pushing an array of IDs inside the User document?"
+    ),
+    (
+        "How did you handle user feedback when an asynchronous operation takes more than 2 seconds?",
+        "Displayed a smooth loading indicator or skeleton screen immediately upon submission. For operations taking longer than 2 seconds (e.g., file processing or video encoding), displayed a progress bar percentage or an informative message like 'Processing file, please do not close this window'.",
+        "Easy",
+        "Practical",
+        "<div>\n  <ProgressBar value={progressPercentage} />\n  <p className='text-muted'>Uploading and compressing image... {progressPercentage}%</p>\n</div>",
+        "What is the psychological impact on users when a UI shows zero feedback for 2+ seconds?"
+    ),
+    (
+        "How did you document your REST API endpoints for team members or frontend consumers?",
+        "Used Swagger / OpenAPI specifications (via swagger-jsdoc and swagger-ui-express) or maintained an up-to-date Postman collection. Each endpoint documented URL, HTTP method, required request headers, request body schema, and sample responses for status codes 200, 400, 401, and 500.",
+        "Easy",
+        "Concept",
+        "/**\n * @swagger\n * /api/users:\n *   get:\n *     summary: Retrieve a list of users\n *     responses:\n *       200:\n *         description: A JSON array of users\n */",
+        "Why is maintaining API documentation critical in full-stack projects?"
+    ),
+    (
+        "How did you test that your responsive navbar works properly on mobile touch devices?",
+        "Used Chrome DevTools Device Mode to test various viewports (iPhone SE, iPhone 14, iPad). Tested hamburger menu toggle opening and closing, ensuring touch targets were tap-friendly (min 44px) and clicking outside the navigation drawer closed the menu smoothly without horizontal page scrolling.",
+        "Easy",
+        "Practical",
+        "const [isOpen, setIsOpen] = useState(false);\nreturn (\n  <nav>\n    <button className='hamburger' onClick={() => setIsOpen(!isOpen)}>☰</button>\n    <ul className={`nav-links ${isOpen ? 'open' : ''}`}>\n      <li><Link to='/' onClick={() => setIsOpen(false)}>Home</Link></li>\n    </ul>\n  </nav>\n);",
+        "Why is it important to test on actual physical devices in addition to browser emulation?"
+    ),
+    (
+        "How did you handle health check endpoints for monitoring application status?",
+        "Created a '/health' or '/api/health' endpoint that checks basic server responsiveness and database connectivity. Monitoring tools (like UptimeRobot) ping this endpoint every 5 minutes. If MongoDB connection status is ready (readyState === 1), it returns 200 OK; otherwise 503 Service Unavailable.",
+        "Easy",
+        "Practical",
+        "app.get('/health', (req, res) => {\n  const isDbConnected = mongoose.connection.readyState === 1;\n  res.status(isDbConnected ? 200 : 503).json({\n    status: isDbConnected ? 'healthy' : 'unhealthy',\n    uptime: process.uptime(),\n    timestamp: new Date()\n  });\n});",
+        "Why is checking database connectivity in a health check endpoint better than just returning 200 immediately?"
+    ),
+    (
+        "How did you implement conditional navigation (e.g. redirecting unauthenticated users)?",
+        "In React Router v6, created a <ProtectedRoute> component that checks auth state. If authenticated, it renders the <Outlet /> or child component. If not authenticated, it renders <Navigate to='/login' state={{ from: location }} replace /> so the user can be returned to their intended page after login.",
+        "Easy",
+        "Practical",
+        "const ProtectedRoute = () => {\n  const { user, loading } = useAuth();\n  const location = useLocation();\n  if (loading) return <div>Loading...</div>;\n  return user ? <Outlet /> : <Navigate to='/login' state={{ from: location }} replace />;\n};",
+        "What does the 'replace' prop do on React Router's Navigate component?"
+    ),
+    (
+        "How did you handle third-party API failures (e.g. Weather API or Payment Gateway)?",
+        "Wrapped third-party API calls in try/catch blocks with reasonable timeouts (e.g., 5 seconds). If the third-party service failed or timed out, caught the error gracefully: returned cached data if available, or returned a user-friendly error response (502/504) without crashing the Express process.",
+        "Intermediate",
+        "Practical",
+        "try {\n  const response = await axios.get('https://api.external.com/data', { timeout: 5000 });\n  res.json(response.data);\n} catch (err) {\n  console.error('Third-party API failed:', err.message);\n  res.status(502).json({ message: 'External service temporarily unavailable. Please retry later.' });\n}",
+        "Why must you always specify a timeout on outbound HTTP requests to third-party services?"
+    ),
+    (
+        "How did you optimize images before serving them in your web project?",
+        "1) Converted images to modern lightweight formats like WebP or AVIF. 2) Resized uploaded images to maximum display dimensions on the server using Sharp or Cloudinary transformations. 3) Used responsive srcset attributes so mobile devices download smaller image resolutions.",
+        "Easy",
+        "Practical",
+        "// Sharp image resize on Express server\nconst sharp = require('sharp');\nawait sharp(req.file.path)\n  .resize(800, 600, { fit: 'inside' })\n  .toFormat('webp')\n  .toFile(`uploads/optimized-${req.file.filename}.webp`);",
+        "Why is WebP format significantly better than JPEG for web performance?"
+    ),
+    (
+        "How did you manage database migration and schema updates across your team?",
+        "In relational SQL, used migration tools (Knex migrations, Sequelize CLI, or Prisma Migrate) where schema changes are recorded as up/down migration files in Git. In MongoDB, wrote migration scripts to add default values or backfill fields on existing documents before deploying new code.",
+        "Intermediate",
+        "Concept",
+        "// Knex migration example\nexports.up = function(knex) {\n  return knex.schema.table('users', table => {\n    table.string('phone').nullable();\n  });\n};\nexports.down = function(knex) {\n  return knex.schema.table('users', table => {\n    table.dropColumn('phone');\n  });\n};",
+        "Why are automated database migrations safer than manually running SQL ALTER TABLE statements in production?"
+    ),
+    (
+        "How did you design a notifications bell with unread count in React?",
+        "Fetched notification count on load via API. In React state, maintained unreadCount. When the user opens the notification dropdown, displayed notifications and fired an API call to mark notifications as read, resetting unreadCount to 0 in UI.",
+        "Easy",
+        "Practical",
+        "<div className='notification-bell' onClick={toggleDropdown}>\n  <BellIcon />\n  {unreadCount > 0 && <span className='badge'>{unreadCount}</span>}\n</div>",
+        "How do you prevent re-fetching notifications on every single page navigation?"
+    ),
+    (
+        "How did you handle state synchronization when editing an item in a modal?",
+        "Initialized modal form state with a copy of the selected item's data (e.g. useState(initialItem)). Avoided mutating parent state directly. On form save, sent API update; upon success, updated the parent item list in state and closed the modal. If canceled, discarded the local copy without modifying parent state.",
+        "Easy",
+        "Practical",
+        "const EditModal = ({ item, onSave, onClose }) => {\n  const [form, setForm] = useState({ ...item });\n  const handleSubmit = () => onSave(form);\n  return <form onSubmit={handleSubmit}>...</form>;\n};",
+        "Why is direct mutation of parent state props in a child component dangerous in React?"
+    ),
+    (
+        "How did you handle database indexing for text search queries?",
+        "In MongoDB, created a text index on searchable fields: schema.index({ title: 'text', description: 'text' }). Used the $text search operator: find({ $text: { $search: searchQuery } }). In PostgreSQL, used Full-Text Search (to_tsvector and to_tsquery) with GIN indexing for fast lexical matching.",
+        "Intermediate",
+        "Practical",
+        "// MongoDB Text Index\nproductSchema.index({ title: 'text', description: 'text' });\n// Query\nconst results = await Product.find({ $text: { $search: 'wireless keyboard' } });",
+        "How does a database text index differ from a standard B-tree index?"
+    ),
+    (
+        "How did you prevent cross-site request forgery (CSRF) in your project?",
+        "1) If using cookie authentication, set SameSite='Strict' or SameSite='Lax' on session cookies so browsers do not attach cookies to cross-site requests. 2) If using Authorization headers with Bearer tokens stored in memory, CSRF is naturally mitigated since browsers do not attach headers automatically.",
+        "Intermediate",
+        "Concept",
+        "res.cookie('token', token, {\n  httpOnly: true,\n  secure: process.env.NODE_ENV === 'production',\n  sameSite: 'strict'\n});",
+        "Why does SameSite='strict' prevent CSRF attacks on authenticated endpoints?"
+    ),
+    (
+        "How did you test your frontend application across multiple screen sizes?",
+        "1) Used Chrome DevTools Device Toolbar to test standard mobile (375px), tablet (768px), and laptop (1280px) viewports. 2) Used CSS media queries and relative units (rem, %, vh, vw). 3) Tested orientation changes (portrait vs landscape) to verify layout flexibility.",
+        "Easy",
+        "Practical",
+        "// Testing viewport breakpoints\n@media (max-width: 640px) { /* Mobile */ }\n@media (min-width: 641px) and (max-width: 1024px) { /* Tablet */ }\n@media (min-width: 1025px) { /* Desktop */ }",
+        "What is the difference between viewport width (vw) and percentage width (%)?"
+    ),
+    (
+        "How did you ensure clean separation between UI components and business logic in React?",
+        "Extracted data fetching, caching, and state transformation logic into custom React hooks (e.g. useProducts, useAuth, useCart). UI components focus purely on rendering JSX, layout, and user event handling, keeping them clean, readable, and easily testable.",
+        "Easy",
+        "Concept",
+        "// Custom hook encapsulates logic\nconst { products, loading, error } = useProducts();\n// UI component purely renders\nif (loading) return <Spinner />;\nreturn <ProductList items={products} />;",
+        "What are the testing advantages of separating custom hooks from presentation components?"
+    ),
+    (
+        "How did you handle environment configuration in Vite or Create React App?",
+        "In Vite, environment variables must start with 'VITE_' prefix and are accessed via 'import.meta.env.VITE_VAR'. In CRA, variables start with 'REACT_APP_' and are accessed via 'process.env.REACT_APP_VAR'. Variables without the required prefix are ignored by the bundler for security.",
+        "Easy",
+        "Concept",
+        "// .env\nVITE_API_URL=https://api.myproject.com\n\n// In React component:\nconst apiUrl = import.meta.env.VITE_API_URL;",
+        "Why do bundlers enforce specific prefixes like VITE_ or REACT_APP_ for client environment variables?"
+    ),
+    (
+        "How did you handle order state transitions (e.g. Pending -> Paid -> Shipped -> Delivered)?",
+        "Implemented a state machine pattern with allowed transitions in the backend order model. For example, an order cannot transition directly from 'Pending' to 'Delivered' without passing through 'Paid' and 'Shipped'. Any invalid status change is rejected with a 400 Bad Request.",
+        "Intermediate",
+        "Practical",
+        "const validTransitions = {\n  Pending: ['Paid', 'Cancelled'],\n  Paid: ['Processing', 'Refunded'],\n  Processing: ['Shipped'],\n  Shipped: ['Delivered']\n};\nif (!validTransitions[order.status]?.includes(newStatus)) {\n  return res.status(400).json({ error: `Cannot transition from ${order.status} to ${newStatus}` });\n}",
+        "Why is restricting state transitions essential in e-commerce backend systems?"
+    ),
+    (
+        "How did you handle continuous integration (CI) checks before merging pull requests?",
+        "Set up a GitHub Actions workflow that triggers on every pull request to 'main'. The workflow installs dependencies, runs the ESLint linter, executes automated test suites (npm test), and builds the frontend bundle. If any check fails, merging is blocked.",
+        "Easy",
+        "Practical",
+        "# .github/workflows/ci.yml\nname: CI Pipeline\non: [pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - run: npm ci\n      - run: npm run lint\n      - run: npm test\n      - run: npm run build",
+        "What is the difference between 'npm install' and 'npm ci' in CI pipelines?"
+    ),
+    (
+        "How did you implement a confirmation modal before destructive actions like deletion?",
+        "Created a reusable <ConfirmDialog isOpen={isOpen} onConfirm={handleDelete} onCancel={closeModal} title='Delete Account?' message='This action cannot be undone.' />. The destructive API call is only dispatched when the user clicks 'Confirm' in the modal, preventing accidental data loss.",
+        "Easy",
+        "Practical",
+        "const handleDeleteClick = (id) => {\n  setSelectedId(id);\n  setIsConfirmOpen(true);\n};\nconst handleConfirm = async () => {\n  await api.delete(`/items/${selectedId}`);\n  setIsConfirmOpen(false);\n  fetchItems();\n};",
+        "Why is relying on window.confirm() discouraged in modern web applications?"
+    ),
+    (
+        "How did you handle API pagination response metadata for UI controls?",
+        "Returned a structured metadata object alongside the data array: { items: [...], pagination: { totalCount: 150, page: 2, limit: 10, totalPages: 15, hasNextPage: true, hasPrevPage: true } }. The frontend uses these boolean flags to enable/disable navigation buttons cleanly.",
+        "Easy",
+        "Practical",
+        "res.json({\n  data: items,\n  pagination: {\n    page,\n    limit,\n    totalCount,\n    totalPages: Math.ceil(totalCount / limit),\n    hasNextPage: page * limit < totalCount,\n    hasPrevPage: page > 1\n  }\n});",
+        "What is the benefit of computing hasNextPage and hasPrevPage on the server?"
+    ),
+    (
+        "How did you implement search highlighting in matching result titles?",
+        "Created a utility function that splits the title string using a case-insensitive regular expression matching the search term. Wrapped matching substrings in a <mark> or <span className='highlight'> tag while leaving other text unchanged.",
+        "Intermediate",
+        "Coding",
+        "const highlightMatch = (text, term) => {\n  if (!term) return text;\n  const parts = text.split(new RegExp(`(${term})`, 'gi'));\n  return parts.map((part, i) => \n    part.toLowerCase() === term.toLowerCase() ? <mark key={i}>{part}</mark> : part\n  );\n};",
+        "Why must you be cautious of XSS when creating HTML-based search highlights?"
+    ),
+    (
+        "How did you prevent memory leaks when using event listeners in React?",
+        "Always removed listeners in the cleanup return function of useEffect: window.removeEventListener('resize', handleResize). Without the cleanup, every re-render or page navigation attaches duplicate listeners, consuming memory and causing ghost callbacks.",
+        "Easy",
+        "Practical",
+        "useEffect(() => {\n  const handleResize = () => setWindowWidth(window.innerWidth);\n  window.addEventListener('resize', handleResize);\n  return () => window.removeEventListener('resize', handleResize);\n}, []);",
+        "What happens if an event listener references state variables inside an uncleaned closure?"
+    ),
+    (
+        "How did you handle smooth page transitions or route changes in React?",
+        "Used CSS transitions or framer-motion library with AnimatePresence. When switching routes, components fade in smoothly over 200ms, enhancing the visual polish of the application without jarring content jumps.",
+        "Easy",
+        "Practical",
+        "// framer-motion route transition\n<motion.div\n  initial={{ opacity: 0, y: 10 }}\n  animate={{ opacity: 1, y: 0 }}\n  exit={{ opacity: 0 }}\n  transition={{ duration: 0.2 }}\n>\n  {children}\n</motion.div>",
+        "Why should page transition animations be kept under 300 milliseconds?"
+    ),
+    (
+        "How did you verify that your project was secure against common OWASP Top 10 vulnerabilities?",
+        "1) Injection: Used parameterized queries and Mongoose schemas. 2) Broken Auth: Used bcrypt for password hashing and secure JWT expiration. 3) XSS: Used React auto-escaping and Helmet HTTP headers. 4) Broken Access Control: Verified user ID ownership on every mutating endpoint. 5) Security Misconfiguration: Hid stack traces in production.",
+        "Intermediate",
+        "Concept",
+        "OWASP Fresh Check:\n1. Parameterized queries (No SQLi)\n2. Password hashing with bcrypt\n3. Authorization checks on all PUT/DELETE\n4. Helmet secure HTTP headers\n5. Environment variables for secrets",
+        "What is the difference between Authentication (401) and Authorization (403) in web security?"
+    )
+]
+
+with open("scripts/project_part5.py", "w", encoding="utf-8") as f:
+    f.write("# scripts/project_part5.py\n")
+    f.write("project_part5_items = [\n")
+    for q in part5_questions:
+        f.write(f"    {repr(q)},\n")
+    f.write("]\n")
+
+print(f"Total Project Interview Part 5 questions created: {len(part5_questions)}")
+print("Saved to scripts/project_part5.py")

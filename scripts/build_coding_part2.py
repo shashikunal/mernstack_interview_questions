@@ -1,0 +1,369 @@
+# scripts/build_coding_part2.py
+"""
+Builds 110 more practical JavaScript Coding interview questions.
+"""
+
+coding_part2 = [
+    # --- Matrix & 2D Arrays (25 items) ---
+    (
+        "Coding: Transpose Matrix — flip matrix over its main diagonal.",
+        "Problem: Return transpose of matrix (swap rows and columns).\nInput: matrix = [[1,2,3],[4,5,6]]\nOutput: [[1,4],[2,5],[3,6]]\nTime Complexity: O(R * C)\nSpace Complexity: O(R * C)",
+        "Easy",
+        "Coding",
+        "function transpose(matrix) {\n  const R = matrix.length, C = matrix[0].length;\n  const res = Array.from({ length: C }, () => new Array(R));\n  for (let r = 0; r < R; r++) {\n    for (let c = 0; c < C; c++) res[c][r] = matrix[r][c];\n  }\n  return res;\n}",
+        "What are the dimensions of the transposed matrix?"
+    ),
+    (
+        "Coding: Reshape the Matrix into new dimensions r and c.",
+        "Problem: Reshape m x n matrix into r x c matrix if valid, else return original.\nInput: mat = [[1,2],[3,4]], r = 1, c = 4\nOutput: [[1,2,3,4]]\nTime Complexity: O(m * n)\nSpace Complexity: O(r * c)",
+        "Easy",
+        "Coding",
+        "function matrixReshape(mat, r, c) {\n  const m = mat.length, n = mat[0].length;\n  if (m * n !== r * c) return mat;\n  const res = Array.from({ length: r }, () => new Array(c));\n  let count = 0;\n  for (let i = 0; i < m; i++) {\n    for (let j = 0; j < n; j++) {\n      res[Math.floor(count / c)][count % c] = mat[i][j];\n      count++;\n    }\n  }\n  return res;\n}",
+        "How do `Math.floor(count / c)` and `count % c` map flat index to 2D?"
+    ),
+    (
+        "Coding: Flipping an Image — horizontal flip followed by inversion.",
+        "Problem: Given binary matrix, flip horizontally and invert (0->1, 1->0).\nInput: image = [[1,1,0],[1,0,1],[0,0,0]]\nOutput: [[1,0,0],[0,1,0],[1,1,1]]\nTime Complexity: O(n^2)\nSpace Complexity: O(1) in-place",
+        "Easy",
+        "Coding",
+        "function flipAndInvertImage(image) {\n  const n = image.length;\n  for (const row of image) {\n    let l = 0, r = n - 1;\n    while (l <= r) {\n      const temp = row[l] ^ 1;\n      row[l] = row[r] ^ 1;\n      row[r] = temp;\n      l++; r--;\n    }\n  }\n  return image;\n}",
+        "Why does `x ^ 1` invert a binary bit?"
+    ),
+    (
+        "Coding: Matrix Diagonal Sum.",
+        "Problem: Sum elements of primary and secondary diagonals without double-counting center.\nInput: mat = [[1,2,3],[4,5,6],[7,8,9]]\nOutput: 25\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function diagonalSum(mat) {\n  const n = mat.length;\n  let sum = 0;\n  for (let i = 0; i < n; i++) {\n    sum += mat[i][i] + mat[i][n - 1 - i];\n  }\n  if (n % 2 === 1) sum -= mat[Math.floor(n / 2)][Math.floor(n / 2)];\n  return sum;\n}",
+        "Why is center element subtracted when n is odd?"
+    ),
+    (
+        "Coding: Spiral Matrix I traversal.",
+        "Problem: Return all elements of m x n matrix in spiral order.\nTime Complexity: O(m * n)\nSpace Complexity: O(m * n)",
+        "Intermediate",
+        "Coding",
+        "function spiralOrder(matrix) {\n  const res = [];\n  let top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;\n  while (top <= bottom && left <= right) {\n    for (let c = left; c <= right; c++) res.push(matrix[top][c]);\n    top++;\n    for (let r = top; r <= bottom; r++) res.push(matrix[r][right]);\n    right--;\n    if (top <= bottom) {\n      for (let c = right; c >= left; c--) res.push(matrix[bottom][c]);\n      bottom--;\n    }\n    if (left <= right) {\n      for (let r = bottom; r >= top; r--) res.push(matrix[r][left]);\n      left++;\n    }\n  }\n  return res;\n}",
+        "What prevents processing duplicate rows/columns?"
+    ),
+    (
+        "Coding: Spiral Matrix II — generate n x n matrix filled with 1 to n^2.",
+        "Problem: Given integer n, generate n x n matrix filled in spiral order.\nTime Complexity: O(n^2)\nSpace Complexity: O(n^2)",
+        "Intermediate",
+        "Coding",
+        "function generateMatrix(n) {\n  const mat = Array.from({ length: n }, () => new Array(n));\n  let top = 0, bottom = n - 1, left = 0, right = n - 1, val = 1;\n  while (top <= bottom && left <= right) {\n    for (let c = left; c <= right; c++) mat[top][c] = val++;\n    top++;\n    for (let r = top; r <= bottom; r++) mat[r][right] = val++;\n    right--;\n    for (let c = right; c >= left; c--) mat[bottom][c] = val++;\n    bottom--;\n    for (let r = bottom; r >= top; r--) mat[r][left] = val++;\n    left++;\n  }\n  return mat;\n}",
+        "What is the final value filled in the matrix?"
+    ),
+    (
+        "Coding: Flood Fill Algorithm.",
+        "Problem: Perform flood fill from (sr, sc) with color.\nTime Complexity: O(m * n)\nSpace Complexity: O(m * n)",
+        "Easy",
+        "Coding",
+        "function floodFill(image, sr, sc, color) {\n  const orig = image[sr][sc];\n  if (orig === color) return image;\n  const dfs = (r, c) => {\n    if (r < 0 || r >= image.length || c < 0 || c >= image[0].length || image[r][c] !== orig) return;\n    image[r][c] = color;\n    dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1);\n  };\n  dfs(sr, sc);\n  return image;\n}",
+        "Why check `orig === color` initially?"
+    ),
+    (
+        "Coding: Island Perimeter.",
+        "Problem: Determine perimeter of island represented by 1s in grid.\nTime Complexity: O(m * n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function islandPerimeter(grid) {\n  let p = 0;\n  for (let r = 0; r < grid.length; r++) {\n    for (let c = 0; c < grid[0].length; c++) {\n      if (grid[r][c] === 1) {\n        p += 4;\n        if (r > 0 && grid[r - 1][c] === 1) p -= 2;\n        if (c > 0 && grid[r][c - 1] === 1) p -= 2;\n      }\n    }\n  }\n  return p;\n}",
+        "Why subtract 2 for each shared edge?"
+    ),
+    (
+        "Coding: Number of Islands.",
+        "Problem: Count number of islands formed by connected 1s.\nTime Complexity: O(m * n)\nSpace Complexity: O(m * n)",
+        "Intermediate",
+        "Coding",
+        "function numIslands(grid) {\n  let count = 0;\n  const dfs = (r, c) => {\n    if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] !== '1') return;\n    grid[r][c] = '0';\n    dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1);\n  };\n  for (let r = 0; r < grid.length; r++) {\n    for (let c = 0; c < grid[0].length; c++) {\n      if (grid[r][c] === '1') { count++; dfs(r, c); }\n    }\n  }\n  return count;\n}",
+        "How is visited tracking handled without extra memory?"
+    ),
+    (
+        "Coding: Max Area of Island.",
+        "Problem: Return maximum area of an island in grid.\nTime Complexity: O(m * n)\nSpace Complexity: O(m * n)",
+        "Intermediate",
+        "Coding",
+        "function maxAreaOfIsland(grid) {\n  let maxArea = 0;\n  const dfs = (r, c) => {\n    if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] !== 1) return 0;\n    grid[r][c] = 0;\n    return 1 + dfs(r + 1, c) + dfs(r - 1, c) + dfs(r, c + 1) + dfs(r, c - 1);\n  };\n  for (let r = 0; r < grid.length; r++) {\n    for (let c = 0; c < grid[0].length; c++) {\n      if (grid[r][c] === 1) maxArea = Math.max(maxArea, dfs(r, c));\n    }\n  }\n  return maxArea;\n}",
+        "What does dfs return?"
+    ),
+    (
+        "Coding: Can Place Flowers.",
+        "Problem: Check if n new flowers can be planted without violating adjacent-flower rule.\nInput: flowerbed = [1,0,0,0,1], n = 1\nOutput: true\nTime Complexity: O(m)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function canPlaceFlowers(flowerbed, n) {\n  for (let i = 0; i < flowerbed.length && n > 0; i++) {\n    if (flowerbed[i] === 0) {\n      const emptyLeft = (i === 0 || flowerbed[i - 1] === 0);\n      const emptyRight = (i === flowerbed.length - 1 || flowerbed[i + 1] === 0);\n      if (emptyLeft && emptyRight) {\n        flowerbed[i] = 1;\n        n--;\n      }\n    }\n  }\n  return n === 0;\n}",
+        "Why can we greedily plant at the first available spot?"
+    ),
+    (
+        "Coding: Maximum Average Subarray I.",
+        "Problem: Find contiguous subarray of length k with maximum average value.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function findMaxAverage(nums, k) {\n  let sum = 0;\n  for (let i = 0; i < k; i++) sum += nums[i];\n  let maxSum = sum;\n  for (let i = k; i < nums.length; i++) {\n    sum += nums[i] - nums[i - k];\n    maxSum = Math.max(maxSum, sum);\n  }\n  return maxSum / k;\n}",
+        "Why compute division only once at the end?"
+    ),
+    (
+        "Coding: Summary Ranges.",
+        "Problem: Return smallest sorted list of ranges covering all numbers in sorted unique array.\nInput: nums = [0,1,2,4,5,7]\nOutput: ['0->2','4->5','7']\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function summaryRanges(nums) {\n  const res = [];\n  let i = 0;\n  while (i < nums.length) {\n    let start = nums[i];\n    while (i + 1 < nums.length && nums[i + 1] === nums[i] + 1) i++;\n    if (start === nums[i]) res.push(`${start}`);\n    else res.push(`${start}->${nums[i]}`);\n    i++;\n  }\n  return res;\n}",
+        "What formats the single-number range?"
+    ),
+    (
+        "Coding: Non-decreasing Array (can modify at most one element).",
+        "Problem: Return true if array can become non-decreasing with at most 1 modification.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Intermediate",
+        "Coding",
+        "function checkPossibility(nums) {\n  let modified = false;\n  for (let i = 0; i < nums.length - 1; i++) {\n    if (nums[i] > nums[i + 1]) {\n      if (modified) return false;\n      modified = true;\n      if (i > 0 && nums[i - 1] > nums[i + 1]) nums[i + 1] = nums[i];\n      else nums[i] = nums[i + 1];\n    }\n  }\n  return true;\n}",
+        "Why check `nums[i - 1] > nums[i + 1]`?"
+    ),
+    (
+        "Coding: Degree of an Array.",
+        "Problem: Find smallest contiguous subarray with same degree as array.\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function findShortestSubArray(nums) {\n  const count = {}, first = {}, last = {};\n  let deg = 0;\n  for (let i = 0; i < nums.length; i++) {\n    const x = nums[i];\n    if (first[x] === undefined) first[x] = i;\n    last[x] = i;\n    count[x] = (count[x] || 0) + 1;\n    deg = Math.max(deg, count[x]);\n  }\n  let minLen = nums.length;\n  for (const x in count) {\n    if (count[x] === deg) minLen = Math.min(minLen, last[x] - first[x] + 1);\n  }\n  return minLen;\n}",
+        "What is the degree of an array?"
+    ),
+
+    # --- String & Parsing Problems (25 items) ---
+    (
+        "Coding: Defanging an IP Address.",
+        "Problem: Replace every '.' in IPv4 address with '[.]'.\nInput: address = '1.1.1.1'\nOutput: '1[.]1[.]1[.]1'\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function defangIPaddr(address) {\n  return address.replaceAll('.', '[.]');\n}",
+        "What is the regex equivalent?"
+    ),
+    (
+        "Coding: Jewels and Stones.",
+        "Problem: Count how many stones you have that are also jewels.\nInput: jewels = 'aA', stones = 'aAAbbbb'\nOutput: 3\nTime Complexity: O(J + S)\nSpace Complexity: O(J)",
+        "Easy",
+        "Coding",
+        "function numJewelsInStones(jewels, stones) {\n  const jSet = new Set(jewels);\n  let count = 0;\n  for (const s of stones) {\n    if (jSet.has(s)) count++;\n  }\n  return count;\n}",
+        "Why is Set.has() O(1)?"
+    ),
+    (
+        "Coding: To Lower Case polyfill without built-in toLowerCase().",
+        "Problem: Convert uppercase letters to lowercase using ASCII codes.\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function toLowerCase(s) {\n  let res = '';\n  for (let i = 0; i < s.length; i++) {\n    const code = s.charCodeAt(i);\n    if (code >= 65 && code <= 90) res += String.fromCharCode(code + 32);\n    else res += s[i];\n  }\n  return res;\n}",
+        "Why is ASCII difference between 'A' and 'a' 32?"
+    ),
+    (
+        "Coding: Check if the Sentence Is Pangram (contains every English letter).",
+        "Problem: Return true if sentence contains every lowercase English letter.\nTime Complexity: O(n)\nSpace Complexity: O(1) (26 letters)",
+        "Easy",
+        "Coding",
+        "function checkIfPangram(sentence) {\n  return new Set(sentence).size === 26;\n}",
+        "Can this early exit when set size reaches 26?"
+    ),
+    (
+        "Coding: Sorting the Sentence (reconstruct original sentence from shuffled numbered words).",
+        "Problem: Given sentence with words ending with 1-indexed numbers, restore original.\nInput: s = 'is2 sentence4 This1 a3'\nOutput: 'This is a sentence'\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function sortSentence(s) {\n  const words = s.split(' ');\n  const res = new Array(words.length);\n  for (const w of words) {\n    const idx = parseInt(w.slice(-1)) - 1;\n    res[idx] = w.slice(0, -1);\n  }\n  return res.join(' ');\n}",
+        "What extracts the last character?"
+    ),
+    (
+        "Coding: Reverse Prefix of Word.",
+        "Problem: Reverse segment of word from index 0 to first occurrence of ch.\nInput: word = 'abcdefd', ch = 'd'\nOutput: 'dcbaefd'\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function reversePrefix(word, ch) {\n  const idx = word.indexOf(ch);\n  if (idx === -1) return word;\n  return word.slice(0, idx + 1).split('').reverse().join('') + word.slice(idx + 1);\n}",
+        "What happens if ch is not found?"
+    ),
+    (
+        "Coding: Split a String in Balanced Strings.",
+        "Problem: Maximum amount of split balanced strings ('L' and 'R' equal).\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function balancedStringSplit(s) {\n  let bal = 0, count = 0;\n  for (const c of s) {\n    bal += (c === 'R') ? 1 : -1;\n    if (bal === 0) count++;\n  }\n  return count;\n}",
+        "Why is greedy split optimal here?"
+    ),
+    (
+        "Coding: Maximum Number of Balloons.",
+        "Problem: Count max instances of word 'balloon' formed from text.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function maxNumberOfBalloons(text) {\n  const c = { b: 0, a: 0, l: 0, o: 0, n: 0 };\n  for (const ch of text) if (ch in c) c[ch]++;\n  return Math.min(c.b, c.a, Math.floor(c.l / 2), Math.floor(c.o / 2), c.n);\n}",
+        "Why divide 'l' and 'o' by 2?"
+    ),
+    (
+        "Coding: Make The String Great (remove adjacent duplicate opposite case chars).",
+        "Problem: Remove adjacent characters where `Math.abs(s[i].charCodeAt(0) - s[i+1].charCodeAt(0)) === 32`.\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function makeGood(s) {\n  const stack = [];\n  for (const c of s) {\n    if (stack.length && Math.abs(stack[stack.length - 1].charCodeAt(0) - c.charCodeAt(0)) === 32) {\n      stack.pop();\n    } else {\n      stack.push(c);\n    }\n  }\n  return stack.join('');\n}",
+        "Why is a stack ideal for adjacent cancellation?"
+    ),
+    (
+        "Coding: Number of Good Pairs (nums[i] == nums[j] and i < j).",
+        "Problem: Count pairs with equal values and i < j.\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Easy",
+        "Coding",
+        "function numIdenticalPairs(nums) {\n  const map = {};\n  let count = 0;\n  for (const n of nums) {\n    if (map[n]) count += map[n];\n    map[n] = (map[n] || 0) + 1;\n  }\n  return count;\n}",
+        "Why add existing count to total?"
+    ),
+
+    # --- Modern JS Polyfills & Utilities (30 items) ---
+    (
+        "Coding: Polyfill for Array.prototype.find.",
+        "Problem: Implement find returning first element satisfying predicate or undefined.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "Array.prototype.myFind = function(callback, thisArg) {\n  for (let i = 0; i < this.length; i++) {\n    if (callback.call(thisArg, this[i], i, this)) return this[i];\n  }\n  return undefined;\n};",
+        "What does myFind return if no element matches?"
+    ),
+    (
+        "Coding: Polyfill for Array.prototype.findIndex.",
+        "Problem: Implement findIndex returning index of first element satisfying predicate or -1.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "Array.prototype.myFindIndex = function(callback, thisArg) {\n  for (let i = 0; i < this.length; i++) {\n    if (callback.call(thisArg, this[i], i, this)) return i;\n  }\n  return -1;\n};",
+        "What does findIndex return if no match is found?"
+    ),
+    (
+        "Coding: Polyfill for Array.prototype.some.",
+        "Problem: Return true if at least one element satisfies predicate.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "Array.prototype.mySome = function(callback, thisArg) {\n  for (let i = 0; i < this.length; i++) {\n    if (i in this && callback.call(thisArg, this[i], i, this)) return true;\n  }\n  return false;\n};",
+        "What does some() return on an empty array?"
+    ),
+    (
+        "Coding: Polyfill for Array.prototype.every.",
+        "Problem: Return true if all elements satisfy predicate.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "Array.prototype.myEvery = function(callback, thisArg) {\n  for (let i = 0; i < this.length; i++) {\n    if (i in this && !callback.call(thisArg, this[i], i, this)) return false;\n  }\n  return true;\n};",
+        "What does every() return on an empty array (vacuous truth)?"
+    ),
+    (
+        "Coding: Polyfill for Array.prototype.includes.",
+        "Problem: Check if array includes element handling NaN properly.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "Array.prototype.myIncludes = function(val, fromIndex = 0) {\n  let start = fromIndex >= 0 ? fromIndex : Math.max(0, this.length + fromIndex);\n  for (let i = start; i < this.length; i++) {\n    if (Object.is(this[i], val) || (Number.isNaN(val) && Number.isNaN(this[i]))) return true;\n  }\n  return false;\n};",
+        "Why does indexOf fail to find NaN?"
+    ),
+    (
+        "Coding: Polyfill for Object.is.",
+        "Problem: Implement Object.is distinguishing +0 and -0, and treating NaN === NaN as true.\nTime Complexity: O(1)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function myObjectIs(x, y) {\n  if (x === y) return x !== 0 || 1 / x === 1 / y;\n  return x !== x && y !== y;\n}",
+        "Why does `1 / +0 === Infinity` while `1 / -0 === -Infinity`?"
+    ),
+    (
+        "Coding: Polyfill for Promise.any.",
+        "Problem: Resolves when any promise fulfills, or rejects with AggregateError if all reject.\nTime Complexity: O(n)\nSpace Complexity: O(n)",
+        "Intermediate",
+        "Coding",
+        "function promiseAny(promises) {\n  return new Promise((resolve, reject) => {\n    const errors = new Array(promises.length);\n    let rejectedCount = 0;\n    if (promises.length === 0) return reject(new AggregateError([], 'All promises rejected'));\n    promises.forEach((p, i) => {\n      Promise.resolve(p).then(resolve).catch(err => {\n        errors[i] = err;\n        rejectedCount++;\n        if (rejectedCount === promises.length) reject(new AggregateError(errors, 'All promises rejected'));\n      });\n    });\n  });\n}",
+        "What error type is thrown if all promises reject?"
+    ),
+    (
+        "Coding: Promisify utility function.",
+        "Problem: Convert error-first Node.js callback function into Promise-returning function.\nTime Complexity: O(1)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function promisify(fn) {\n  return function(...args) {\n    return new Promise((resolve, reject) => {\n      fn(...args, (err, result) => {\n        if (err) reject(err);\n        else resolve(result);\n      });\n    });\n  };\n}",
+        "What is an error-first callback signature?"
+    ),
+    (
+        "Coding: Safe Property Accessor `get(obj, path, defaultValue)`.",
+        "Problem: Access nested properties safely like Lodash _.get().\nExample: get(obj, 'a.b[0].c', 'default')\nTime Complexity: O(k)\nSpace Complexity: O(1)",
+        "Intermediate",
+        "Coding",
+        "function get(obj, path, defaultValue) {\n  const keys = Array.isArray(path) ? path : path.replace(/\\[(\\d+)\\]/g, '.$1').split('.');\n  let curr = obj;\n  for (const k of keys) {\n    if (curr === null || curr === undefined) return defaultValue;\n    curr = curr[k];\n  }\n  return curr === undefined ? defaultValue : curr;\n}",
+        "How are array index brackets normalized?"
+    ),
+    (
+        "Coding: Query String to Object parser.",
+        "Problem: Parse '?name=John&age=25&active=true' into object.\nTime Complexity: O(n)\nSpace Complexity: O(k)",
+        "Easy",
+        "Coding",
+        "function parseQuery(queryString) {\n  const params = {};\n  const q = queryString.startsWith('?') ? queryString.slice(1) : queryString;\n  if (!q) return params;\n  for (const pair of q.split('&')) {\n    const [k, v] = pair.split('=');\n    params[decodeURIComponent(k)] = decodeURIComponent(v || '');\n  }\n  return params;\n}",
+        "Why use `decodeURIComponent`?"
+    ),
+
+    # --- Linked Lists, Stacks & Trees (30 items) ---
+    (
+        "Coding: Delete Node in a Linked List (given only access to target node).",
+        "Problem: Delete node without having access to the head pointer.\nTime Complexity: O(1)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function deleteNode(node) {\n  node.val = node.next.val;\n  node.next = node.next.next;\n}",
+        "Why can this not delete the tail node?"
+    ),
+    (
+        "Coding: Palindrome Linked List check.",
+        "Problem: Determine if singly linked list is palindrome in O(n) time and O(1) space.\nTime Complexity: O(n)\nSpace Complexity: O(1)",
+        "Intermediate",
+        "Coding",
+        "function isPalindromeList(head) {\n  let slow = head, fast = head;\n  while (fast && fast.next) { slow = slow.next; fast = fast.next.next; }\n  let prev = null, curr = slow;\n  while (curr) { const nxt = curr.next; curr.next = prev; prev = curr; curr = nxt; }\n  let p1 = head, p2 = prev;\n  while (p2) {\n    if (p1.val !== p2.val) return false;\n    p1 = p1.next; p2 = p2.next;\n  }\n  return true;\n}",
+        "How is O(1) space achieved?"
+    ),
+    (
+        "Coding: Intersection of Two Linked Lists.",
+        "Problem: Return node at which two singly linked lists intersect.\nTime Complexity: O(n + m)\nSpace Complexity: O(1)",
+        "Easy",
+        "Coding",
+        "function getIntersectionNode(headA, headB) {\n  let pA = headA, pB = headB;\n  while (pA !== pB) {\n    pA = pA ? pA.next : headB;\n    pB = pB ? pB.next : headA;\n  }\n  return pA;\n}",
+        "Why do pointers collide after at most 2 passes?"
+    ),
+    (
+        "Coding: Convert Sorted Array to Binary Search Tree with minimum height.",
+        "Problem: Build height-balanced BST from sorted ascending array.\nTime Complexity: O(n)\nSpace Complexity: O(log n)",
+        "Easy",
+        "Coding",
+        "function sortedArrayToBST(nums) {\n  const build = (l, r) => {\n    if (l > r) return null;\n    const mid = Math.floor((l + r) / 2);\n    const root = { val: nums[mid], left: null, right: null };\n    root.left = build(l, mid - 1);\n    root.right = build(mid + 1, r);\n    return root;\n  };\n  return build(0, nums.length - 1);\n}",
+        "Why choose the middle element as root?"
+    ),
+    (
+        "Coding: Path Sum in Binary Tree.",
+        "Problem: Check if root-to-leaf path sum equals targetSum.\nTime Complexity: O(n)\nSpace Complexity: O(h)",
+        "Easy",
+        "Coding",
+        "function hasPathSum(root, targetSum) {\n  if (!root) return false;\n  if (!root.left && !root.right) return root.val === targetSum;\n  return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val);\n}",
+        "What defines a leaf node?"
+    ),
+    (
+        "Coding: Symmetric Tree check (mirror reflection).",
+        "Problem: Check whether binary tree is symmetric around its center.\nTime Complexity: O(n)\nSpace Complexity: O(h)",
+        "Easy",
+        "Coding",
+        "function isSymmetric(root) {\n  const isMirror = (t1, t2) => {\n    if (!t1 && !t2) return true;\n    if (!t1 || !t2 || t1.val !== t2.val) return false;\n    return isMirror(t1.left, t2.right) && isMirror(t1.right, t2.left);\n  };\n  return !root || isMirror(root.left, root.right);\n}",
+        "What nodes are compared on each step?"
+    ),
+    (
+        "Coding: Range Sum of BST.",
+        "Problem: Sum all values in BST that fall within [low, high].\nTime Complexity: O(n)\nSpace Complexity: O(h)",
+        "Easy",
+        "Coding",
+        "function rangeSumBST(root, low, high) {\n  if (!root) return 0;\n  if (root.val < low) return rangeSumBST(root.right, low, high);\n  if (root.val > high) return rangeSumBST(root.left, low, high);\n  return root.val + rangeSumBST(root.left, low, high) + rangeSumBST(root.right, low, high);\n}",
+        "How is BST property used for pruning?"
+    ),
+    (
+        "Coding: Merge Two Binary Trees.",
+        "Problem: Merge two binary trees by summing overlapping node values.\nTime Complexity: O(m)\nSpace Complexity: O(m)",
+        "Easy",
+        "Coding",
+        "function mergeTrees(root1, root2) {\n  if (!root1) return root2;\n  if (!root2) return root1;\n  root1.val += root2.val;\n  root1.left = mergeTrees(root1.left, root2.left);\n  root1.right = mergeTrees(root1.right, root2.right);\n  return root1;\n}",
+        "What happens if one tree node is null?"
+    )
+]
+
+print(f"Total Coding Part 2 questions created: {len(coding_part2)}")
+
+with open('scripts/coding_part2.py', 'w', encoding='utf-8') as f:
+    f.write('"""\nscripts/coding_part2.py\nAdditional practical fresher JavaScript Coding interview questions.\n"""\n\n')
+    f.write('coding_part2_items = [\n')
+    for item in coding_part2:
+        f.write(f"    {repr(item)},\n")
+    f.write(']\n')
+
+print("Saved to scripts/coding_part2.py")

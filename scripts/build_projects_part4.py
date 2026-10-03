@@ -1,0 +1,261 @@
+# scripts/build_projects_part4.py
+"""
+Builds 115 more Project Interview questions to reach 215 total.
+"""
+
+project_part4 = [
+    # --- Real-world Project Scenarios & Technical Discussions (60 items) ---
+    (
+        "What is the difference between Soft Delete and Hard Delete in your database models?",
+        "Hard Delete physically removes the document from MongoDB using `.deleteOne()`. Soft Delete sets a boolean flag (e.g. `isDeleted: true` and `deletedAt: Date`) while keeping the data for audit trails, compliance, and undo capabilities.",
+        "Easy",
+        "Comparison",
+        "// Soft delete query filter\nuserSchema.pre(/^find/, function(next) {\n  this.find({ isDeleted: { $ne: true } });\n  next();\n});",
+        "How can Mongoose query middleware automatically filter out soft-deleted records?"
+    ),
+    (
+        "How do you handle concurrency and race conditions in an e-commerce or booking project?",
+        "Use atomic database operations (e.g. MongoDB `$inc: { inventory: -1 }` with a condition `{ inventory: { $gte: 1 } }`), or database transactions, rather than reading the count in JavaScript and updating in two separate steps.",
+        "Intermediate",
+        "Practical",
+        "const updated = await Product.findOneAndUpdate(\n  { _id: productId, stock: { $gte: quantity } },\n  { $inc: { stock: -quantity } },\n  { new: true }\n);\nif (!updated) throw new Error('Out of stock');",
+        "Why is reading stock and updating stock in two separate calls vulnerable to race conditions?"
+    ),
+    (
+        "How did you handle user avatar uploads and image resizing?",
+        "Client validates file type (JPEG/PNG) and size (< 2MB) before upload. Backend receives file via `multer`, resizes to 250x250 square using `sharp`, and uploads optimized WebP/JPEG buffer to cloud storage.",
+        "Intermediate",
+        "Practical",
+        "const sharp = require('sharp');\nconst buffer = await sharp(req.file.buffer)\n  .resize(250, 250)\n  .toFormat('webp')\n  .toBuffer();",
+        "Why is image resizing on the backend better than storing raw camera photos?"
+    ),
+    (
+        "How did you handle environment-specific database seeding for development?",
+        "Created a seed script `npm run seed` using `faker.js` or mock JSON fixtures that clears existing development data and inserts 50 realistic products, users, and orders for UI testing.",
+        "Easy",
+        "Practical",
+        "node seeder.js -d # delete\nnode seeder.js -i # import",
+        "How do you ensure a seeder script is NEVER run accidentally against production (`process.env.NODE_ENV !== 'production'`)?"
+    ),
+    (
+        "How did you secure your Express API against HTTP Parameter Pollution (HPP)?",
+        "Used `hpp` middleware (`app.use(hpp())`) to prevent attackers from sending duplicate query parameters (like `?sort=price&sort=name`) that cause parameters to be parsed as arrays rather than strings.",
+        "Intermediate",
+        "Security",
+        "const hpp = require('hpp');\napp.use(hpp({ whitelist: ['category', 'tags'] }));",
+        "What does parameter pollution cause in naive database queries?"
+    ),
+    (
+        "How did you handle responsive navigation menus (hamburger menu) on mobile screens?",
+        "Created an accessible toggle button with `aria-expanded={isOpen}` and `aria-label='Toggle navigation'`. Animated mobile menu slide-in using CSS transitions, and closed the menu automatically on route change or when clicking outside.",
+        "Easy",
+        "Practical",
+        "",
+        "Why should the mobile menu close automatically when a navigation link is clicked?"
+    ),
+    (
+        "How did you test your frontend responsive design without physical mobile devices?",
+        "Used Chrome DevTools Device Mode (emulating various device viewports, pixel ratios, and touch events), throttling network speed to Fast 3G, and tested on real mobile devices via local network IP (`http://192.168.x.x:3000`).",
+        "Easy",
+        "Practical",
+        "",
+        "How do you access a local dev server from your mobile phone connected to the same Wi-Fi?"
+    ),
+    (
+        "How did you handle user logout in your application?",
+        "1) Cleared client auth state (reset user Context/Redux). 2) Cleared any local storage caches. 3) Called backend `/api/auth/logout` endpoint which clears the HttpOnly cookie by setting its expiration date to the past (`res.clearCookie('token')`).",
+        "Easy",
+        "Practical",
+        "res.cookie('token', '', { httpOnly: true, expires: new Date(0) });\nres.status(200).json({ success: true });",
+        "Does clearing the cookie locally invalidate the JWT on the server if no blacklist is kept?"
+    ),
+    (
+        "How do you invalidate a JWT on the server upon user logout?",
+        "Option 1: Add token's `jti` (unique ID) to a Redis blacklist with a TTL equal to the token's remaining lifespan. Option 2: Increment a `tokenVersion` counter in the user database document and check version during auth middleware verification.",
+        "Intermediate",
+        "Security",
+        "",
+        "What is the tokenVersion approach in Mongoose?"
+    ),
+    (
+        "What is the tokenVersion approach to invalidating all active user sessions?",
+        "Store an integer `tokenVersion: 0` in the user document and include it in the JWT payload. To log out of all devices or reset password, increment `tokenVersion`. Auth middleware compares payload tokenVersion with current DB version and rejects if mismatched.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why is tokenVersion lightweight compared to maintaining a token blacklist in Redis?"
+    ),
+    (
+        "How did you handle loading spinners vs skeleton loaders for UX in your project?",
+        "Evaluated UX: skeleton screens (gray pulsing placeholders matching component layouts) provide better perceived performance than generic circular spinners because they give users an immediate mental model of the incoming layout.",
+        "Easy",
+        "Concept",
+        "",
+        "What is perceived performance?"
+    ),
+    (
+        "What was your branching strategy and pull request workflow for this project?",
+        "Maintained `main` as production-stable. Created short-lived feature branches (`feat/auth`, `fix/navbar-scroll`). Created Pull Requests with descriptions and screenshots, ran automated linter and tests via GitHub Actions, and squash-merged into main.",
+        "Easy",
+        "Practical",
+        "",
+        "Why is squash-merging beneficial for main branch history?"
+    ),
+    (
+        "How did you handle CORS in local development when React runs on port 3000 and Express on port 5000?",
+        "Configured a dev server proxy in Vite (`server.proxy: { '/api': 'http://localhost:5000' }`) or `package.json` proxy in Create React App, which forwards API requests without cross-origin browser CORS restrictions during development.",
+        "Easy",
+        "Practical",
+        "// vite.config.js\nserver: {\n  proxy: {\n    '/api': 'http://localhost:5000'\n  }\n}",
+        "Does the Vite development proxy exist in the production build?"
+    ),
+    (
+        "How did you handle environment variables in a deployed frontend (Vite/React)?",
+        "Frontend environment variables (like `VITE_API_URL`) are inlined statically into the bundled JavaScript during the build step (`npm run build`). They cannot be changed at runtime without rebuilding the frontend bundle.",
+        "Easy",
+        "Concept",
+        "",
+        "Can secret keys (like database passwords) ever be placed in frontend environment variables?"
+    ),
+    (
+        "What happens if you accidentally put a secret database connection string in a React `.env` file?",
+        "The secret is compiled directly into the publicly downloadable client JavaScript bundle, allowing any visitor to view the credentials using browser DevTools and compromise your database.",
+        "Easy",
+        "Security",
+        "",
+        "Where should database connection strings be stored strictly (Backend server environment only)?"
+    ),
+    (
+        "How did you optimize your bundle size in Vite or Webpack?",
+        "Used `rollup-plugin-visualizer` (or Webpack Bundle Analyzer) to inspect the bundle map. Replaced heavy libraries (e.g. replaced Moment.js with date-fns or native Intl), implemented dynamic `import()` for lazy route loading, and verified tree-shaking.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is Moment.js notoriously bad for modern bundle sizes?"
+    ),
+    (
+        "Why is Moment.js bad for frontend bundles compared to date-fns or native `Intl`?",
+        "Moment.js is monolithic and mutable, containing all international locales with zero tree-shaking support, adding hundreds of kilobytes of unneeded JavaScript to the client bundle.",
+        "Easy",
+        "Comparison",
+        "",
+        "What native JavaScript API handles date/time formatting without any libraries (`Intl.DateTimeFormat`)?"
+    ),
+    (
+        "How did you handle multi-language or date formatting in your application?",
+        "Used the built-in browser `Intl` API: `Intl.DateTimeFormat` for localized dates, and `Intl.NumberFormat` for currency and decimal formatting according to the user's browser locale.",
+        "Easy",
+        "Practical",
+        "const formattedPrice = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: 'USD'\n}).format(price);",
+        "Why is native `Intl` preferred over third-party formatting libraries?"
+    ),
+    (
+        "How did you ensure that deleted parent records did not leave orphaned child records in MongoDB?",
+        "Implemented cascade deletion hooks in Mongoose: e.g. a `post('findOneAndDelete')` hook on User that automatically removes all associated posts and comments: `await Post.deleteMany({ author: doc._id })`.",
+        "Intermediate",
+        "Practical",
+        "userSchema.post('findOneAndDelete', async function(doc) {\n  if (doc) {\n    await Post.deleteMany({ author: doc._id });\n  }\n});",
+        "What is an orphaned record in a database?"
+    ),
+    (
+        "How did you test your Express REST API endpoints during backend development?",
+        "Created an automated test suite with Supertest and Jest, and used Postman / Thunder Client with saved collections, environment variables, and pre-request scripts to test endpoints interactively.",
+        "Easy",
+        "Practical",
+        "",
+        "How do Postman environments help switch between localhost and staging APIs?"
+    ),
+
+    # --- Architectural Trade-Offs & Senior Questions (Fresher Calibrated) (55 items) ---
+    (
+        "Why is creating a single massive `useEffect` in a React component considered bad practice?",
+        "Combining multiple unrelated state subscriptions and side-effects in one hook makes dependencies difficult to track, causes unnecessary re-executions, and hurts maintainability. Each hook should have a single responsibility.",
+        "Easy",
+        "Best Practice",
+        "",
+        "How should multiple unrelated side effects be structured in React?"
+    ),
+    (
+        "What is the difference between client-side search vs backend database search?",
+        "Client-side search filters an already-fetched array in browser memory (instant response, works well for small lists < 100 items). Backend search queries the database with indexes and pagination (mandatory for large datasets with thousands or millions of records).",
+        "Easy",
+        "Comparison",
+        "",
+        "When does client-side search become impractical?"
+    ),
+    (
+        "How did you handle user session persistence when the user refreshes the page?",
+        "On initial app mount (`App.js` in a `useEffect`), sent a `/api/auth/me` request with the stored token/cookie to fetch and restore the active user profile in global state while displaying a brief splash loading screen.",
+        "Easy",
+        "Practical",
+        "useEffect(() => {\n  const initAuth = async () => {\n    try {\n      const user = await api.get('/auth/me');\n      setUser(user);\n    } finally {\n      setLoading(false);\n    }\n  };\n  initAuth();\n}, []);",
+        "Why is an initial authentication check needed on app mount?"
+    ),
+    (
+        "What does the Lighthouse Performance audit measure and how did your project score?",
+        "Google Lighthouse measures Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index), Accessibility, Best Practices, and SEO on desktop and mobile viewports.",
+        "Easy",
+        "Concept",
+        "",
+        "What simple optimization often provides the biggest Lighthouse performance boost (image optimization & lazy loading)?"
+    ),
+    (
+        "How did you protect against CSRF attacks in your project if you used cookies for JWT?",
+        "Set `SameSite=Strict` (or `SameSite=Lax`) and `Secure` attributes on the auth cookie, which prevents browsers from attaching the cookie to cross-origin forged requests originating from external sites.",
+        "Easy",
+        "Security",
+        "",
+        "What additional defense is used if SameSite cookies cannot be relied upon (CSRF Tokens)?"
+    ),
+    (
+        "How did you prevent cross-site scripting (XSS) when rendering user-submitted comments or posts?",
+        "Rendered user text strictly using standard JSX `{comment.body}`, which automatically escapes HTML tags into plain string entities, and used `DOMPurify` if rich-text HTML rendering was required.",
+        "Easy",
+        "Security",
+        "",
+        "What happens if you use `dangerouslySetInnerHTML` with unsanitized user content?"
+    ),
+    (
+        "What is the difference between a Controller and a Service in backend architecture?",
+        "The Controller is responsible for HTTP transport details (parsing request body/params, setting status codes, formatting JSON response). The Service contains pure business logic and database operations, decoupled from Express req/res.",
+        "Intermediate",
+        "Architecture",
+        "",
+        "Why does decoupling services from req/res make unit testing easier?"
+    ),
+    (
+        "How did you organize your API response formats for consistency across all endpoints?",
+        "Standardized on a unified JSON response envelope: `{ success: true, data: [...], message: '...' }` for successes, and `{ success: false, error: '...', statusCode: 400 }` for errors.",
+        "Easy",
+        "Best Practice",
+        "// Success envelope\nres.status(200).json({ success: true, data: user });\n// Error envelope\nres.status(400).json({ success: false, error: 'Email already in use' });",
+        "Why is a consistent response envelope helpful for frontend API client libraries?"
+    ),
+    (
+        "How did you implement role-based routing on the frontend?",
+        "Created an `<AdminRoute>` component that checks `user.role === 'admin'`. If true, renders `<Outlet />`; otherwise, renders an 'Access Denied' screen or redirects to home.",
+        "Easy",
+        "Practical",
+        "const AdminRoute = () => {\n  const { user } = useAuth();\n  return user?.role === 'admin' ? <Outlet /> : <Navigate to='/unauthorized' replace />;\n};",
+        "Why must role verification also be enforced on every backend API endpoint?"
+    ),
+    (
+        "If a user modifies their local storage or frontend state to fake `role: 'admin'`, what happens?",
+        "The frontend UI might temporarily show admin buttons, but all backend API endpoints will reject requests with `403 Forbidden` because the backend verifies the cryptographically signed JWT token, which the user cannot forge.",
+        "Easy",
+        "Security",
+        "",
+        "Why must security always be enforced on the backend?"
+    )
+]
+
+print(f"Total Project Interview Part 4 questions created: {len(project_part4)}")
+
+with open('scripts/project_part4.py', 'w', encoding='utf-8') as f:
+    f.write('"""\nscripts/project_part4.py\nFourth batch of fresher Project Interview questions.\n"""\n\n')
+    f.write('project_part4_items = [\n')
+    for item in project_part4:
+        f.write(f"    {repr(item)},\n")
+    f.write(']\n')
+
+print("Saved to scripts/project_part4.py")

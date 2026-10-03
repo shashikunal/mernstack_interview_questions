@@ -1,0 +1,253 @@
+# scripts/build_hr_part5.py
+
+hr_part5 = [
+    (
+        "How do you handle being placed in a cross-functional team with designers, marketers, and sales reps?",
+        "1) Respect each member's specialized expertise: sales understands customer pain, designers understand usability, marketers understand market positioning. 2) Communicate technical constraints in plain, non-intimidating language. 3) Seek feedback early and build prototypes that cross-functional peers can touch and validate.",
+        "Easy",
+        "Concept",
+        "Cross-functional synergy:\nRespect functional expertise + Plain language + Early interactive prototypes.",
+        "Why is empathy for non-engineering team functions critical for product delivery?"
+    ),
+    (
+        "What is your strategy when you have to decline a feature request from a stakeholder?",
+        "Never say a blunt 'No'; say 'Not right now, and here is why': 1) Explain current team priorities and capacity constraints. 2) Quantify the trade-offs on other scheduled features. 3) Propose adding it to the product backlog for prioritization in the next planning cycle.",
+        "Intermediate",
+        "Scenario",
+        "Diplomatic decline:\nValidate the request -> Explain current trade-offs -> Propose backlog scheduling.",
+        "Why does explaining the 'Why' behind declining a request preserve stakeholder goodwill?"
+    ),
+    (
+        "How do you balance helping teammates with maintaining your own sprint velocity?",
+        "1) Set designated office hours or pairing windows (e.g. 30 minutes in the morning and afternoon) for helping teammates. 2) During deep focus blocks, mute notifications so you finish your core deliverables. 3) Helping peers unblock is a team win, as long as it is structured sustainably.",
+        "Easy",
+        "Practical",
+        "Balance technique:\nScheduled pairing windows + Dedicated deep-work blocks.",
+        "Why is a team where all tickets finish together better than one rockstar finishing early while three teammates fail?"
+    ),
+    (
+        "How do you approach writing your own self-assessment during annual reviews?",
+        "1) Be honest, factual, and backed by data (tickets closed, latency reduced, test coverage increased). 2) Highlight personal growth and obstacles overcome. 3) Acknowledge areas where you want to grow further in the next year with clear learning objectives.",
+        "Easy",
+        "Practical",
+        "Self-assessment structure:\nConcrete impact metrics + Collaborative wins + Growth areas and future goals.",
+        "Why is acknowledging growth areas in self-reviews viewed as high maturity?"
+    ),
+    (
+        "What would you do if a production release causes a major drop in page conversion rate?",
+        "1) Immediately notify the release team and check real-time error logs and telemetry. 2) If the drop is severe and unexplained, initiate a rapid rollback to the prior stable release. 3) Triage the issue in staging using analytics and session replays before attempting another rollout.",
+        "Intermediate",
+        "Scenario",
+        "Conversion drop triage: Alert team -> Check telemetry -> Rollback to safe version -> Diagnose in staging.",
+        "What is Canary Deployment and how does it catch conversion drops before affecting 100% of users?"
+    ),
+    (
+        "How do you handle receiving conflicting design feedback from two different UI/UX designers?",
+        "1) Don't choose sides based on personal taste. 2) Set up a brief 10-minute design review with both designers. 3) Show both implementations side by side and evaluate them against user test data and the design system guidelines. 4) Implement the unified consensus design.",
+        "Easy",
+        "Scenario",
+        "Alignment strategy: Side-by-side comparison + Design system standards + Unified consensus.",
+        "Why is referencing an established design system helpful for resolving UI debates?"
+    ),
+    (
+        "How do you ensure you don't take code review feedback personally?",
+        "Remind yourself that code review is about the software, not your self-worth. Great code is built through iteration and collective intelligence. Every comment that points out a bug or edge case saves you from a production incident later.",
+        "Easy",
+        "Concept",
+        "Mindset: Code reviews are your shield against production bugs and your fastest route to senior engineering skills.",
+        "How do you separate personal identity from professional code artifacts?"
+    ),
+    (
+        "What is your approach to handling customer escalations that require immediate engineering attention?",
+        "1) Acknowledge the escalation promptly to customer support. 2) Replicate the customer's specific environment and account configuration. 3) Apply a targeted patch or data fix. 4) Communicate the root cause and permanent preventive fix to prevent recurrence.",
+        "Intermediate",
+        "Scenario",
+        "Escalation loop:\nPrompt acknowledgment -> Faithful replication -> Targeted hotfix -> Root-cause prevention.",
+        "Why is keeping customer support updated just as important as fixing the code?"
+    ),
+    (
+        "How do you keep yourself enthusiastic when working on repetitive CRUD screens?",
+        "Look for opportunities to improve engineering craft: 1) Build reusable form and table components that reduce boilerplate for the whole team. 2) Optimize bundle size and render performance. 3) Add robust accessibility attributes and keyboard navigation.",
+        "Easy",
+        "Concept",
+        "Transform routine tasks into opportunities to build reusable component libraries and improve accessibility.",
+        "How do component design systems benefit from routine CRUD implementations?"
+    ),
+    (
+        "What do you do if you notice a teammate consistently struggling with English during team calls?",
+        "1) Speak patiently and clearly without rushing. 2) Offer to follow up with written bullet points in Slack or PR comments. 3) Encourage them privately and never mock grammar or accent. 4) Focus on their technical insights and problem-solving abilities.",
+        "Easy",
+        "Scenario",
+        "Global team respect:\nPatience in speech + Written follow-ups + Focus on technical substance.",
+        "Why is written asynchronous communication easier for non-native language speakers?"
+    ),
+    (
+        "How do you handle a situation where a technical debate goes on for days without resolution?",
+        "Recommend a time-boxed decision framework: 1) Define the decision deadline (e.g. 5 PM today). 2) Summarize both options with explicit trade-offs. 3) Have the team lead or principal engineer make the final call. 4) Commit 100% to the chosen solution.",
+        "Intermediate",
+        "Scenario",
+        "Resolution protocol: Time-box debate -> Document trade-offs -> Principal engineer decides -> Team commits fully.",
+        "What is 'Analysis Paralysis' and how does it hurt engineering teams?"
+    ),
+    (
+        "How do you ensure you understand the end-user's perspective when building a feature?",
+        "1) Use the product yourself as an everyday user. 2) Read customer support tickets and user forum reviews. 3) Sit in on user testing or demo recordings if available. 4) Test with slow network throttling (3G) to experience real-world mobile latency.",
+        "Easy",
+        "Practical",
+        "User empathy tactics:\nDogfooding your own app + Reading support feedback + Throttled network testing.",
+        "What is 'dogfooding' in software engineering?"
+    ),
+    (
+        "What is your approach to writing clean API error responses for frontend teams?",
+        "Return structured, predictable JSON with consistent keys: error code, human-readable message, and specific invalid field details. Never return raw stack traces or internal database errors in production.",
+        "Easy",
+        "Practical",
+        "{\n  \"error\": {\n    \"code\": \"VALIDATION_FAILED\",\n    \"message\": \"Invalid registration details\",\n    \"fields\": { \"email\": \"Invalid email format\" }\n  }\n}",
+        "Why are structured field-level error messages easier for frontends to render than generic strings?"
+    ),
+    (
+        "How do you handle working with an offshore team located in a 12-hour different time zone?",
+        "1) Maximize the 1-2 hour daily overlap window for blockers and alignment syncs. 2) Provide clear, comprehensive written handoffs at the end of each day. 3) Ensure continuous progress by having their morning resume where your evening left off.",
+        "Intermediate",
+        "Concept",
+        "Follow-the-Sun workflow: Structured end-of-day handoffs allow 24-hour continuous development cycles.",
+        "What is the 'Follow-the-Sun' software engineering model?"
+    ),
+    (
+        "What do you do if you accidentally commit a sensitive database connection string to a private repository?",
+        "1) Treat the credential as compromised immediately: rotate/change the database password. 2) Remove the secret from Git history using git-filter-repo or BFG Repo-Cleaner. 3) Update .env and .gitignore files to prevent re-committing.",
+        "Intermediate",
+        "Practical",
+        "Rotation is key: Even in private repos, leaked secrets must be rotated immediately because commit history persists.",
+        "Why is rotating a leaked credential safer than just deleting the commit?"
+    ),
+    (
+        "How do you stay calm when your code breaks during a live client demonstration?",
+        "1) Take a deep breath and smile; live demo glitches happen to the best engineers. 2) Calmly refresh the page or restart the local service. 3) If still stuck, switch smoothly to pre-recorded backup video or screenshots: 'While this service reconnects, let me show you the full recorded workflow.'",
+        "Easy",
+        "Scenario",
+        "Live demo composure: Calm refresh -> Transparent acknowledgment -> Seamless switch to pre-recorded backup.",
+        "Why does staying calm during a live failure impress clients more than panicking?"
+    ),
+    (
+        "How do you maintain code quality when working under extreme crunch time?",
+        "1) Don't abandon testing; write at least critical path integration tests to prevent fatal regressions. 2) Keep functions short and modular. 3) Run automated linter checks before committing. 4) Flag temporary shortcuts with explicit 'TODO: TECH-DEBT' comments.",
+        "Intermediate",
+        "Concept",
+        "Quality under crunch:\nAutomated linter + Critical path tests + Explicit TODO markers for post-launch cleanup.",
+        "Why do hasty shortcuts without tests usually backfire with launch-day outages?"
+    ),
+    (
+        "What is your approach to handling a technical disagreement with an external consultant or contractor?",
+        "1) Treat them with professional respect as specialized domain contributors. 2) Anchor discussions in company standards, existing architecture, and long-term maintenance costs. 3) Align with your internal team lead on the preferred direction.",
+        "Easy",
+        "Scenario",
+        "Professional alignment: Respect expertise + Evaluate against long-term internal maintainability.",
+        "Why must internal engineering teams evaluate consultant code for long-term maintainability?"
+    ),
+    (
+        "How do you handle receiving a vague PR rejection that simply says 'Needs improvement'?",
+        "1) Don't react with frustration. 2) Reply politely asking for guidance: 'Hi! Could you pinpoint which specific areas need improvement (e.g. test coverage, modularity, or naming)? I want to ensure it meets our team standards.'",
+        "Easy",
+        "Practical",
+        "Turn vague rejection into constructive mentorship by asking for specific quality areas.",
+        "Why is constructive feedback essential for junior developer growth?"
+    ),
+    (
+        "What does 'DevOps culture' mean to you in modern software teams?",
+        "DevOps is not just a role; it is a shared mindset where developers take ownership of the entire lifecycle of their software: writing code, automating tests, managing deployments, and monitoring production metrics. 'You build it, you run it.'",
+        "Easy",
+        "Concept",
+        "The DevOps philosophy:\nBreak down silos between development and operations through automation and shared accountability.",
+        "What does Werner Vogels' famous quote 'You build it, you run it' mean?"
+    ),
+    (
+        "How do you prioritize learning between breadth (many languages) versus depth (one stack)?",
+        "Adopt a 'T-shaped' learning model: Build deep expertise in one primary stack (e.g. MERN: JavaScript, React, Node, MongoDB) while developing broad understanding of adjacent technologies (Docker, SQL, Cloud deployment, CI/CD). Deep mastery gives you execution power; breadth gives you architectural perspective.",
+        "Easy",
+        "Concept",
+        "The T-Shaped developer: Deep expertise on the vertical stem (JavaScript/MERN) with broad literacy on the horizontal bar.",
+        "Why are T-shaped engineers highly sought after by engineering hiring managers?"
+    ),
+    (
+        "What do you do if you notice a teammate feels excluded during technical discussions?",
+        "Actively invite their perspective: 'Hey Alex, you worked on the search module last sprint; what are your thoughts on this schema design?' Creating space for quieter voices improves collective decision-making.",
+        "Easy",
+        "Scenario",
+        "Inclusive facilitation invites valuable domain perspectives that might otherwise stay silent.",
+        "How does encouraging quiet team members improve team psychological safety?"
+    ),
+    (
+        "How do you handle working on an application where there are no automated tests at all?",
+        "1) Don't attempt to rewrite the entire app at once. 2) Adopt the 'Golden Master' or characterization test pattern: capture existing outputs for typical inputs to establish a safety baseline. 3) For any new bug fix or feature, write automated unit tests, gradually building coverage.",
+        "Intermediate",
+        "Practical",
+        "Incremental testing:\nEstablish baseline characterization tests -> Require tests on all new PRs -> Steadily increase coverage.",
+        "What are 'Characterization Tests' in legacy software engineering?"
+    ),
+    (
+        "How do you manage your own career progression in your first two years?",
+        "1) Seek regular feedback in monthly 1-on-1s. 2) Maintain an up-to-date Brag Document of contributions. 3) Consistently volunteer for tasks that push your technical boundaries. 4) Find a senior mentor within the company and ask for candid advice on growth areas.",
+        "Easy",
+        "Practical",
+        "Progression drivers:\nProactive 1-on-1 feedback + Brag Document + High-learning assignments + Internal mentorship.",
+        "Why is waiting for annual reviews to ask about career growth a missed opportunity?"
+    ),
+    (
+        "What is the most rewarding part of being a software engineer for you?",
+        "The feeling of turning abstract logical ideas into reliable, interactive tools that solve real problems for human beings. Seeing users interact effortlessly with software you helped build provides deep intellectual and creative fulfillment.",
+        "Easy",
+        "Concept",
+        "The creative impact of software engineering: Solving real-world problems with scalable code.",
+        "How does focusing on user impact keep developers motivated throughout their careers?"
+    ),
+    (
+        "How do you approach writing clean, readable documentation for internal engineering APIs?",
+        "1) Provide a concise 2-sentence overview of what the API does. 2) Provide a copy-pasteable curl example and response JSON. 3) Document all required headers, query parameters, and error status codes. 4) Keep examples up to date with automated API testing.",
+        "Easy",
+        "Practical",
+        "API docs checklist:\nSummary + Copy-pasteable curl + Request/Response JSON schemas + Error codes.",
+        "Why is a copy-pasteable curl example the most appreciated feature of API documentation?"
+    ),
+    (
+        "What would you do if a critical third-party dependency is deprecated by its maintainer?",
+        "1) Assess the risk and timeline: deprecated doesn't mean broken immediately, but security updates will cease. 2) Evaluate viable alternatives in the community. 3) Present an evaluation matrix (maintenance activity, community adoption, migration complexity) to the team. 4) Schedule a planned migration sprint.",
+        "Intermediate",
+        "Scenario",
+        "Proactive deprecation handling: Risk assessment -> Community alternative evaluation -> Phased migration plan.",
+        "Why is planning a migration before a security flaw is discovered in a deprecated library vital?"
+    ),
+    (
+        "How do you maintain a positive learning attitude when your code is repeatedly rejected in code reviews?",
+        "Remember that rigorous code reviews are the greatest free training you will ever receive. Each comment teaches you an edge case, performance optimization, or style guideline that senior engineers took years to learn. Thank reviewers and celebrate your rapid skill acceleration.",
+        "Easy",
+        "Concept",
+        "Mindset: Rigorous code reviews are an investment by seniors in your professional mastery.",
+        "Why do top tech companies prioritize comprehensive peer code reviews over fast sloppy merges?"
+    ),
+    (
+        "What are your core strategies for staying focused while working in an open-office environment?",
+        "1) Use noise-cancelling headphones to signal deep focus mode. 2) Sit facing away from high-traffic hallways if possible. 3) Book quiet study pods for 2-hour deep problem-solving blocks. 4) Use keyboard shortcuts and clean window layouts to minimize visual distractions.",
+        "Easy",
+        "Practical",
+        "Open-office focus:\nHeadphone signaling + Quiet pods for deep work + Minimized visual distractions.",
+        "Why do visual interruptions derail developer concentration as much as audio noise?"
+    ),
+    (
+        "Why is mutual respect and psychological safety essential for building world-class software?",
+        "Software engineering is an intensely collaborative intellectual endeavor. When engineers feel safe to ask questions, admit errors, and propose innovative ideas without fear of ridicule, bugs are discovered early, knowledge is shared freely, and teams build resilient, world-class products.",
+        "Easy",
+        "Concept",
+        "Psychological safety drives innovation, transparent error reporting, and exceptional software quality.",
+        "How does mutual respect between developers, QA, and product managers create a high-velocity team?"
+    )
+]
+
+with open("scripts/hr_part5.py", "w", encoding="utf-8") as f:
+    f.write("# scripts/hr_part5.py\n")
+    f.write("hr_questions_part5 = [\n")
+    for q in hr_part5:
+        f.write(f"    {repr(q)},\n")
+    f.write("]\n")
+
+print(f"Total HR questions part 5: {len(hr_part5)}")

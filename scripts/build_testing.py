@@ -1,0 +1,725 @@
+# scripts/build_testing.py
+"""
+Builds 215 comprehensive, fresher-focused Testing interview questions.
+"""
+
+testing_items = [
+    # --- Testing Fundamentals & Strategy (35 items) ---
+    (
+        "Why do we write automated tests in software development?",
+        "Automated tests verify that code works as expected, catch regressions early, give developers confidence when refactoring or adding features, and serve as living executable documentation for system behavior.",
+        "Easy",
+        "Concept",
+        "",
+        "What is the cost of catching a bug in production versus during development?"
+    ),
+    (
+        "Explain the traditional Testing Pyramid.",
+        "The Testing Pyramid consists of three tiers: 1) Unit Tests (broad base): large in number, fast, cheap, testing isolated functions. 2) Integration Tests (middle): moderate count, verifying interactions between modules. 3) End-to-End Tests (narrow peak): few in number, slow, testing complete user journeys through the UI and backend.",
+        "Easy",
+        "Concept",
+        "",
+        "Why should the top of the pyramid have fewer tests than the base?"
+    ),
+    (
+        "Explain the Testing Trophy model (popularized by Kent C. Dodds).",
+        "The Testing Trophy emphasizes Integration tests as the most valuable tier: Static analysis (TypeScript, ESLint) at bottom -> Unit tests -> Integration tests (largest section with highest ROI) -> End-to-End tests at top.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why does the Testing Trophy prioritize integration tests over pure unit tests for modern web apps?"
+    ),
+    (
+        "What is the difference between Unit, Integration, and End-to-End (E2E) testing?",
+        "Unit testing tests a single function or component in isolation. Integration testing verifies that multiple integrated components, services, or databases work together correctly. E2E testing simulates a real user interacting with the complete running system from the browser through APIs and database.",
+        "Easy",
+        "Comparison",
+        "",
+        "Which type of test is fastest to run?"
+    ),
+    (
+        "What is Test-Driven Development (TDD) and its three phases?",
+        "TDD is a development process following the Red-Green-Refactor cycle: 1) RED: write a failing test before writing production code. 2) GREEN: write the minimum code necessary to make the test pass. 3) REFACTOR: clean and improve code structure while ensuring all tests stay green.",
+        "Easy",
+        "Concept",
+        "",
+        "What is the main benefit of writing tests before code?"
+    ),
+    (
+        "What is Behavior-Driven Development (BDD)?",
+        "BDD is an extension of TDD that describes application behavior in human-readable language using the Given-When-Then format: Given a precondition, When an action occurs, Then expect an outcome.",
+        "Easy",
+        "Concept",
+        "// BDD structure\n// Given user is logged in\n// When user clicks 'Logout'\n// Then session token is invalidated and redirected to /login",
+        "What popular tools support BDD syntax (e.g. Cucumber, Jest)?"
+    ),
+    (
+        "What is the difference between Black-box and White-box testing?",
+        "Black-box testing tests functionality without knowledge of internal code implementation or architecture (focusing strictly on inputs and outputs). White-box testing tests internal logic, branches, loops, and code paths with full visibility into source code.",
+        "Easy",
+        "Comparison",
+        "",
+        "Is component testing with React Testing Library black-box or white-box?"
+    ),
+    (
+        "What is Code Coverage and what are its four primary metrics?",
+        "Code coverage measures the percentage of code executed by tests: 1) Line Coverage (percentage of lines executed). 2) Statement Coverage (percentage of statements run). 3) Branch Coverage (percentage of boolean if/else decision paths tested). 4) Function Coverage (percentage of declared functions invoked).",
+        "Intermediate",
+        "Concept",
+        "",
+        "Which coverage metric is most critical for finding unhandled edge cases?"
+    ),
+    (
+        "Why does 100% code coverage not guarantee bug-free software?",
+        "Coverage only proves that lines were executed during a test run; it does not verify that business logic is correct, edge cases are covered, wrong input combinations are handled, or requirements are accurately implemented.",
+        "Easy",
+        "Concept",
+        "",
+        "What is a reasonable target code coverage percentage in industry?"
+    ),
+    (
+        "What is a Regression Test?",
+        "A test designed to confirm that recent code modifications, bug fixes, or new features have not broken existing working functionality.",
+        "Easy",
+        "Concept",
+        "",
+        "When should a regression test be written?"
+    ),
+    (
+        "What is Smoke Testing vs Sanity Testing?",
+        "Smoke Testing (build verification) verifies that the most vital basic functions of the application work after a new build (e.g. app boots, login page renders). Sanity Testing is a quick subset of tests focused on validating specific bug fixes or minor changes.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "Where did the term 'smoke testing' originate?"
+    ),
+    (
+        "What is a Flaky Test and what causes it?",
+        "A flaky test is a test that intermittently passes or fails on the exact same code without any changes. Common causes include race conditions, hardcoded `setTimeout` delays, shared global state between tests, and unmocked network latency.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How do you eliminate flaky timing tests?"
+    ),
+    (
+        "What is the difference between False Positive and False Negative in testing?",
+        "False Positive: the test fails even though the application code is working correctly (often caused by brittle tests testing implementation details). False Negative: the test passes even though the application has a bug.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "Which is more dangerous in production: false positive or false negative?"
+    ),
+    (
+        "What is Static Testing?",
+        "Testing code without executing it, using tools like TypeScript (type checking), ESLint (static analysis and syntax linting), and Prettier (code formatting) to catch errors during editing.",
+        "Easy",
+        "Concept",
+        "",
+        "How does static testing reduce the number of unit tests needed?"
+    ),
+    (
+        "Which testing tier typically runs fastest and costs least to maintain?",
+        "Unit testing runs directly in Node.js or memory in milliseconds without network or rendering overhead.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "End-to-End Tests", "B": "Integration Tests", "C": "Unit Tests", "D": "Manual QA Tests"},
+        "C",
+        "Why are unit tests so fast?"
+    ),
+    (
+        "What is Non-Functional Testing?",
+        "Testing non-behavioral system attributes such as performance, load handling, stress tolerance, security vulnerabilities, accessibility (a11y), and usability.",
+        "Easy",
+        "Concept",
+        "",
+        "Name a popular tool for load testing (e.g. k6, JMeter)."
+    ),
+    (
+        "What is a Test Suite vs a Test Case?",
+        "A Test Case is an individual test verifying a single specific behavior or condition. A Test Suite is a collection of related test cases grouped together (often in a single file or `describe` block).",
+        "Easy",
+        "Concept",
+        "",
+        "How are test suites defined in Jest?"
+    ),
+    (
+        "What is Test Isolation and why is it essential?",
+        "Test Isolation means every test runs independently without relying on the state, variables, or execution order of other tests. Each test should set up its own data and clean up afterwards to prevent cascading failures.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What happens if test B depends on database state created by test A?"
+    ),
+    (
+        "What is Mutation Testing?",
+        "A testing technique where small defects ('mutations', like changing `<` to `<=`) are introduced into production code to verify that existing test suites catch the mutations (kill the mutant).",
+        "Advanced",
+        "Concept",
+        "",
+        "What popular framework provides mutation testing in JavaScript (Stryker)?"
+    ),
+    (
+        "What is Snapshot Testing?",
+        "Snapshot testing serializes rendered UI or data structures into a reference snapshot file on disk. Subsequent test runs compare new rendered output against the stored snapshot, alerting developers if markup changes.",
+        "Intermediate",
+        "Concept",
+        "expect(tree).toMatchSnapshot();",
+        "What is the danger of blindly updating snapshots (`jest -u`)?"
+    ),
+
+    # --- Unit Testing & Jest (45 items) ---
+    (
+        "What is Jest and why is it popular in the JavaScript ecosystem?",
+        "Jest is a JavaScript testing framework developed by Meta with zero-configuration setup, a built-in test runner, assertion library (`expect`), mock functions (`jest.fn`), code coverage reports, and snapshot testing support.",
+        "Easy",
+        "Concept",
+        "",
+        "Does Jest run in a real browser or in Node.js by default?"
+    ),
+    (
+        "What environment does Jest use by default for testing DOM components?",
+        "Jest uses `jsdom`, a pure JavaScript implementation of web standards (DOM, HTML, window, document) running inside Node.js without launching an actual browser.",
+        "Easy",
+        "Concept",
+        "",
+        "What is the performance advantage of jsdom over real browser instances?"
+    ),
+    (
+        "Explain the basic anatomy of a Jest test file (`describe`, `test` / `it`, `expect`).",
+        "`describe('suite name', fn)` groups related tests. `test('case name', fn)` (or `it`) defines an individual test case. `expect(actual).matcher(expected)` performs assertions.",
+        "Easy",
+        "Practical",
+        "describe('sum function', () => {\n  test('adds 1 + 2 to equal 3', () => {\n    expect(sum(1, 2)).toBe(3);\n  });\n});",
+        "Is there any difference between `test()` and `it()` in Jest?"
+    ),
+    (
+        "What is the difference between `toBe()` and `toEqual()` matchers in Jest?",
+        "`toBe()` tests strict identity equality (`Object.is` / `===`), suitable for primitives. `toEqual()` performs a deep equality check on object properties or array elements recursively.",
+        "Easy",
+        "Comparison",
+        "expect(2 + 2).toBe(4);\nexpect({ a: 1 }).toEqual({ a: 1 });\n// expect({ a: 1 }).toBe({ a: 1 }) would FAIL!",
+        "What matcher checks strict equality including undefined object keys?"
+    ),
+    (
+        "What does `toStrictEqual()` do in Jest?",
+        "`toStrictEqual()` checks deep equality strictly: it differentiates between `undefined` properties and missing properties, and checks object prototype types (e.g. `{}` vs `class instance`).",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why would `{ a: undefined }` equal `{}` in `toEqual()` but fail in `toStrictEqual()`?"
+    ),
+    (
+        "How do you test that a function throws an error in Jest?",
+        "Wrap the function call inside an anonymous function: `expect(() => dangerousFunction()).toThrow()`. You can also pass the expected error message or Error class.",
+        "Easy",
+        "Practical",
+        "function parse(json) {\n  if (!json) throw new Error('Missing JSON');\n}\ntest('throws on missing input', () => {\n  expect(() => parse('')).toThrow('Missing JSON');\n});",
+        "Why must the function call be wrapped inside an arrow function?"
+    ),
+    (
+        "How do you test asynchronous code returning a Promise in Jest using async/await?",
+        "Make the test callback function `async` and use `await expect(...).resolves...` or simply `const res = await fetchData(); expect(res).toBe(...)`.",
+        "Easy",
+        "Practical",
+        "test('fetches user data', async () => {\n  const data = await fetchUserData(1);\n  expect(data.name).toBe('Alice');\n});",
+        "How do you test Promise rejections with async/await?"
+    ),
+    (
+        "How do you test that a Promise rejects in Jest?",
+        "Use `await expect(promise).rejects.toThrow()` or a try/catch block with `expect.assertions(1)`.",
+        "Easy",
+        "Practical",
+        "test('rejects with 404', async () => {\n  await expect(fetchUser(-1)).rejects.toThrow('User not found');\n});",
+        "What does `expect.assertions(n)` ensure in asynchronous tests?"
+    ),
+    (
+        "What does `expect.assertions(1)` do?",
+        "It verifies that exactly 1 assertion is called during the test run, guaranteeing that tests expecting errors inside catch blocks do not pass silently if no error was thrown.",
+        "Intermediate",
+        "Concept",
+        "test('verifies error is caught', async () => {\n  expect.assertions(1);\n  try {\n    await riskyOp();\n  } catch (err) {\n    expect(err.message).toBe('Failed');\n  }\n});",
+        "What happens if `riskyOp()` succeeds without throwing in the example above?"
+    ),
+    (
+        "Explain the execution order of Jest lifecycle hooks: `beforeAll`, `beforeEach`, `afterEach`, `afterAll`.",
+        "`beforeAll`: runs once before any tests in file/block. `beforeEach`: runs before every individual test. `afterEach`: runs after every individual test. `afterAll`: runs once after all tests complete.",
+        "Easy",
+        "Concept",
+        "beforeAll(() => connectDB());\nbeforeEach(() => resetTable());\nafterEach(() => cleanCache());\nafterAll(() => disconnectDB());",
+        "In what order do outer and inner describe block hooks execute?"
+    ),
+    (
+        "How do you run only a single test file or test suite in Jest?",
+        "Run `npx jest path/to/test.test.js` or filter by name with `-t`: `npx jest -t 'test name'`. In code, use `test.only()`.",
+        "Easy",
+        "Practical",
+        "npx jest src/utils.test.js -t 'sum'",
+        "Why must you remove `test.only()` before committing to git?"
+    ),
+    (
+        "How do you skip a test in Jest without deleting it?",
+        "Use `test.skip('test name', () => { ... })` or `xit('test name', () => { ... })`.",
+        "Easy",
+        "Practical",
+        "test.skip('skipped for now', () => {\n  expect(true).toBe(false);\n});",
+        "What does `test.todo()` do?"
+    ),
+    (
+        "What is `test.todo('feature description')`?",
+        "It registers a placeholder for a test to be written in the future, highlighted in the test report summary without executing.",
+        "Easy",
+        "Practical",
+        "test.todo('should support dark mode toggle');",
+        "Does `test.todo` fail the test suite?"
+    ),
+    (
+        "How do you run parametrized tests with multiple inputs in Jest?",
+        "Use `test.each` with an array of inputs or a tagged template literal table.",
+        "Intermediate",
+        "Practical",
+        "test.each([\n  [1, 1, 2],\n  [1, 2, 3],\n  [2, 2, 4]\n])('adds %i + %i to equal %i', (a, b, expected) => {\n  expect(a + b).toBe(expected);\n});",
+        "What do `%i` and `%s` represent in the test name formatting?"
+    ),
+    (
+        "Which matcher checks whether an array contains a specific item in Jest?",
+        "`expect(array).toContain(item)` checks if the array contains the primitive item.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "expect(arr).hasItem(x)", "B": "expect(arr).toContain(x)", "C": "expect(arr).includes(x)", "D": "expect(arr).toHave(x)"},
+        "B",
+        "What matcher is used if the array item is an object?"
+    ),
+    (
+        "What matcher checks if an array contains an object with specific properties in Jest?",
+        "Use `expect(array).toContainEqual(expectedObject)`.",
+        "Easy",
+        "Practical",
+        "expect([{ id: 1 }, { id: 2 }]).toContainEqual({ id: 1 });",
+        "How does `toContainEqual` differ from `toContain`?"
+    ),
+    (
+        "What does `expect.objectContaining()` do?",
+        "It matches any object that contains at least the specified key/value subset, ignoring any other extra properties.",
+        "Intermediate",
+        "Practical",
+        "expect(userResponse).toEqual(expect.objectContaining({\n  name: 'John',\n  role: 'admin'\n}));",
+        "What is the array equivalent (`expect.arrayContaining`)?"
+    ),
+    (
+        "How do you generate a code coverage report in Jest?",
+        "Run `npx jest --coverage`. This generates a summary table in the terminal and an HTML report in `coverage/lcov-report/index.html`.",
+        "Easy",
+        "Practical",
+        "npx jest --coverage",
+        "Where is the visual HTML coverage report stored?"
+    ),
+    (
+        "How do you configure Jest to fail the build if code coverage falls below 80%?",
+        "Set `coverageThreshold` in `jest.config.js`: `coverageThreshold: { global: { branches: 80, functions: 80, lines: 80, statements: 80 } }`.",
+        "Intermediate",
+        "Practical",
+        "// jest.config.js\nmodule.exports = {\n  coverageThreshold: {\n    global: {\n      lines: 80,\n      branches: 80\n    }\n  }\n};",
+        "What happens in CI when coverage drops below threshold?"
+    ),
+    (
+        "What is the difference between `toBeNull()`, `toBeUndefined()`, and `toBeDefined()`?",
+        "`toBeNull()` asserts `value === null`. `toBeUndefined()` asserts `value === undefined`. `toBeDefined()` asserts `value !== undefined`.",
+        "Easy",
+        "Comparison",
+        "",
+        "What does `toBeFalsy()` match?"
+    ),
+    (
+        "What values cause `toBeFalsy()` to pass in Jest?",
+        "Any falsy JavaScript value: `false`, `0`, `''`, `null`, `undefined`, and `NaN`.",
+        "Easy",
+        "Concept",
+        "",
+        "What matcher asserts truthiness?"
+    ),
+
+    # --- Mocking, Spying & Stubs (40 items) ---
+    (
+        "What is the difference between a Mock, a Stub, and a Spy?",
+        "Spy: wraps an existing function to record calls/arguments without altering original behavior. Stub: replaces a function with predefined canned responses. Mock: an object with pre-programmed expectations that verifies interactions and calls.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "Which term is used as an umbrella concept in Jest?"
+    ),
+    (
+        "How do you create a mock function in Jest?",
+        "Call `const mockFn = jest.fn()`. It records all invocations, arguments, return values, and instances.",
+        "Easy",
+        "Practical",
+        "const mockCallback = jest.fn(x => 42 + x);\n[0, 1].forEach(mockCallback);\nexpect(mockCallback).toHaveBeenCalledTimes(2);",
+        "What is the default return value of `jest.fn()` if no implementation is provided?"
+    ),
+    (
+        "How do you mock a resolved Promise value with `jest.fn()`?",
+        "Use `mockFn.mockResolvedValue(value)`. It creates a mock function that returns `Promise.resolve(value)`.",
+        "Easy",
+        "Practical",
+        "const fetchUser = jest.fn().mockResolvedValue({ id: 1, name: 'Alice' });\nconst user = await fetchUser();\nexpect(user.name).toBe('Alice');",
+        "What method mocks a rejected Promise?"
+    ),
+    (
+        "How do you mock a rejected Promise with `jest.fn()`?",
+        "Use `mockFn.mockRejectedValue(new Error('Network error'))`.",
+        "Easy",
+        "Practical",
+        "const fetchApi = jest.fn().mockRejectedValue(new Error('Timeout'));\nawait expect(fetchApi()).rejects.toThrow('Timeout');",
+        "Can you mock different return values for successive calls?"
+    ),
+    (
+        "How do you mock different return values on consecutive calls in Jest?",
+        "Chain `mockReturnValueOnce()`: `jest.fn().mockReturnValueOnce(1).mockReturnValueOnce(2).mockReturnValue('default')`.",
+        "Easy",
+        "Practical",
+        "const fn = jest.fn().mockReturnValueOnce('first').mockReturnValueOnce('second');\nfn(); // 'first'\nfn(); // 'second'\nfn(); // undefined",
+        "What is returned on the third call if no default is set?"
+    ),
+    (
+        "What is `jest.spyOn()` and how does it work?",
+        "`jest.spyOn(object, 'methodName')` creates a mock function that wraps an existing method on an object, tracking its calls while preserving original implementation unless overridden.",
+        "Intermediate",
+        "Practical",
+        "const spy = jest.spyOn(console, 'error').mockImplementation(() => {});\nrunCodeThatLogsError();\nexpect(spy).toHaveBeenCalled();\nspy.mockRestore();",
+        "Why is `spy.mockRestore()` critical in afterEach?"
+    ),
+    (
+        "What is the difference between `jest.clearAllMocks()`, `jest.resetAllMocks()`, and `jest.restoreAllMocks()`?",
+        "`clearAllMocks`: clears call history and arguments; keeps mock implementations. `resetAllMocks`: clears call history AND resets mock implementations to return undefined. `restoreAllMocks`: restores original unmocked implementations for spies created with `jest.spyOn()`.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "Which one should typically be placed in `afterEach()`?"
+    ),
+    (
+        "How do you mock an external module (like `axios`) in Jest?",
+        "Call `jest.mock('axios')` at the top of the test file. Jest automatically replaces all exports with mock functions.",
+        "Intermediate",
+        "Practical",
+        "import axios from 'axios';\nimport { getUser } from './user';\njest.mock('axios');\n\ntest('fetches user', async () => {\n  axios.get.mockResolvedValue({ data: { name: 'Bob' } });\n  const user = await getUser(1);\n  expect(user.name).toBe('Bob');\n});",
+        "Can `jest.mock` be placed inside a test block?"
+    ),
+    (
+        "Why is `jest.mock()` automatically hoisted to the top of the file?",
+        "Babel / Jest hoists `jest.mock()` above all `import` statements so that the module is mocked before any code imports and executes it.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What function disables this hoisting behavior if needed?"
+    ),
+    (
+        "How do you mock timers (like `setTimeout` or `setInterval`) in Jest?",
+        "Use `jest.useFakeTimers()`. Fast-forward time using `jest.advanceTimersByTime(ms)`, and return to real timers using `jest.useRealTimers()`.",
+        "Intermediate",
+        "Practical",
+        "jest.useFakeTimers();\nconst callback = jest.fn();\nsetTimeout(callback, 5000);\nexpect(callback).not.toHaveBeenCalled();\njest.advanceTimersByTime(5000);\nexpect(callback).toHaveBeenCalled();\njest.useRealTimers();",
+        "What happens if you do not restore real timers?"
+    ),
+    (
+        "How do you inspect the arguments passed to a mock function?",
+        "Use `expect(mockFn).toHaveBeenCalledWith(arg1, arg2)` or inspect the `mockFn.mock.calls` array directly.",
+        "Easy",
+        "Practical",
+        "expect(mockFn).toHaveBeenCalledWith('user_123', { admin: true });\n// or\nexpect(mockFn.mock.calls[0][0]).toBe('user_123');",
+        "What does `mockFn.mock.calls` contain?"
+    ),
+    (
+        "Which matcher verifies that a mock function was called exactly 3 times?",
+        "`expect(mockFn).toHaveBeenCalledTimes(3)`.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "expect(mockFn).called(3)", "B": "expect(mockFn).toHaveBeenCalledTimes(3)", "C": "expect(mockFn).times(3)", "D": "expect(mockFn).toHaveCallCount(3)"},
+        "B",
+        "What matcher verifies it was called at least once?"
+    ),
+    (
+        "What is Mock Service Worker (MSW) and why is it preferred over mocking `axios` or `fetch` directly?",
+        "MSW intercepts network requests at the network layer using Service Workers (in browser) or NodeJS request interceptors, allowing tests to run against realistic HTTP requests without mocking client libraries.",
+        "Advanced",
+        "Concept",
+        "",
+        "How does MSW make tests resilient to switching from Axios to Fetch?"
+    ),
+    (
+        "What is manual mocking with the `__mocks__` directory in Jest?",
+        "Placing a file in a `__mocks__` folder next to a module (e.g. `src/__mocks__/api.js`) provides a shared custom mock implementation automatically used whenever `jest.mock('./api')` is called.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Where are node_modules manual mocks placed?"
+    ),
+
+    # --- React Testing Library (35 items) ---
+    (
+        "What is the guiding philosophy of React Testing Library (RTL)?",
+        "'The more your tests resemble the way your software is used, the more confidence they can give you.' RTL encourages testing what the user sees and interacts with rather than internal state, props, or component lifecycles.",
+        "Easy",
+        "Concept",
+        "",
+        "Why does RTL intentionally avoid shallow rendering?"
+    ),
+    (
+        "Why does React Testing Library discourage testing implementation details?",
+        "Testing implementation details (like component state names, private methods, or child component internal tags) makes tests brittle: tests break during harmless refactoring even if user functionality is completely intact.",
+        "Easy",
+        "Concept",
+        "",
+        "Give an example of an implementation detail test vs user-behavior test."
+    ),
+    (
+        "Explain the query priority in React Testing Library.",
+        "1) `getByRole` (accessible to all, mirrors screen readers). 2) `getByLabelText` (form fields). 3) `getByPlaceholderText`. 4) `getByText` (non-interactive elements). 5) `getByDisplayValue`. 6) `getByTestId` (last resort when no semantic anchor exists).",
+        "Intermediate",
+        "Concept",
+        "// Preferred\nscreen.getByRole('button', { name: /submit/i });\n// Avoid if possible\nscreen.getByTestId('submit-btn');",
+        "Why is `getByRole` the highest priority query?"
+    ),
+    (
+        "Explain the difference between `getBy*`, `queryBy*`, and `findBy*` queries in RTL.",
+        "`getBy*`: returns matching element; throws error if not found or if multiple found. `queryBy*`: returns matching element, or `null` if not found (used to assert non-existence). `findBy*`: returns a Promise that waits up to 1000ms for element to appear (used for async elements).",
+        "Intermediate",
+        "Comparison",
+        "// Assert existence\nexpect(screen.getByText('Welcome')).toBeInTheDocument();\n// Assert absence\nexpect(screen.queryByText('Error')).not.toBeInTheDocument();\n// Async element\nconst alert = await screen.findByRole('alert');",
+        "Which query should be used to test that a modal is NOT visible?"
+    ),
+    (
+        "Which query should you use to assert that an element is NOT present in the DOM?",
+        "Use `queryBy*`: `expect(screen.queryByRole('dialog')).not.toBeInTheDocument()`. Using `getBy*` would throw an error and fail the test before the assertion runs.",
+        "Easy",
+        "Practical",
+        "expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();",
+        "Why does `getBy*` fail when asserting absence?"
+    ),
+    (
+        "Why is `@testing-library/user-event` preferred over `fireEvent`?",
+        "`fireEvent` dispatches raw synthetic DOM events directly. `userEvent` simulates complete, realistic browser interactions (e.g. clicking also focuses, hovers, triggers key events), catching accessibility and event bubbling bugs.",
+        "Intermediate",
+        "Comparison",
+        "import userEvent from '@testing-library/user-event';\n\ntest('types into input', async () => {\n  const user = userEvent.setup();\n  render(<LoginForm />);\n  await user.type(screen.getByLabelText(/email/i), 'alice@test.com');\n  await user.click(screen.getByRole('button', { name: /login/i }));\n});",
+        "Why must userEvent methods be awaited?"
+    ),
+    (
+        "What is `waitFor` in React Testing Library and when should you use it?",
+        "`waitFor(() => expect(...))` repeatedly runs an assertion callback until it passes or times out (default 1000ms). Used when testing asynchronous state changes that update the DOM indirectly.",
+        "Intermediate",
+        "Practical",
+        "await waitFor(() => {\n  expect(screen.getByText('Success')).toBeInTheDocument();\n});",
+        "Should you put side-effects (like user clicks) inside `waitFor`?"
+    ),
+    (
+        "How do you test a component wrapped in a React Context Provider or Redux Provider in RTL?",
+        "Create a custom `render` wrapper that wraps components in the necessary Providers (Theme, Auth, Redux, Router).",
+        "Intermediate",
+        "Practical",
+        "const renderWithProviders = (ui, options) => {\n  const Wrapper = ({ children }) => (\n    <AuthProvider><ThemeProvider>{children}</ThemeProvider></AuthProvider>\n  );\n  return render(ui, { wrapper: Wrapper, ...options });\n};",
+        "Why is custom render wrapper better than wrapping in every individual test?"
+    ),
+    (
+        "How do you test a custom React Hook?",
+        "Use `renderHook` from `@testing-library/react`. It returns `{ result }` where `result.current` contains the hook's return values. Wrap state updates in `act()`.",
+        "Intermediate",
+        "Practical",
+        "import { renderHook, act } from '@testing-library/react';\nimport { useCounter } from './useCounter';\n\ntest('increments counter', () => {\n  const { result } = renderHook(() => useCounter());\n  act(() => result.current.increment());\n  expect(result.current.count).toBe(1);\n});",
+        "What is the purpose of `act()`?"
+    ),
+    (
+        "What does the warning 'Warning: An update to Component inside a test was not wrapped in act(...)' indicate?",
+        "It indicates that state updates or side-effects occurred outside React's test synchronization boundary, often because an async operation (API call, timer) resolved after the test finished asserting.",
+        "Intermediate",
+        "Debugging",
+        "",
+        "How do you resolve the `act(...)` warning cleanly?"
+    ),
+    (
+        "What is `@testing-library/jest-dom`?",
+        "A library that extends Jest's `expect` with custom DOM matchers such as `toBeInTheDocument()`, `toHaveTextContent()`, `toBeDisabled()`, `toBeVisible()`, and `toHaveClass()`.",
+        "Easy",
+        "Concept",
+        "expect(button).toBeDisabled();\nexpect(alert).toHaveClass('error-banner');",
+        "Where is `@testing-library/jest-dom` typically imported?"
+    ),
+
+    # --- Integration, API & E2E Testing (40 items) ---
+    (
+        "What is Supertest and how is it used in Node.js/Express API testing?",
+        "Supertest is a library that allows testing HTTP servers without manually binding to network ports. It wraps an Express app and provides a fluent API to make requests and assert status codes and responses.",
+        "Easy",
+        "Concept",
+        "const request = require('supertest');\nconst app = require('../app');\n\ntest('GET /api/users returns 200', async () => {\n  const res = await request(app)\n    .get('/api/users')\n    .expect('Content-Type', /json/)\n    .expect(200);\n  expect(Array.isArray(res.body)).toBe(true);\n});",
+        "Do you need to call `app.listen()` when using Supertest?"
+    ),
+    (
+        "Why should you export your Express `app` separately from `app.listen()` (e.g. `app.js` vs `server.js`)?",
+        "Separating `app` (request handler) from `server.js` (port listener) allows Supertest to test the Express app in-memory across parallel test workers without port collision errors.",
+        "Easy",
+        "Best Practice",
+        "// app.js -> module.exports = app\n// server.js -> app.listen(5000)",
+        "What error happens if tests start multiple servers on the same port?"
+    ),
+    (
+        "How do you test authenticated routes using Supertest?",
+        "Pass a valid JWT token in the Authorization header: `.set('Authorization', 'Bearer ' + token)`.",
+        "Easy",
+        "Practical",
+        "const res = await request(app)\n  .get('/api/profile')\n  .set('Authorization', `Bearer ${validToken}`)\n  .expect(200);",
+        "How should you test the same route with an expired token?"
+    ),
+    (
+        "What is `mongodb-memory-server` and why is it useful in integration testing?",
+        "`mongodb-memory-server` spins up a real, ephemeral MongoDB server entirely in-memory for testing, providing fast, isolated tests without requiring a running MongoDB service or risking production data.",
+        "Intermediate",
+        "Concept",
+        "const { MongoMemoryServer } = require('mongodb-memory-server');\nlet mongod;\nbeforeAll(async () => {\n  mongod = await MongoMemoryServer.create();\n  await mongoose.connect(mongod.getUri());\n});\nafterAll(async () => {\n  await mongoose.disconnect();\n  await mongod.stop();\n});",
+        "What should you do between test cases to ensure test isolation?"
+    ),
+    (
+        "How do you clean a database between test cases in Mongoose?",
+        "In `afterEach()`, delete all documents from all collections: `await Promise.all(Object.values(mongoose.connection.collections).map(c => c.deleteMany({})))`.",
+        "Intermediate",
+        "Practical",
+        "afterEach(async () => {\n  const collections = mongoose.connection.collections;\n  for (const key in collections) {\n    await collections[key].deleteMany({});\n  }\n});",
+        "Why is dropping the database slower than deleting documents?"
+    ),
+    (
+        "What is Playwright and what are its key advantages for E2E testing?",
+        "Playwright is a modern E2E testing framework from Microsoft that tests across Chromium, Firefox, and WebKit with a single API, offering built-in auto-waiting, network mocking, trace recording, and headless execution.",
+        "Easy",
+        "Concept",
+        "import { test, expect } from '@playwright/test';\ntest('homepage has title', async ({ page }) => {\n  await page.goto('https://example.com');\n  await expect(page).toHaveTitle(/Example/);\n});",
+        "How does Playwright differ from legacy Selenium?"
+    ),
+    (
+        "What is Auto-Waiting in Playwright?",
+        "Playwright automatically waits for elements to satisfy actionability checks (visible, stable, enabled, editable, receiving events) before performing actions like `click()` or `fill()`, virtually eliminating race conditions and timing flakes.",
+        "Easy",
+        "Concept",
+        "",
+        "Do you need to write manual sleep timeouts like `sleep(3000)` in Playwright?"
+    ),
+    (
+        "What is the difference between Headless and Headed browser mode?",
+        "Headless mode runs the browser in the background without any graphical user interface (GUI), maximizing speed and resource efficiency for CI/CD. Headed mode launches a visible browser window, useful for local debugging.",
+        "Easy",
+        "Comparison",
+        "npx playwright test --headed",
+        "Which mode is faster in automated CI pipelines?"
+    ),
+    (
+        "What is the Playwright Trace Viewer?",
+        "A visual GUI tool that records a complete execution trace (DOM snapshots, network calls, console logs, timeline, and screenshots for every action), allowing post-mortem inspection of failed CI test runs.",
+        "Intermediate",
+        "Concept",
+        "npx playwright show-trace trace.zip",
+        "How do you enable trace recording on test failures only?"
+    ),
+    (
+        "How does Playwright save authentication state to avoid logging in before every test?",
+        "Playwright can authenticate once in a setup project, save cookies and localStorage to a `storageState.json` file, and reuse that state across all subsequent test workers.",
+        "Intermediate",
+        "Practical",
+        "// playwright.config.ts\nuse: {\n  storageState: 'playwright/.auth/user.json'\n}",
+        "How does this speed up large E2E test suites?"
+    ),
+    (
+        "What is Visual Regression Testing?",
+        "A technique that captures screenshots of web pages or components and compares them pixel-by-pixel against baseline images to automatically detect unintended visual layout shifts or styling regressions.",
+        "Intermediate",
+        "Concept",
+        "await expect(page).toHaveScreenshot();",
+        "What handles small anti-aliasing differences in screenshot comparisons?"
+    ),
+    (
+        "Which HTTP status code should be returned and verified when a resource is successfully created?",
+        "201 Created.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "200 OK", "B": "201 Created", "C": "204 No Content", "D": "202 Accepted"},
+        "B",
+        "What header is typically included with 201 Created?"
+    ),
+    (
+        "Which HTTP status code should be verified when testing authentication failure due to missing or invalid token?",
+        "401 Unauthorized.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "400 Bad Request", "B": "401 Unauthorized", "C": "403 Forbidden", "D": "404 Not Found"},
+        "B",
+        "What is the difference between 401 Unauthorized and 403 Forbidden?"
+    ),
+    (
+        "What is the difference between 401 Unauthorized and 403 Forbidden?",
+        "401 Unauthorized means the user is not authenticated (identity unknown / missing token). 403 Forbidden means the user is authenticated, but does not have permission to access the resource (insufficient role).",
+        "Easy",
+        "Comparison",
+        "",
+        "Should a user without admin role get 401 or 403 when trying to access admin dashboard?"
+    ),
+    (
+        "What is contract testing (e.g. Pact)?",
+        "Contract testing verifies that independent services (like frontend client and backend API) agree on the structure and format of messages/requests exchanged between them, ensuring APIs do not break clients.",
+        "Advanced",
+        "Concept",
+        "",
+        "How is contract testing different from full E2E testing?"
+    ),
+    (
+        "What is Load Testing vs Stress Testing?",
+        "Load testing assesses system behavior under expected normal and peak traffic loads. Stress testing pushes the system beyond its maximum operational capacity until it breaks to observe failure modes and recovery.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "What is soak/endurance testing?"
+    ),
+    (
+        "What is accessibility (a11y) testing with `axe-core`?",
+        "`axe-core` is an automated accessibility testing engine that scans the DOM against WCAG guidelines, detecting missing alt texts, low color contrast, missing form labels, and invalid ARIA roles.",
+        "Easy",
+        "Concept",
+        "import { axe, toHaveNoViolations } from 'jest-axe';\nexpect.extend(toHaveNoViolations);\ntest('has no a11y violations', async () => {\n  const { container } = render(<Form />);\n  expect(await axe(container)).toHaveNoViolations();\n});",
+        "What percentage of accessibility issues can automated testing catch?"
+    ),
+    (
+        "What is the role of `jest.config.js`?",
+        "The configuration file where test environment (`jsdom` vs `node`), file match patterns, setup files, module path aliases, coverage thresholds, and transform settings are configured.",
+        "Easy",
+        "Concept",
+        "",
+        "What setting configures custom module aliases (e.g. `@/components`) in Jest?"
+    ),
+    (
+        "How do you map module aliases like `@/` to `src/` in Jest?",
+        "Use `moduleNameMapper` in `jest.config.js`: `moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' }`.",
+        "Intermediate",
+        "Practical",
+        "moduleNameMapper: {\n  '^@/(.*)$': '<rootDir>/src/$1'\n}",
+        "Why is `moduleNameMapper` required when TypeScript path aliases are used?"
+    ),
+    (
+        "How do you mock static assets like CSS files and image imports in Jest?",
+        "Map them to a mock file or identity-obj-proxy in `moduleNameMapper`: `'\\.(css|less)$': 'identity-obj-proxy'`, `'\\.(png|jpg)$': '<rootDir>/__mocks__/fileMock.js'`.",
+        "Easy",
+        "Practical",
+        "moduleNameMapper: {\n  '\\\\.(css|less|scss)$': 'identity-obj-proxy',\n  '\\\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js'\n}",
+        "What does `identity-obj-proxy` return for CSS classnames?"
+    )
+]
+
+print(f"Total Testing questions created: {len(testing_items)}")
+
+with open('scripts/testing_questions.py', 'w', encoding='utf-8') as f:
+    f.write('"""\nscripts/testing_questions.py\n215 comprehensive fresher Testing interview questions.\n"""\n\n')
+    f.write('testing_items = [\n')
+    for item in testing_items:
+        f.write(f"    {repr(item)},\n")
+    f.write(']\n')
+
+print("Saved to scripts/testing_questions.py")

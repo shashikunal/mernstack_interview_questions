@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1 YOE Full-Stack Interview Prep - MERN/.NET</title>
+<meta name="description" content="MERN/.NET 1 YOE interview Q&A: JS, React, Redux, Node, Express, Mongo, Postgres, Next, DSA, Git + mocks with code and project examples.">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#0f172a;color:#e2e8f0}
+header{position:sticky;top:0;background:#020617;padding:12px 16px;border-bottom:1px solid #1e293b;z-index:10}
+header h1{margin:0;font-size:18px}header p{margin:4px 0 0;color:#94a3b8;font-size:13px}
+.search{margin-top:10px;display:flex;gap:8px}input{flex:1;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#fff}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;position:sticky;top:97px;background:#0f172a;z-index:9}
+button.tab{padding:8px 12px;border-radius:20px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;cursor:pointer;font-size:13px}
+button.tab.active{background:#38bdf8;color:#020617;font-weight:700}
+main{padding:16px;max-width:1000px;margin:auto}
+section.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;margin:12px 0}
+h2{margin:0 0 8px;font-size:18px;color:#38bdf8}h3{color:#facc15;font-size:15px}
+details{background:#0f172a;border:1px solid #334155;border-radius:8px;margin:8px 0;padding:10px}
+summary{cursor:pointer;font-weight:600}summary span.tag{font-size:11px;background:#334155;padding:2px 8px;border-radius:10px;margin-left:8px}
+p,li{font-size:14px;line-height:1.6}code{background:#020617;padding:2px 6px;border-radius:6px;color:#7dd3fc;font-size:13px}pre{background:#020617;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+.proj{color:#86efac}.say{color:#fcd34d}
+.badge{display:inline-block;background:#16a34a;padding:2px 10px;border-radius:12px;font-size:12px;margin:2px}
+footer{padding:20px;text-align:center;color:#64748b;font-size:12px}
+@media print{nav,.search{display:none}body{background:#fff;color:#000}section.card{background:#fff;color:#000;border-color:#ccc}}
+</style>
+</head>
+<body>
+<header>
+<h1>1 YOE Full-Stack Interview Prep (MERN / .NET)</h1>
+<p>JS/TS • HTML/CSS • React/Redux • Node/.NET • Mongo/Postgres • Next/Nest • Azure/GCP • DSA • Git — Tomorrow Ready</p>
+<div class="search"><input id="q" placeholder="Search any question... e.g. closure, JWT, useEffect, index" oninput="filter()"></div>
+</header>
+<nav id="tabs">
+<button class="tab active" onclick="show('crash',this)">Crash Plan</button>
+<button class="tab" onclick="show('frontend',this)">JS/TS/HTML/CSS</button>
+<button class="tab" onclick="show('react',this)">React+Redux</button>
+<button class="tab" onclick="show('backend',this)">Backend</button>
+<button class="tab" onclick="show('db',this)">DB</button>
+<button class="tab" onclick="show('bonus',this)">Bonus</button>
+<button class="tab" onclick="show('dsa',this)">DSA</button>
+<button class="tab" onclick="show('git',this)">Git+HR+Mock</button>
+</nav>
+<main>
+<section id="crash" class="card page">
+<h2>1-Day Crash Plan (1 YOE)</h2>
+<p><span class="badge">90 min JS+React</span> <span class="badge">60 min Redux+Backend</span> <span class="badge">60 min DB+DSA</span> <span class="badge">60 min Bonus+Git</span> <span class="badge">60 min 2 Mocks</span></p>
+<h3>10 Must-Know (say + 1 project example each)</h3>
+<ol>
+<li>Event loop: microtasks (Promise.then) drain before macrotasks (setTimeout 0) — so Promise beats timeout 0.</li>
+<li>Closure counter + debounce 300ms for search — keeps timer private, cuts API calls ~70%.</li>
+<li>useEffect cleanup with AbortController + correct deps [id] — fixes stale fetch bug.</li>
+<li>Redux Toolkit slice + createAsyncThunk pending/fulfilled — products list with loading state.</li>
+<li>Express auth middleware verifying Bearer JWT → req.user + role guard — secures /api/orders.</li>
+<li>JWT login: access 15m in memory + refresh 7d HttpOnly SameSite cookie + logout clears — never localStorage.</li>
+<li>Mongo embed (&lt;100, together-read) vs reference (many/shared) / Postgres JOIN + index on email — login 800ms→40ms.</li>
+<li>Next SSR per-request vs SSG build vs ISR revalidate 60s — catalog ISR for SEO, dashboard CSR.</li>
+<li>Big-O + HashMap Two Sum O(n) + Valid Parentheses stack — code both in 5 min.</li>
+<li>STAR project story with metric — challenge, action (debounce+abort+index), result (400ms faster).</li>
+</ol>
+<h3>STAR Template</h3>
+<p>Built [HRMS/e-comm] with [React+Node+Mongo]. I did [auth+listing]. Challenge [search lag 1.2s]. Fixed [debounce+abort+index]. Result [400ms faster, 70% fewer calls].</p>
+<h3>How to answer (30s)</h3>
+<p><span class="say">Concept → why → code → 1 project metric.</span> Never blank — think aloud.</p>
+</section>
+
+<section id="frontend" class="card page" style="display:none">
+<h2>Frontend - JS / TS / HTML / CSS</h2>
+<details open><summary>Closure? + debounce<span class="tag">Top</span></summary><p>Function + its lexical env remembers outer vars after return. Uses: private counter, debounce, memoize.</p><pre>function outer(){let c=0;return ()=>++c}
+const debounce=(fn,d)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),d)}}</pre><p class="proj">Project: 300ms debounce on user search cut API calls ~70%.</p></details>
+<details><summary>Event loop?</summary><p>Stack runs sync → all microtasks (Promise.then, await) drain → one macrotask (setTimeout, I/O) → render. So Promise beats setTimeout 0.</p><pre>console.log(1);setTimeout(()=>console.log(2),0);Promise.resolve().then(()=>console.log(3)) // 1,3,2</pre></details>
+<details><summary>Debounce vs throttle? Code?</summary><p>Debounce = wait idle then run (search). Throttle = max once per limit (scroll).</p><pre>const throttle=(fn,l)=>{let f=false;return(...a)=>{if(!f){fn(...a);f=true;setTimeout(()=>f=false,l)}}}</pre></details>
+<details><summary>Promises: all vs allSettled vs race vs any?</summary><p>all = fail-fast parallel fetch; allSettled = wait all (dashboard widgets); race = first settled (timeout); any = first fulfilled (CDN fallback).</p><pre>await Promise.all([fetchA,fetchB])
+await Promise.race([fetch(u),new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),5000))])</pre></details>
+<details><summary>== vs ===? ?? vs ||? ?.?</summary><p>Always <code>===</code>. <code>||</code> falls on any falsy (0,''), <code>??</code> only null/undefined, <code>?.</code> safe access.</p><pre>user?.name ?? 'Guest'; const qty = 0 ?? 10 // 0 (|| would give 10 — payroll bug)</pre></details>
+<details><summary>Deep copy?</summary><p><code>structuredClone(obj)</code> best — handles Date/Map/circular. JSON loses Dates/functions. Spread is shallow.</p></details>
+<details><summary>this + arrow?</summary><p>Regular <code>this</code> = caller-dependent; arrow = lexical from definition. Use arrow for callbacks/map to keep component scope.</p></details>
+<details><summary>CORS? XSS vs CSRF?</summary><p>CORS = browser blocks cross-origin; fix server <code>cors({origin:[allowlist]})</code>. XSS = injected script → escape, textContent, DOMPurify, CSP. CSRF = forged cookie request → SameSite + token. JWT refresh in HttpOnly SameSite cookie.</p></details>
+<details><summary>TS: interface vs type? any vs unknown?</summary><p>interface = extendable object/merging (models); type = unions/tuples. any = opt-out (danger); unknown = must narrow (prefer for API JSON).</p><pre>interface User{id:string;email:string} type Role='admin'|'user'
+let v:unknown = await res.json(); if(typeof v==='object'&&v!==null){/* narrow */}</pre></details>
+<details><summary>TS Generics + Utilities?</summary><p>Reusable type-safe helpers + built-ins.</p><pre>function first&lt;T&gt;(a:T[]):T|undefined{return a[0]}
+type Public = Omit&lt;User,'password'&gt;; type Update = Partial&lt;Pick&lt;User,'name'&gt;&gt;</pre></details>
+<details><summary>HTML: defer vs async? Semantic? a11y?</summary><p>defer = parallel download, ordered exec after parse (your app). async = ASAP unordered (ads). Semantic header/nav/main/article for SEO+screen readers. a11y: label-for, alt, focus-visible, aria-label, contrast.</p><pre>&lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;label for="e"&gt;Email&lt;/label&gt;&lt;input id="e"&gt;</pre></details>
+<details><summary>CSS: Flex vs Grid? Center?</summary><p>Flex = 1D row/col (nav, list). Grid = 2D rows+cols (dashboard).</p><pre>.c{display:flex;align-items:center;justify-content:center}
+/* or */ .c{display:grid;place-items:center}</pre></details>
+<details><summary>Box model? Specificity? Position?</summary><p>content+padding+border+margin; <code>*{box-sizing:border-box}</code>. Specificity: inline&gt;id&gt;class&gt;element. Positions: relative (anchor), absolute (nearest positioned), fixed (viewport), sticky (scroll, needs top).</p></details>
+<details><summary>Reflow vs repaint?</summary><p>Reflow = layout recalc (width) expensive; repaint = pixels (color) cheap; transform/opacity composite cheapest — animate with transform, not left/top.</p></details>
+<details><summary>var vs let vs const?</summary><p>var = function-scoped, hoisted undefined; let/const = block-scoped, TDZ error before init. Use const default.</p><pre>for(let i=0;i&lt;3;i++) setTimeout(()=>console.log(i),0) // 0,1,2</pre></details>
+<details><summary>fetch + AbortController?</summary><p>Cancel stale search in cleanup; always check <code>res.ok</code> (fetch resolves 404).</p><pre>const c=new AbortController(); const r=await fetch(u,{signal:c.signal}); if(!r.ok) throw new Error(r.status)</pre></details>
+</section>
+
+<section id="react" class="card page" style="display:none">
+<h2>React + Redux</h2>
+<details open><summary>useEffect vs useLayoutEffect? Cleanup?<span class="tag">Top</span></summary><p>useEffect after paint (fetch, subs). useLayoutEffect before paint (measure DOM, avoid flicker). Return cleanup aborts fetch/timers. [] = mount only, [id] = re-run.</p><pre>useEffect(()=>{const c=new AbortController();fetch(`/api/p/${id}`,{signal:c.signal}).then(r=>r.json()).then(setD);return ()=>c.abort()},[id])</pre></details>
+<details><summary>useMemo vs useCallback vs memo?</summary><p>useMemo = cached value (expensive filter); useCallback = cached fn (stable child prop); memo = cached component. Only for expensive/referential stability.</p><pre>const f=useMemo(()=>list.filter(p=>p.name.includes(q)),[list,q])</pre></details>
+<details><summary>Keys? Why not index?</summary><p>Stable identity for diff. Index breaks on reorder/filter → wrong input state. Use id.</p><pre>{items.map(p=>&lt;Card key={p.id} p={p}/&gt;)}</pre></details>
+<details><summary>Controlled vs uncontrolled?</summary><p>Controlled = value+onChange, live validation (prefer). Uncontrolled = ref/defaultValue (file input).</p></details>
+<details><summary>Context perf pitfall?</summary><p>All consumers re-render on any value change. Fix: split contexts (Auth/User), memo value.</p><pre>const v=useMemo(()=>({user}),[user]); &lt;Auth.Provider value={v}&gt;</pre></details>
+<details><summary>Fetch race fix?</summary><pre>useEffect(()=>{let ok=true;const c=new AbortController();fetch(url,{signal:c.signal}).then(r=>r.json()).then(v=>ok&&setD(v));return ()=>{ok=false;c.abort()}},[url])</pre></details>
+<details><summary>Redux Toolkit flow?</summary><p>createSlice → configureStore → Provider → useSelector/useDispatch. Immer lets you push mutably. Async via createAsyncThunk pending/fulfilled.</p><pre>export const fetchP=createAsyncThunk('p/fetch',async()=>{const r=await fetch('/api/p');if(!r.ok)throw new Error('fail');return r.json()})</pre></details>
+<details><summary>Normalize? RTK Query?</summary><p>Normalize {ids,entities} via createEntityAdapter = O(1) update for 2k rows. RTK Query caches CRUD with tags/invalidate, replaces manual thunk+loading.</p></details>
+<details><summary>Redux vs Context vs Zustand?</summary><p>Context = low-freq theme/auth; Redux = complex shared + devtools + middleware; Zustand = lightweight less boilerplate.</p></details>
+<details><summary>Optimistic update?</summary><p>UI first, rollback on fail (likes). Pessimistic for money (wait 201).</p><pre>setLiked(true); try{await api.like()}catch{setLiked(false)}</pre></details>
+<details><summary>Testing (RTL)?</summary><pre>render(&lt;Search/&gt;); fireEvent.change(screen.getByPlaceholderText(/search/i),{target:{value:'phone'}}); expect(await screen.findByText(/phone/i)).toBeInTheDocument()</pre></details>
+</section>
+
+<section id="backend" class="card page" style="display:none">
+<h2>Backend - Node+Express / .NET</h2>
+<details open><summary>Express middleware + error handler?<span class="tag">Top</span></summary><pre>function auth(req,res,next){const h=req.headers.authorization;if(!h?.startsWith('Bearer '))return res.status(401).json({message:'No token'});try{req.user=jwt.verify(h.slice(7),process.env.JWT_SECRET);next()}catch{return res.status(401).json({message:'Invalid token'})}}
+app.use((err,req,res,next)=>res.status(err.status||500).json({message:err.message||'Server error'}))</pre></details>
+<details><summary>JWT flow? Where store?</summary><p>Login verifies bcrypt → access 15m + refresh 7d. Client sends <code>Authorization: Bearer &lt;access&gt;</code> → verify → req.user. Access in memory, refresh HttpOnly Secure SameSite cookie. Never localStorage (XSS). Logout clears cookie + deletes DB refresh. Reuse detection → logout-all.</p></details>
+<details><summary>Hash? Validation? REST?</summary><p><code>bcrypt.hash(pwd,12)</code> + compare. Validate at boundary with zod → 400. REST: GET/POST/PUT(full)/PATCH(partial)/DELETE; 200/201(+Location)/204/400/401/403/404/409/429.</p></details>
+<details><summary>Pagination? Cache? Rate limit?</summary><p>Cursor <code>?cursor=&amp;limit=</code> for infinite (fast 1M rows); offset <code>?page=</code> admin + cap limit 50. Redis <code>GET key</code> 60s + invalidate on write. express-rate-limit (login 5/min) + helmet + cors allowlist.</p></details>
+<details><summary>.NET pipeline? DI?</summary><p>UseRouting → Authentication → Authorization → MapControllers. DI: Singleton (stateless), Scoped per-request (DbContext), Transient. [Authorize(Roles="Admin")], await _db.ToListAsync(), IOptions, Serilog.</p></details>
+<details><summary>401 vs 403? Idempotency?</summary><p>401 = no/invalid token (login again); 403 = valid but no permission. POST payment retries safe via <code>Idempotency-Key</code> header stored 24h.</p></details>
+</section>
+
+<section id="db" class="card page" style="display:none">
+<h2>MongoDB vs Postgres</h2>
+<details open><summary>Embed vs reference? (Mongo)<span class="tag">Top</span></summary><p>Embed together-read &lt;100 (user+address, order items snapshot). Reference many/shared (posts/userId). 16MB doc limit → bucket reviews per product.</p></details>
+<details><summary>Index? Aggregation?</summary><p><code>db.users.createIndex({email:1},{unique:true})</code>; compound {userId:1,createdAt:-1} for feeds.</p><pre>db.orders.aggregate([{$match:{status:'paid'}},{$group:{_id:'$userId',total:{$sum:'$amount'}}},{$sort:{total:-1}}])</pre><p><code>explain('executionStats')</code>: COLLSCAN → add index → IXSCAN (login 800ms→40ms).</p></details>
+<details><summary>JOINs? N+1? (PG)</summary><p>INNER = match only; LEFT = all left + nulls. N+1 = loop of 100 queries → fix with one JOIN/batch + FK index. Keyset <code>WHERE id&gt;$1 LIMIT 20</code> faster than OFFSET on large tables.</p><pre>SELECT p.*,u.name FROM posts p JOIN users u ON u.id=p.user_id;
+-- stock: UPDATE products SET stock=stock-1 WHERE id=$1 AND stock&gt;0 RETURNING *;</pre></details>
+<details><summary>ACID? Transaction?</summary><p>Atomic/Consistent/Isolated/Durable. Money/stock: BEGIN → UPDATE... → COMMIT; race: SELECT...FOR UPDATE; Node: pool.connect + try BEGIN/COMMIT catch ROLLBACK finally release.</p></details>
+<details><summary>2nd highest salary?</summary><pre>SELECT MAX(salary) FROM emp WHERE salary &lt; (SELECT MAX(salary) FROM emp);</pre></details>
+</section>
+
+<section id="bonus" class="card page" style="display:none">
+<h2>Bonus - Next.js / NestJS / Cloud</h2>
+<details open><summary>SSR vs SSG vs ISR?</summary><p>SSR per-request (personalized), SSG build-time (blog), ISR revalidate 60s (catalog: SEO + fresh), CSR client (dashboard). Catalog=ISR.</p><pre>fetch(url,{next:{revalidate:60}})</pre></details>
+<details><summary>Server vs Client components?</summary><p>Server default: fetch DB, no hooks, SEO via metadata. Client "use client": state/events. Keep client low in tree for small bundle.</p></details>
+<details><summary>NestJS blocks? Guard vs Pipe?</summary><p>Module→Controller→Service. Guard = allow? (auth), Pipe = validate/transform (ValidationPipe whitelist → 400), Interceptor = wrap logging/cache.</p></details>
+<details><summary>Azure vs GCP deploy?</summary><p>Azure: App Service + Cosmos/Postgres + Static Web Apps. GCP: Cloud Run + Cloud SQL + Firebase. Secrets in Key Vault/Secret Manager (never repo), CI via GitHub Actions, health /healthz, Docker multi-stage + non-root.</p></details>
+</section>
+
+<section id="dsa" class="card page" style="display:none">
+<h2>DSA - Easy/Medium for 1 YOE</h2>
+<p>Speak: clarify → brute → optimal → Big-O → edge → code → test.</p>
+<details open><summary>Two Sum O(n)<span class="tag">Must</span></summary><pre>function twoSum(a,t){const m=new Map();for(let i=0;i&lt;a.length;i++){const c=t-a[i];if(m.has(c))return[m.get(c),i];m.set(a[i],i)}}</pre></details>
+<details><summary>Valid Parentheses</summary><pre>function isValid(s){const st=[],m={')':'(','}':'{',']':'['};for(const c of s){if('([{'.includes(c))st.push(c);else if(st.pop()!==m[c])return false}return !st.length}</pre></details>
+<details><summary>Patterns</summary><p>HashMap→dups/anagram/TwoSum; Two pointers→sorted/palindrome; Sliding window→longest substring; Stack→parentheses/next greater; Fast/slow→cycle; BFS→shortest; Heap→top K.</p></details>
+<details><summary>Big-O cheat</summary><p>Array access O1, search On, sort On logn, binary Ologn, BFS/DFS O(V+E), hash O1 avg. Parallel Promise.all halves dashboard time.</p></details>
+</section>
+
+<section id="git" class="card page" style="display:none">
+<h2>Git + HR + Mocks</h2>
+<details open><summary>Daily flow + rebase vs merge?</summary><p><code>git pull --rebase → feat/x → push → PR squash → delete</code>. Merge preserves history (main); rebase linearizes (feature). Never rebase shared main.</p></details>
+<details><summary>Conflict? Undo? Stash?</summary><p>Status → edit &lt;&lt;&lt;&lt; → add → rebase --continue. revert = safe shared (new commit); reset --hard = danger local. <code>stash push -m wip --include-untracked → pop</code>.</p></details>
+<details><summary>Tell me about yourself (60s)</summary><p>Stack → 2 projects with metric → next goal. "MERN: HRMS with JWT+RBAC 3 roles; e-comm 2k products, search 1.2s→400ms via debounce+abort+index. Seeking product scale team."</p></details>
+<details><summary>Mock A: Product listing</summary><p>Fetch ?q=&amp;page= with debounce 300ms + abort + skeleton + pagination + memo Card + empty state. Follow-ups: SWR cache? ISR for SEO? RTL test with MSW?</p></details>
+<details><summary>Mock B: Auth API</summary><p>POST /login (bcrypt, rate-limit 5/min) → access+HttpOnly refresh; POST /refresh rotation + reuse-detect logout-all; GET /me auth. 401 vs 403. Tables: users + refresh_tokens. Tests: no token 401, user on admin route 403, dup email 409.</p></details>
+</section>
+</main>
+<footer>1-YOE tip: Concept → why → code → 1 project metric • Think aloud • No blank answers</footer>
+<script>
+function show(id,btn){document.querySelectorAll('.page').forEach(p=>p.style.display='none');document.getElementById(id).style.display='block';document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');window.scrollTo(0,0)}
+function filter(){const v=document.getElementById('q').value.toLowerCase();document.querySelectorAll('details').forEach(d=>{d.style.display=d.innerText.toLowerCase().includes(v)?'':'none'});if(v){document.querySelectorAll('.page').forEach(p=>p.style.display='block')}}
+</script>
+</body>
+</html>

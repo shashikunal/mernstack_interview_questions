@@ -1,0 +1,1747 @@
+# scripts/build_problemsolving.py
+"""
+Builds 215 comprehensive, fresher-focused Problem Solving questions.
+"""
+
+import os
+
+ps_items = [
+    # --- Pattern Recognition & Problem Classification (25 items) ---
+    (
+        "What is the difference between a substring, a subsequence, and a subset?",
+        "A substring is a contiguous sequence of characters within a string. A subsequence is a sequence derived by deleting zero or more elements without changing the order of the remaining elements (not necessarily contiguous). A subset is any unordered collection of elements from a set.",
+        "Easy",
+        "Comparison",
+        "",
+        "Give an example of a subsequence of 'abcde' that is not a substring."
+    ),
+    (
+        "When should you choose the Two Pointers technique over a Hash Map for finding a pair sum?",
+        "If the input array is already sorted or can be sorted in O(n log n) without exceeding time constraints and O(1) space is required, use Two Pointers. If the array is unsorted and must remain in original order or runs strictly in O(n) time with O(n) space allowed, use a Hash Map.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "What is the space complexity difference between the two approaches?"
+    ),
+    (
+        "What is the core indicator that a problem can be solved using the Sliding Window pattern?",
+        "The problem asks to find an optimal (longest, shortest, minimum, maximum) contiguous subarray or substring that satisfies a specific condition, where adding or removing an element modifies the window condition predictably.",
+        "Easy",
+        "Concept",
+        "",
+        "Why does sliding window fail if elements can be arbitrary negative numbers in a sum problem?"
+    ),
+    (
+        "What is the difference between a fixed-size and dynamic-size sliding window?",
+        "A fixed-size window has a predetermined length k; it slides forward one element at a time by adding arr[i] and removing arr[i - k]. A dynamic-size window expands by moving its right boundary until a condition is met or violated, then contracts by moving its left boundary.",
+        "Easy",
+        "Comparison",
+        "",
+        "Give an example problem for each type of sliding window."
+    ),
+    (
+        "What is Binary Search on Answer (or search space)?",
+        "When the solution space is monotonic (e.g. if answer X is valid, all values > X are also valid), you can binary search over the range of possible answers [minAnswer, maxAnswer] using a feasibility check function `isValid(mid)`.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Give an example problem solved by binary searching the answer space."
+    ),
+    (
+        "What is the difference between an in-place and out-of-place algorithm?",
+        "An in-place algorithm transforms the input data using O(1) auxiliary memory (excluding recursive call stack). An out-of-place algorithm allocates additional memory proportional to the input size (O(n)) to store intermediate or final results.",
+        "Easy",
+        "Comparison",
+        "",
+        "Is quicksort strictly an in-place algorithm?"
+    ),
+    (
+        "What is a Monotonic Stack and when should you use one?",
+        "A Monotonic Stack is a stack whose elements are always kept in strictly increasing or decreasing order. It is used to find the Next Greater Element, Previous Greater Element, Next Smaller Element, or Previous Smaller Element for all items in O(n) time.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why is the time complexity O(n) even though there is a while loop inside the for loop?"
+    ),
+    (
+        "What is the Two Pointers 'Fast and Slow' (Tortoise and Hare) pattern used for?",
+        "It uses two pointers moving at different speeds (slow moves 1 step, fast moves 2 steps) to detect cycles in linked lists, find the middle element of a linked list, or find cycle lengths and starting points.",
+        "Easy",
+        "Concept",
+        "",
+        "How do you find the exact middle node of an even-length linked list using fast and slow pointers?"
+    ),
+    (
+        "When does a Greedy algorithm guarantee the globally optimal solution?",
+        "A greedy algorithm works when the problem exhibits the Greedy Choice Property (a globally optimal solution can be reached by making locally optimal choices) and Optimal Substructure.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Name a problem where a greedy choice fails to give the global optimum."
+    ),
+    (
+        "What is the Prefix Sum pattern and when is it applicable?",
+        "Prefix Sum precalculates cumulative sums so that any range sum from index L to R can be computed in O(1) time as `prefix[R + 1] - prefix[L]`. It is applicable to static arrays with frequent range sum queries.",
+        "Easy",
+        "Concept",
+        "",
+        "How can Prefix Sum be combined with a Hash Map to find subarrays with sum equal to k in O(n) time?"
+    ),
+    (
+        "Which technique is most optimal to find the longest substring containing at most 2 distinct characters?",
+        "A dynamic sliding window maintaining a character frequency map and tracking the number of distinct keys.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Two Pointers from ends", "B": "Sliding Window", "C": "Monotonic Stack", "D": "Binary Search on Answer"},
+        "B",
+        "What happens when distinct character count exceeds 2?"
+    ),
+    (
+        "Which data structure is best suited to answer Next Greater Element queries in an array of size n in O(n) total time?",
+        "A Monotonic Stack stores elements in decreasing order, popping smaller elements when a greater element arrives.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Priority Queue", "B": "Monotonic Stack", "C": "Binary Search Tree", "D": "Linked List"},
+        "B",
+        "What is the amortized number of operations per element?"
+    ),
+    (
+        "What is the time complexity of the Two Sum problem using an auxiliary Hash Map?",
+        "O(n) time and O(n) space because each element is inserted and checked in O(1) average time.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "O(n^2)", "B": "O(n log n)", "C": "O(n)", "D": "O(1)"},
+        "C",
+        "What is the time complexity if solved by sorting first?"
+    ),
+    (
+        "What is loop invariant in problem solving?",
+        "A loop invariant is a formal condition or property that is true before the loop starts, remains true after each iteration, and helps prove the correctness of the algorithm upon termination.",
+        "Intermediate",
+        "Concept",
+        "",
+        "State the loop invariant for insertion sort."
+    ),
+    (
+        "What is the difference between divide-and-conquer and dynamic programming?",
+        "Divide-and-conquer splits a problem into independent subproblems, solves them recursively, and combines the results (e.g. Merge Sort). Dynamic programming solves overlapping subproblems by caching results to avoid redundant calculations.",
+        "Intermediate",
+        "Comparison",
+        "",
+        "Does quicksort use dynamic programming?"
+    ),
+    (
+        "What is the Pigeonhole Principle and how is it used in problem solving?",
+        "If n items are put into m containers and n > m, at least one container must contain more than one item. It is used to prove the existence of duplicates (e.g. finding a duplicate in an array of n+1 numbers in range 1 to n).",
+        "Intermediate",
+        "Concept",
+        "",
+        "How does Floyd's cycle detection relate to the pigeonhole principle?"
+    ),
+    (
+        "What is the difference between permutation and combination?",
+        "A permutation is an ordered arrangement of items where order matters (e.g. [1, 2] is different from [2, 1]). A combination is a selection where order does not matter (e.g. {1, 2} is identical to {2, 1}).",
+        "Easy",
+        "Comparison",
+        "",
+        "What is the formula for the number of permutations of n items taken r at a time?"
+    ),
+    (
+        "How do you determine if a recursion will lead to stack overflow?",
+        "Calculate the maximum recursion depth. If the depth is proportional to n and n can be 10^5 or greater, standard runtime stack limits (typically 10,000 frames) will overflow.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How can deep recursion be restructured to avoid stack overflow?"
+    ),
+    (
+        "What is the trade-off between recursion and iteration?",
+        "Recursion often leads to cleaner, more expressive code for hierarchical structures (like trees), but incurs call-stack memory overhead and risk of stack overflow. Iteration uses O(1) stack memory and is often faster, but may require manual state tracking.",
+        "Easy",
+        "Comparison",
+        "",
+        "Can every recursive function be written iteratively?"
+    ),
+    (
+        "What is amortized analysis in algorithm analysis?",
+        "Amortized analysis averages the running time of all operations in a sequence, showing that even if an occasional single operation is expensive (e.g. dynamic array resizing), the average cost per operation is small (e.g. O(1)).",
+        "Intermediate",
+        "Concept",
+        "",
+        "What are the three common methods for amortized analysis?"
+    ),
+    (
+        "What is an off-by-one error (fencepost problem)?",
+        "An off-by-one error occurs when an iterative loop executes one time too many or one time too few, commonly caused by confusing `<` with `<=`, or miscalculating boundary lengths (e.g. `n` vs `n - 1`).",
+        "Easy",
+        "Concept",
+        "",
+        "How many fences posts are needed for 10 fence panels?"
+    ),
+    (
+        "Why does comparing floating point numbers with `===` often fail in problem solving?",
+        "Binary floating-point representation (IEEE 754) cannot represent certain decimal fractions precisely (e.g. `0.1 + 0.2 === 0.30000000000000004 !== 0.3`). You should check if `Math.abs(a - b) < Number.EPSILON`.",
+        "Easy",
+        "Practical",
+        "",
+        "What is Number.EPSILON in JavaScript?"
+    ),
+    (
+        "What is the Difference Array technique used for?",
+        "A difference array allows applying range update operations (e.g. add value v to all indices from L to R) in O(1) time each: `diff[L] += v; diff[R + 1] -= v;`. Taking the prefix sum of diff reconstructs the final updated array in O(n) time.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is the overall time complexity of doing Q range updates followed by array reconstruction?"
+    ),
+    (
+        "Which pattern is most appropriate for: 'Given daily stock prices, find the maximum profit from buying and selling once'?",
+        "Single pass tracking the minimum price seen so far and calculating `Math.max(maxProfit, currentPrice - minPrice)`.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time and space complexity of this single-pass approach?"
+    ),
+    (
+        "What is a bitmask and when is it useful in combinatorial problem solving?",
+        "A bitmask uses an integer where each bit represents a boolean flag (0 = excluded, 1 = included). It allows representing and manipulating subsets using fast bitwise operations for N up to ~30.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How do you check if the i-th element is included in mask M?"
+    ),
+
+    # --- Two Pointers & Fast-Slow Pointers (25 items) ---
+    (
+        "How does the Two Pointers technique solve the Two Sum problem in a sorted array?",
+        "Place one pointer at index 0 (left) and one at index n - 1 (right). If `arr[left] + arr[right] === target`, return indices. If sum < target, increment left to increase sum; if sum > target, decrement right to decrease sum. Runs in O(n) time and O(1) space.",
+        "Easy",
+        "Practical",
+        "function twoSumSorted(arr, target) {\n  let left = 0, right = arr.length - 1;\n  while (left < right) {\n    const sum = arr[left] + arr[right];\n    if (sum === target) return [left, right];\n    if (sum < target) left++;\n    else right--;\n  }\n  return [-1, -1];\n}",
+        "Why does this greedy pointer movement guarantee not missing any valid pair?"
+    ),
+    (
+        "How do you remove duplicates from a sorted array in-place using two pointers?",
+        "Use a slow write pointer `i = 0` and a fast read pointer `j = 1`. When `arr[j] !== arr[i]`, increment `i` and set `arr[i] = arr[j]`. Return `i + 1` as the new length. Runs in O(n) time and O(1) space.",
+        "Easy",
+        "Practical",
+        "function removeDuplicates(nums) {\n  if (nums.length === 0) return 0;\n  let i = 0;\n  for (let j = 1; j < nums.length; j++) {\n    if (nums[j] !== nums[i]) {\n      i++;\n      nums[i] = nums[j];\n    }\n  }\n  return i + 1;\n}",
+        "What does the modified array contain after the returned length?"
+    ),
+    (
+        "How do you move all zeroes to the end of an array while maintaining relative order?",
+        "Maintain a write pointer `pos = 0`. Iterate through the array; whenever `nums[i] !== 0`, set `nums[pos] = nums[i]` and increment `pos`. Finally, fill remaining positions from `pos` to end with 0.",
+        "Easy",
+        "Practical",
+        "function moveZeroes(nums) {\n  let pos = 0;\n  for (let i = 0; i < nums.length; i++) {\n    if (nums[i] !== 0) nums[pos++] = nums[i];\n  }\n  while (pos < nums.length) nums[pos++] = 0;\n}",
+        "Can this be done in a single pass using pointer swaps?"
+    ),
+    (
+        "Explain the Container With Most Water problem and its two-pointer solution.",
+        "Two lines at i and j form a container with area `(j - i) * Math.min(height[i], height[j])`. Start pointers at both ends. Always move the pointer with the shorter height inward, because moving the taller pointer can only decrease width without any chance of increasing the limiting height.",
+        "Intermediate",
+        "Practical",
+        "function maxArea(height) {\n  let left = 0, right = height.length - 1, max = 0;\n  while (left < right) {\n    const area = (right - left) * Math.min(height[left], height[right]);\n    max = Math.max(max, area);\n    if (height[left] < height[right]) left++;\n    else right--;\n  }\n  return max;\n}",
+        "What is the time complexity of the Container With Most Water algorithm?"
+    ),
+    (
+        "Explain the 3Sum problem and how to avoid duplicate triplets.",
+        "Sort the array. Loop i from 0 to n - 3. If `i > 0 && nums[i] === nums[i - 1]`, skip to avoid duplicates. Then use two pointers (left = i + 1, right = n - 1) to find `nums[left] + nums[right] === -nums[i]`. When a match is found, skip duplicate adjacent values before moving pointers.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the overall time complexity of 3Sum?"
+    ),
+    (
+        "How do you check if a string is a palindrome considering only alphanumeric characters and ignoring cases?",
+        "Use two pointers: left = 0, right = str.length - 1. While left < right, skip non-alphanumeric characters. Compare lowercased characters; if they differ, return false. If loop finishes, return true.",
+        "Easy",
+        "Practical",
+        "function isPalindrome(s) {\n  let l = 0, r = s.length - 1;\n  while (l < r) {\n    while (l < r && !/[a-zA-Z0-9]/.test(s[l])) l++;\n    while (l < r && !/[a-zA-Z0-9]/.test(s[r])) r--;\n    if (s[l].toLowerCase() !== s[r].toLowerCase()) return false;\n    l++; r--;\n  }\n  return true;\n}",
+        "What is the space complexity of this in-place check?"
+    ),
+    (
+        "How do you find the middle node of a singly linked list in a single pass?",
+        "Use slow and fast pointers initialized to head. Advance slow by 1 step (`slow = slow.next`) and fast by 2 steps (`fast = fast.next.next`). When fast or fast.next reaches null, slow is at the middle node.",
+        "Easy",
+        "Practical",
+        "function middleNode(head) {\n  let slow = head, fast = head;\n  while (fast && fast.next) {\n    slow = slow.next;\n    fast = fast.next.next;\n  }\n  return slow;\n}",
+        "Which middle node is returned for an even-length list (e.g. [1,2,3,4])?"
+    ),
+    (
+        "How does Floyd's Cycle-Finding Algorithm detect a cycle in a linked list?",
+        "Slow pointer moves 1 step; fast pointer moves 2 steps. If there is no cycle, fast reaches null. If there is a cycle, fast will eventually lap and meet slow inside the cycle in O(n) time and O(1) space.",
+        "Easy",
+        "Concept",
+        "",
+        "Why is fast guaranteed to meet slow without skipping over it?"
+    ),
+    (
+        "How do you find the start node of a cycle in a linked list?",
+        "First, find meeting point using Floyd's algorithm. Then reset one pointer to head while leaving the other at the meeting point. Move both pointers 1 step at a time. The node where they collide is the cycle start node.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the mathematical proof behind this pointer collision?"
+    ),
+    (
+        "Explain the Trapping Rain Water problem using two pointers.",
+        "Maintain left and right pointers, and leftMax and rightMax. Water trapped at left depends on `leftMax - height[left]`, and at right on `rightMax - height[right]`. At each step, process the side with the smaller max boundary, guaranteeing that the opposite side is high enough to contain the water.",
+        "Advanced",
+        "Practical",
+        "function trap(height) {\n  let left = 0, right = height.length - 1;\n  let leftMax = 0, rightMax = 0, water = 0;\n  while (left < right) {\n    if (height[left] < height[right]) {\n      if (height[left] >= leftMax) leftMax = height[left];\n      else water += leftMax - height[left];\n      left++;\n    } else {\n      if (height[right] >= rightMax) rightMax = height[right];\n      else water += rightMax - height[right];\n      right--;\n    }\n  }\n  return water;\n}",
+        "What is the space complexity of the two-pointer solution compared to DP?"
+    ),
+    (
+        "How do you reverse vowels in a string using two pointers?",
+        "Convert string to array. Place left at 0 and right at len - 1. Increment left until a vowel is found; decrement right until a vowel is found. Swap vowels, advance pointers, and repeat until pointers cross.",
+        "Easy",
+        "Practical",
+        "",
+        "Which characters are considered vowels?"
+    ),
+    (
+        "What is the Dutch National Flag partitioning logic?",
+        "Pointers: low (tracks 0 boundary), mid (scans elements), high (tracks 2 boundary). If arr[mid] is 0, swap(low, mid), low++, mid++. If arr[mid] is 1, mid++. If arr[mid] is 2, swap(mid, high), high--.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is mid NOT incremented after swapping with high?"
+    ),
+    (
+        "How do you merge two sorted arrays into arr1 in-place (assuming arr1 has enough empty trailing space)?",
+        "Use three pointers starting from the end: p1 at last valid element of arr1, p2 at last element of arr2, and p at end of arr1 buffer. Compare elements from right to left and place the larger element at index p.",
+        "Easy",
+        "Practical",
+        "function merge(nums1, m, nums2, n) {\n  let p1 = m - 1, p2 = n - 1, p = m + n - 1;\n  while (p2 >= 0) {\n    if (p1 >= 0 && nums1[p1] > nums2[p2]) nums1[p--] = nums1[p1--];\n    else nums1[p--] = nums2[p2--];\n  }\n}",
+        "Why does working backwards prevent overwriting unmerged elements in nums1?"
+    ),
+    (
+        "How do you find if an array has two numbers with difference equal to k?",
+        "Sort array. Use two pointers i = 0, j = 1 moving in the same direction. If `arr[j] - arr[i] === k`, return true. If difference < k or i === j, j++; else i++.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Can this also be solved using a Set in O(n) time?"
+    ),
+    (
+        "In the Container With Most Water problem, if height[left] === height[right], which pointer should you move?",
+        "You can move either pointer (or both) because both hold the same limiting height and cannot form a larger container with any inner boundary unless an even taller height is found.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Does moving either pointer affect the correctness of the algorithm?"
+    ),
+    (
+        "What is the output of removeDuplicates on [1, 1, 2, 2, 3]?",
+        "New length is 3, and the first 3 elements of the array are [1, 2, 3].",
+        "Easy",
+        "Output",
+        "const nums = [1, 1, 2, 2, 3];\nlet i = 0;\nfor (let j = 1; j < nums.length; j++) {\n  if (nums[j] !== nums[i]) nums[++i] = nums[j];\n}\nconsole.log(i + 1, nums.slice(0, i + 1));",
+        "What is left at indices 3 and 4?"
+    ),
+    (
+        "What is wrong with this two pointer sum loop condition: `while (left <= right)` for finding two distinct elements?",
+        "When `left === right`, the pointer references the exact same element twice (e.g. `2 * arr[left] === target`), violating the distinct element requirement.",
+        "Easy",
+        "Debugging",
+        "function twoSum(arr, target) {\n  let l = 0, r = arr.length - 1;\n  while (l <= r) {\n    if (arr[l] + arr[r] === target) return [l, r];\n    if (arr[l] + arr[r] < target) l++; else r--;\n  }\n  return [];\n}",
+        "What is the correct loop condition?"
+    ),
+    (
+        "How do you check if string s is a subsequence of string t using two pointers?",
+        "Initialize pointer i for s and j for t. Loop while `i < s.length && j < t.length`. If `s[i] === t[j]`, increment i. Always increment j. Return `i === s.length`.",
+        "Easy",
+        "Practical",
+        "function isSubsequence(s, t) {\n  let i = 0, j = 0;\n  while (i < s.length && j < t.length) {\n    if (s[i] === t[j]) i++;\n    j++;\n  }\n  return i === s.length;\n}",
+        "What is the time complexity of isSubsequence?"
+    ),
+    (
+        "How do you square a sorted array containing negative numbers and return a sorted result in O(n) time?",
+        "Since largest squares occur at either extreme (most negative or most positive), use two pointers at start (left = 0) and end (right = n - 1). Compare `arr[left]^2` and `arr[right]^2`, placing the larger value at the end of the result array.",
+        "Easy",
+        "Practical",
+        "function sortedSquares(nums) {\n  const res = new Array(nums.length);\n  let l = 0, r = nums.length - 1, p = nums.length - 1;\n  while (l <= r) {\n    const leftSq = nums[l] * nums[l], rightSq = nums[r] * nums[r];\n    if (leftSq > rightSq) { res[p--] = leftSq; l++; }\n    else { res[p--] = rightSq; r--; }\n  }\n  return res;\n}",
+        "Why is O(n log n) sorting unnecessary here?"
+    ),
+    (
+        "Which pointer movement is correct when searching for a target pair sum in a sorted array where sum > target?",
+        "Decrement the right pointer to choose a smaller value.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Increment left pointer", "B": "Decrement right pointer", "C": "Reset both pointers", "D": "Swap left and right"},
+        "B",
+        "Why would incrementing left be wrong?"
+    ),
+    (
+        "What is the time complexity of the two-pointer solution for 3Sum after sorting?",
+        "O(n^2) because for each of the n elements, two pointers traverse the rest of the array in O(n) time.",
+        "Intermediate",
+        "MCQ",
+        "",
+        {"A": "O(n^3)", "B": "O(n^2)", "C": "O(n log n)", "D": "O(n)"},
+        "B",
+        "What is the time complexity of the sorting step?"
+    ),
+    (
+        "How do you rotate an array to the right by k steps in O(n) time and O(1) space?",
+        "Normalize `k = k % n`. Reverse the entire array, reverse the first k elements, and reverse the remaining n - k elements.",
+        "Intermediate",
+        "Practical",
+        "function rotate(nums, k) {\n  k %= nums.length;\n  const rev = (l, r) => {\n    while (l < r) [nums[l], nums[r]] = [nums[r], nums[l]], l++, r--;\n  };\n  rev(0, nums.length - 1);\n  rev(0, k - 1);\n  rev(k, nums.length - 1);\n}",
+        "What happens if k is negative?"
+    ),
+    (
+        "How do you partition an array into even numbers followed by odd numbers in-place?",
+        "Use two pointers: left = 0, right = n - 1. While left < right, increment left while `nums[left] % 2 === 0`, decrement right while `nums[right] % 2 !== 0`. Swap `nums[left]` and `nums[right]`.",
+        "Easy",
+        "Practical",
+        "",
+        "Does this preserve the relative order of elements?"
+    ),
+    (
+        "What is the Backspace String Compare problem and how is it solved in O(1) space?",
+        "Given strings s and t where '#' represents a backspace, determine if they are equal. Iterate backwards from end of both strings using two pointers, counting '#' to skip valid deleted characters.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is iterating backwards easier than iterating forwards?"
+    ),
+    (
+        "What is the Circular Array Loop problem?",
+        "An array of non-zero integers where each number indicates forward or backward jump steps. Determine if there is a cycle of length > 1 moving in a single direction using fast and slow pointers.",
+        "Advanced",
+        "Concept",
+        "",
+        "What makes a 1-element self-loop invalid?"
+    ),
+
+    # --- Sliding Window (25 items) ---
+    (
+        "How do you find the maximum sum subarray of fixed size k?",
+        "Compute the sum of the first k elements. Then slide the window from index k to n - 1 by adding the new element `arr[i]` and subtracting the outgoing element `arr[i - k]`. Update maximum sum at each step. Runs in O(n) time.",
+        "Easy",
+        "Practical",
+        "function maxSubArrayOfSizeK(arr, k) {\n  let maxSum = 0, windowSum = 0;\n  for (let i = 0; i < k; i++) windowSum += arr[i];\n  maxSum = windowSum;\n  for (let i = k; i < arr.length; i++) {\n    windowSum += arr[i] - arr[i - k];\n    maxSum = Math.max(maxSum, windowSum);\n  }\n  return maxSum;\n}",
+        "What is the edge case when k > arr.length?"
+    ),
+    (
+        "How do you find the length of the Longest Substring Without Repeating Characters?",
+        "Use a dynamic sliding window with a Map storing the last seen index of each character. When character `s[right]` is already in the map and within the current window (`map.get(char) >= left`), move `left = map.get(char) + 1`. Record `maxLen = Math.max(maxLen, right - left + 1)`.",
+        "Intermediate",
+        "Practical",
+        "function lengthOfLongestSubstring(s) {\n  let map = new Map(), maxLen = 0, left = 0;\n  for (let right = 0; right < s.length; right++) {\n    const ch = s[right];\n    if (map.has(ch) && map.get(ch) >= left) left = map.get(ch) + 1;\n    map.set(ch, right);\n    maxLen = Math.max(maxLen, right - left + 1);\n  }\n  return maxLen;\n}",
+        "What is the time and space complexity?"
+    ),
+    (
+        "What is the Minimum Size Subarray Sum problem?",
+        "Given an array of positive integers and target sum s, find the minimal length of a contiguous subarray whose sum >= s. Expand right pointer accumulating sum. While sum >= s, update minLen and contract left pointer.",
+        "Intermediate",
+        "Practical",
+        "function minSubArrayLen(target, nums) {\n  let left = 0, sum = 0, minLen = Infinity;\n  for (let right = 0; right < nums.length; right++) {\n    sum += nums[right];\n    while (sum >= target) {\n      minLen = Math.min(minLen, right - left + 1);\n      sum -= nums[left++];\n    }\n  }\n  return minLen === Infinity ? 0 : minLen;\n}",
+        "Why does this sliding window approach require all numbers to be positive?"
+    ),
+    (
+        "Explain the Minimum Window Substring problem (Hard).",
+        "Given strings s and t, find the smallest substring of s that contains all characters of t. Maintain a frequency map of t and a count of required characters. Expand right pointer; when all characters are satisfied, contract left pointer to minimize window length.",
+        "Advanced",
+        "Concept",
+        "",
+        "What is the time complexity of the Minimum Window Substring algorithm?"
+    ),
+    (
+        "How do you find the maximum number of consecutive 1s if you can flip at most k zeroes?",
+        "Use a sliding window. Expand right pointer. If `nums[right] === 0`, increment zeroCount. While `zeroCount > k`, if `nums[left] === 0` decrement zeroCount, and increment left. Max window size `right - left + 1` is the answer.",
+        "Intermediate",
+        "Practical",
+        "function longestOnes(nums, k) {\n  let left = 0, zeros = 0, maxLen = 0;\n  for (let right = 0; right < nums.length; right++) {\n    if (nums[right] === 0) zeros++;\n    while (zeros > k) {\n      if (nums[left] === 0) zeros--;\n      left++;\n    }\n    maxLen = Math.max(maxLen, right - left + 1);\n  }\n  return maxLen;\n}",
+        "Can this be optimized to O(1) shrinkage without the inner while loop?"
+    ),
+    (
+        "How do you find all anagrams of string p in string s?",
+        "A sliding window of fixed size `p.length`. Compare frequency counts of the window in s with frequency counts of p. When counts match, record `left` index.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity when using a 26-element array for English lowercase letters?"
+    ),
+    (
+        "What is the Fruit Into Baskets problem?",
+        "Equivalent to finding the length of the longest contiguous subarray containing at most 2 distinct integers. Solved using a dynamic sliding window tracking frequencies of tree types.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What data structure is used to track distinct types in the window?"
+    ),
+    (
+        "What is the Sliding Window Maximum problem and how is it solved in O(n)?",
+        "Find maximum value in every sliding window of size k. Maintain a Monotonic Deque storing indices whose corresponding array values are in strictly decreasing order. The front of the deque always holds the maximum element of the current window.",
+        "Advanced",
+        "Practical",
+        "",
+        "Why does each element enter and leave the deque at most once?"
+    ),
+    (
+        "How do you solve: 'Number of Subarrays with Product Less Than K'?",
+        "Expand right pointer multiplying into window product. While `prod >= k && left <= right`, divide by `nums[left++]`. The number of valid subarrays ending at right is `right - left + 1`.",
+        "Intermediate",
+        "Practical",
+        "function numSubarrayProductLessThanK(nums, k) {\n  if (k <= 1) return 0;\n  let prod = 1, ans = 0, left = 0;\n  for (let right = 0; right < nums.length; right++) {\n    prod *= nums[right];\n    while (prod >= k) prod /= nums[left++];\n    ans += right - left + 1;\n  }\n  return ans;\n}",
+        "Why is `right - left + 1` added to the count?"
+    ),
+    (
+        "What is the Longest Repeating Character Replacement problem?",
+        "Given string s and integer k, find the length of longest substring with same letter after changing at most k letters. Window condition: `(windowLength - maxFrequencyChar) <= k`.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why do we not need to decrease maxFrequencyChar when shrinking the window?"
+    ),
+    (
+        "What is the output of maxSubArrayOfSizeK on [2, 1, 5, 1, 3, 2] with k = 3?",
+        "Subarrays of size 3: [2,1,5]=8, [1,5,1]=7, [5,1,3]=9, [1,3,2]=6. Maximum sum is 9.",
+        "Easy",
+        "Output",
+        "const arr = [2, 1, 5, 1, 3, 2];\nlet win = arr[0] + arr[1] + arr[2], max = win;\nfor (let i = 3; i < arr.length; i++) {\n  win += arr[i] - arr[i - 3];\n  max = Math.max(max, win);\n}\nconsole.log(max);",
+        "What is the starting index of the maximum subarray?"
+    ),
+    (
+        "What is wrong with this sliding window shrink condition?",
+        "`sum > target` fails to shrink when `sum === target`, which causes an infinite loop or incorrect minimum length computation when exact target match is needed.",
+        "Intermediate",
+        "Debugging",
+        "function minSub(arr, target) {\n  let l = 0, sum = 0, res = Infinity;\n  for (let r = 0; r < arr.length; r++) {\n    sum += arr[r];\n    while (sum > target) { res = Math.min(res, r - l + 1); sum -= arr[l++]; }\n  }\n  return res;\n}",
+        "What should the condition be to find subarray with sum >= target?"
+    ),
+    (
+        "What is the average time complexity of expanding and contracting a sliding window across an array of length n?",
+        "O(n) because each pointer (left and right) increments at most n times.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "O(n^2)", "B": "O(n log n)", "C": "O(n)", "D": "O(k)"},
+        "C",
+        "Why is it not O(n^2) despite the nested while loop?"
+    ),
+    (
+        "Which data structure is ideal for tracking frequency of characters in an ASCII sliding window?",
+        "An integer array of size 128 or 256 indexed by charCodeAt() provides O(1) lookups with minimal overhead.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Array of size 128", "B": "Binary Search Tree", "C": "Min Heap", "D": "Linked List"},
+        "A",
+        "How many distinct characters exist in standard ASCII?"
+    ),
+    (
+        "What is the Subarrays with K Different Integers problem?",
+        "Count subarrays with exactly k different integers. Solved as `atMostK(nums, k) - atMostK(nums, k - 1)` using sliding window.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is counting 'at most k' easier than counting 'exactly k' with sliding window?"
+    ),
+    (
+        "What is the Permutation in String problem (check if s2 contains a permutation of s1)?",
+        "Maintain a sliding window of length `s1.length` in s2. If frequency of characters in window matches frequency of s1, return true.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the space complexity of this approach?"
+    ),
+    (
+        "What is the Longest Substring with At Most K Distinct Characters problem?",
+        "Expand right pointer inserting characters into map. While `map.size > k`, decrement frequency of `s[left]` and delete key if 0, advancing left. Track max window size.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What happens if k = 0?"
+    ),
+    (
+        "How do you handle negative numbers in a subarray sum problem when sliding window fails?",
+        "Use a Prefix Sum array combined with a Hash Map storing `{ prefixSum: index }` or `{ prefixSum: count }`, which solves the problem in O(n) time regardless of positive or negative numbers.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why does sliding window fail with negative numbers?"
+    ),
+    (
+        "What is the Maximum Erasure Value problem?",
+        "Find maximum score from erasing a contiguous subarray of unique elements. Dynamic sliding window with Set tracking unique elements and running sum.",
+        "Intermediate",
+        "Practical",
+        "",
+        "How is this related to Longest Substring Without Repeating Characters?"
+    ),
+    (
+        "What is the Grumpy Bookstore Owner problem?",
+        "Use fixed sliding window of size `minutes` to maximize additional satisfied customers converted from grumpy minutes.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is the fixed window size in this problem?"
+    ),
+    (
+        "What is the Maximum Points You Can Obtain from Cards problem?",
+        "You can take k cards from beginning or end. This is equivalent to finding the minimum sum contiguous subarray of size `n - k` using a fixed sliding window.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is finding the remaining subarray easier than exploring combinations?"
+    ),
+    (
+        "What is the output of lengthOfLongestSubstring on 'bbbbb'?",
+        "Every character is 'b'. The longest substring without repeating characters is 'b' of length 1.",
+        "Easy",
+        "Output",
+        "function len(s) {\n  let set = new Set(), max = 0, l = 0;\n  for (let r = 0; r < s.length; r++) {\n    while (set.has(s[r])) set.delete(s[l++]);\n    set.add(s[r]);\n    max = Math.max(max, r - l + 1);\n  }\n  return max;\n}\nconsole.log(len('bbbbb'));",
+        "What is the output on 'pwwkew'?"
+    ),
+    (
+        "What is the output of lengthOfLongestSubstring on 'pwwkew'?",
+        "The longest substring is 'wke' or 'kew' with length 3 (note: 'pwke' is a subsequence, not substring).",
+        "Easy",
+        "Output",
+        "console.log(len('pwwkew'));",
+        "What is the difference between substring and subsequence in this problem?"
+    ),
+    (
+        "What is the Sliding Window Median problem?",
+        "Maintain median of every sliding window of size k. Solved using two self-balancing BSTs or two heaps with lazy removal in O(n log k) time.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why does naive re-sorting the window take O(n * k log k)?"
+    ),
+    (
+        "What is the Minimum Window Subsequence problem?",
+        "Find shortest contiguous substring of S that contains T as a subsequence. Solved using two pointers with backward contraction in O(S * T) time.",
+        "Advanced",
+        "Concept",
+        "",
+        "How is this different from Minimum Window Substring?"
+    ),
+
+    # --- Prefix Sums & Difference Arrays (20 items) ---
+    (
+        "How do you construct a Prefix Sum array and query range sum in O(1)?",
+        "Let `prefix[0] = 0` and `prefix[i + 1] = prefix[i] + arr[i]`. The sum of subarray `arr[L...R]` is given by `prefix[R + 1] - prefix[L]`. Building prefix array takes O(n), and each range query takes O(1).",
+        "Easy",
+        "Practical",
+        "class NumArray {\n  constructor(nums) {\n    this.prefix = [0];\n    for (let i = 0; i < nums.length; i++) this.prefix.push(this.prefix[i] + nums[i]);\n  }\n  sumRange(left, right) {\n    return this.prefix[right + 1] - this.prefix[left];\n  }\n}",
+        "Why is `prefix[0] = 0` used as a dummy offset?"
+    ),
+    (
+        "How do you find the number of subarrays having sum equal to k in O(n) time?",
+        "Maintain running `currentSum` and a Hash Map storing frequencies of seen prefix sums initialized with `{0: 1}`. For each element, add `currentSum - k` frequency count to answer, then increment `map[currentSum]`.",
+        "Intermediate",
+        "Practical",
+        "function subarraySum(nums, k) {\n  const map = new Map([[0, 1]]);\n  let sum = 0, count = 0;\n  for (const x of nums) {\n    sum += x;\n    if (map.has(sum - k)) count += map.get(sum - k);\n    map.set(sum, (map.get(sum) || 0) + 1);\n  }\n  return count;\n}",
+        "Why must `{0: 1}` be initialized in the map?"
+    ),
+    (
+        "How do you find the pivot index where the sum of left elements equals the sum of right elements?",
+        "Compute total sum of array. Iterate with running `leftSum`. The right sum at index i is `totalSum - leftSum - nums[i]`. If `leftSum === rightSum`, return i. Otherwise update `leftSum += nums[i]`.",
+        "Easy",
+        "Practical",
+        "function pivotIndex(nums) {\n  const total = nums.reduce((a, b) => a + b, 0);\n  let left = 0;\n  for (let i = 0; i < nums.length; i++) {\n    if (left === total - left - nums[i]) return i;\n    left += nums[i];\n  }\n  return -1;\n}",
+        "What is the time complexity?"
+    ),
+    (
+        "How do you compute the Product of Array Except Self in O(n) time without division?",
+        "Compute prefix products from left to right. Then traverse backwards from right to left with running postfix product, multiplying `prefix[i - 1]` with postfix product to get result at index i in O(1) extra space.",
+        "Intermediate",
+        "Practical",
+        "function productExceptSelf(nums) {\n  const n = nums.length, res = new Array(n).fill(1);\n  for (let i = 1; i < n; i++) res[i] = res[i - 1] * nums[i - 1];\n  let post = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    res[i] *= post;\n    post *= nums[i];\n  }\n  return res;\n}",
+        "Why is division by zero an issue if using the total product approach?"
+    ),
+    (
+        "What is the Contiguous Array problem (equal number of 0s and 1s)?",
+        "Treat 0 as -1 and 1 as +1. Find the longest subarray with sum 0 using a Hash Map storing first seen index of each prefix sum: `maxLen = Math.max(maxLen, i - map.get(sum))`.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What should the map be initialized with for prefix sum 0?"
+    ),
+    (
+        "How do you compute 2D Range Sum Query in a matrix in O(1) time?",
+        "Precompute 2D prefix matrix: `dp[r][c] = mat[r][c] + dp[r-1][c] + dp[r][c-1] - dp[r-1][c-1]`. Region sum from `(r1, c1)` to `(r2, c2)` is `dp[r2][c2] - dp[r1-1][c2] - dp[r2][c1-1] + dp[r1-1][c1-1]`.",
+        "Intermediate",
+        "Concept",
+        "",
+        "Why is `dp[r1-1][c1-1]` added back at the end?"
+    ),
+    (
+        "What is the Difference Array technique for multiple range updates?",
+        "To add val to range [L, R] across multiple updates, set `diff[L] += val` and `diff[R + 1] -= val`. After all updates, calculate the prefix sum of diff in O(n) time to get final array values.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is the advantage of Difference Array over updating array directly for Q updates?"
+    ),
+    (
+        "What is the Corporate Flight Bookings problem?",
+        "Given flight reservations [first, last, seats], apply the Difference Array pattern on array of length n in O(n + bookings) time.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity difference compared to brute-force nested loop?"
+    ),
+    (
+        "How do you check if an array has a continuous subarray of size at least 2 whose sum is a multiple of k?",
+        "Track running sum modulo k. If the same `sum % k` has been seen before at an index with `i - prevIndex >= 2`, return true.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the mathematical principle behind `(sum2 - sum1) % k === 0`?"
+    ),
+    (
+        "What is the Maximum Size Subarray Sum Equals k problem?",
+        "Store first seen index of each prefix sum in a Hash Map. When `sum - k` is in map, update `maxLen = Math.max(maxLen, i - map.get(sum - k))`. Do NOT overwrite existing map keys to preserve earliest index.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why do we not overwrite map[sum] if it already exists?"
+    ),
+    (
+        "What is the output of subarraySum on [1, 1, 1] with k = 2?",
+        "Subarrays with sum 2 are [1, 1] at index 0-1 and [1, 1] at index 1-2. Count is 2.",
+        "Easy",
+        "Output",
+        "function subSum(nums, k) {\n  let map = new Map([[0, 1]]), sum = 0, count = 0;\n  for (let x of nums) {\n    sum += x;\n    if (map.has(sum - k)) count += map.get(sum - k);\n    map.set(sum, (map.get(sum) || 0) + 1);\n  }\n  return count;\n}\nconsole.log(subSum([1, 1, 1], 2));",
+        "What would the output be for k = 3?"
+    ),
+    (
+        "What is wrong with this prefix sum range query?",
+        "Using 0-based indexing without dummy element requires special checking for `L === 0`, otherwise accessing `prefix[L - 1]` causes out-of-bounds error.",
+        "Easy",
+        "Debugging",
+        "function rangeSum(prefix, L, R) {\n  return prefix[R] - prefix[L - 1];\n}",
+        "How does a 1-based prefix sum array eliminate this conditional check?"
+    ),
+    (
+        "Which technique allows performing 100,000 range additions on an array of size 100,000 in O(N + Q) time?",
+        "Difference Array records range boundaries in O(1) per update and computes final state in O(N) via prefix sum.",
+        "Intermediate",
+        "MCQ",
+        "",
+        {"A": "Prefix Sum", "B": "Difference Array", "C": "Segment Tree", "D": "Binary Search"},
+        "B",
+        "When would a Segment Tree or Fenwick Tree be needed instead?"
+    ),
+    (
+        "What is the Subarray Sums Divisible by K problem?",
+        "Track `((sum % k) + k) % k` frequencies in a Hash Map. Add seen remainder count to answer.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is `((sum % k) + k) % k` necessary for negative numbers?"
+    ),
+    (
+        "What is the Find the Highest Altitude problem?",
+        "Given net gain in altitude between points, find maximum prefix sum starting from altitude 0.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Running Sum of 1d Array problem?",
+        "Replace each element with the sum of all elements up to that index: `nums[i] += nums[i - 1]` for `i > 0`.",
+        "Easy",
+        "Practical",
+        "",
+        "Can this be done in O(1) auxiliary space?"
+    ),
+    (
+        "What is the Car Pooling problem?",
+        "Apply difference array on distance coordinates: `diff[from] += passengers`, `diff[to] -= passengers`. If cumulative sum exceeds capacity at any point, return false.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is `passengers` subtracted at `to` rather than `to + 1`?"
+    ),
+    (
+        "What is the XOR Queries of a Subarray problem?",
+        "Prefix XOR: `prefix[i] = prefix[i - 1] ^ arr[i - 1]`. Range XOR `[L, R]` is `prefix[R + 1] ^ prefix[L]` because `x ^ x = 0`.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does XOR prefix behave similarly to addition prefix?"
+    ),
+    (
+        "What is the Maximum Sum Circular Subarray problem?",
+        "The maximum subarray can either be normal (Kadane) or circular (totalSum - minimumSubarray). If totalSum === minSubarray, return normal Kadane result.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is `totalSum - minSubarray` equal to the circular max subarray?"
+    ),
+    (
+        "What is a Fenwick Tree (Binary Indexed Tree) used for compared to Prefix Sums?",
+        "A standard prefix sum array supports O(1) query but O(n) update. A Fenwick Tree supports both point updates and prefix sum queries in O(log n) time.",
+        "Advanced",
+        "Comparison",
+        "",
+        "What is the space complexity of a Fenwick Tree?"
+    ),
+
+    # --- Intervals & Scheduling (20 items) ---
+    (
+        "How do you merge overlapping intervals in O(n log n) time?",
+        "Sort intervals by start time. Iterate through sorted intervals. If the current interval overlaps with the previous interval (`curr.start <= prev.end`), merge them by setting `prev.end = Math.max(prev.end, curr.end)`. Otherwise, push current interval to result.",
+        "Intermediate",
+        "Practical",
+        "function mergeIntervals(intervals) {\n  if (!intervals.length) return [];\n  intervals.sort((a, b) => a[0] - b[0]);\n  const res = [intervals[0]];\n  for (let i = 1; i < intervals.length; i++) {\n    const prev = res[res.length - 1];\n    if (intervals[i][0] <= prev[1]) {\n      prev[1] = Math.max(prev[1], intervals[i][1]);\n    } else {\n      res.push(intervals[i]);\n    }\n  }\n  return res;\n}",
+        "Why is sorting by start time essential?"
+    ),
+    (
+        "How do you insert an interval into a sorted non-overlapping interval list?",
+        "Add all intervals ending before newInterval starts. For overlapping intervals, merge into newInterval by expanding start and end boundaries. Finally, append newInterval and all remaining intervals.",
+        "Intermediate",
+        "Practical",
+        "function insert(intervals, newInterval) {\n  const res = [];\n  let i = 0, n = intervals.length;\n  while (i < n && intervals[i][1] < newInterval[0]) res.push(intervals[i++]);\n  while (i < n && intervals[i][0] <= newInterval[1]) {\n    newInterval[0] = Math.min(newInterval[0], intervals[i][0]);\n    newInterval[1] = Math.max(newInterval[1], intervals[i][1]);\n    i++;\n  }\n  res.push(newInterval);\n  while (i < n) res.push(intervals[i++]);\n  return res;\n}",
+        "What is the time complexity of interval insertion?"
+    ),
+    (
+        "How do you check if a person can attend all meetings (Meeting Rooms I)?",
+        "Sort intervals by start time. Iterate from 1 to n - 1. If `intervals[i][0] < intervals[i - 1][1]`, there is a conflict; return false. If loop finishes, return true in O(n log n) time.",
+        "Easy",
+        "Practical",
+        "",
+        "Can two meetings touch at boundaries without conflicting (e.g. [0, 5] and [5, 10])?"
+    ),
+    (
+        "How do you find the minimum number of conference rooms required (Meeting Rooms II)?",
+        "Separate start and end times into two arrays and sort both. Use two pointers i and j. If `starts[i] < ends[j]`, a room is occupied; increment room count and i. Otherwise, a room freed up; decrement room count and increment j.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Can this also be solved using a Min-Heap of end times?"
+    ),
+    (
+        "How do you find the minimum number of intervals to remove to make the rest non-overlapping?",
+        "Greedy approach: sort by end time. Always keep the interval that finishes earliest, allowing maximum room for future intervals. If an interval overlaps with the previous chosen end time, increment removal count.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does sorting by end time work better than sorting by start time here?"
+    ),
+    (
+        "How do you find the intersection of two lists of closed intervals?",
+        "Use two pointers i and j. The intersection is `[Math.max(A[i][0], B[j][0]), Math.min(A[i][1], B[j][1])]`. If start <= end, record intersection. Advance the pointer whose interval ends first.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Interval List Intersections condition for overlap?",
+        "Two intervals [startA, endA] and [startB, endB] overlap if and only if `startA <= endB && startB <= endA`.",
+        "Easy",
+        "Concept",
+        "",
+        "What is the start and end of the overlap segment?"
+    ),
+    (
+        "What is the Sweep-Line Algorithm for interval problems?",
+        "Decompose each interval `[start, end]` into two events: `(start, +1)` and `(end, -1)`. Sort events by time. Sweep through events maintaining a running count of active intervals.",
+        "Advanced",
+        "Concept",
+        "",
+        "How do you break ties if start and end events happen at the exact same timestamp?"
+    ),
+    (
+        "What is the Employee Free Time problem?",
+        "Flatten and sort all employee working intervals. Merge overlapping intervals. The gaps between merged working intervals represent company-wide free time.",
+        "Advanced",
+        "Concept",
+        "",
+        "How can a Priority Queue optimize this to O(N log K) where K is number of employees?"
+    ),
+    (
+        "What is the Teemo Attacking (poisoned duration) problem?",
+        "Given time series and poison duration, add `Math.min(duration, timeSeries[i] - timeSeries[i - 1])` for overlaps and full duration for last attack.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the output of mergeIntervals on [[1, 3], [2, 6], [8, 10], [15, 18]]?",
+        "[1, 3] and [2, 6] merge into [1, 6]. Result is [[1, 6], [8, 10], [15, 18]].",
+        "Easy",
+        "Output",
+        "const intervals = [[1, 3], [2, 6], [8, 10], [15, 18]];\nintervals.sort((a, b) => a[0] - b[0]);\nconst res = [intervals[0]];\nfor (let i = 1; i < intervals.length; i++) {\n  let prev = res[res.length - 1];\n  if (intervals[i][0] <= prev[1]) prev[1] = Math.max(prev[1], intervals[i][1]);\n  else res.push(intervals[i]);\n}\nconsole.log(JSON.stringify(res));",
+        "What would happen if intervals was [[1, 4], [4, 5]]?"
+    ),
+    (
+        "What is wrong with this interval sorting code: `intervals.sort((a, b) => a - b)`?",
+        "Each interval is an array `[start, end]`. Subtracting arrays directly results in `NaN`. It must explicitly sort by start time: `a[0] - b[0]`.",
+        "Easy",
+        "Debugging",
+        "intervals.sort((a, b) => a - b);",
+        "How do you sort intervals in descending order of start time?"
+    ),
+    (
+        "Which sorting criterion guarantees optimal greedy interval scheduling (maximum non-overlapping intervals)?",
+        "Sorting by earliest end time guarantees maximum remaining time for subsequent intervals.",
+        "Intermediate",
+        "MCQ",
+        "",
+        {"A": "Earliest start time", "B": "Earliest end time", "C": "Shortest duration", "D": "Longest duration"},
+        "B",
+        "Why does picking shortest duration fail?"
+    ),
+    (
+        "What is the Minimum Number of Arrows to Burst Balloons problem?",
+        "Balloons are represented as horizontal intervals `[xstart, xend]`. Sort by end coordinate. If next balloon starts after current arrow position, shoot a new arrow at next balloon's end.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why shoot the arrow at xend rather than xstart?"
+    ),
+    (
+        "What is the Partition Labels problem?",
+        "Record the last occurrence index of each character. Traverse string tracking max last index seen. When current index matches max last index, partition and start new segment.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the My Calendar I problem (booking without double booking)?",
+        "Store intervals in a balanced BST or sorted list. For each book(start, end), verify no overlapping interval exists where `start < prevEnd && end > prevStart`.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is the time complexity per booking using a sorted list vs BST?"
+    ),
+    (
+        "What is the My Calendar II problem (triple booking prohibited)?",
+        "Maintain list of all bookings and a separate list of overlapping double-bookings. If a new booking overlaps with any double-booking, reject it.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How is My Calendar III (maximum k-booking) solved using Sweep-Line?"
+    ),
+    (
+        "What is the Maximum Length of Pair Chain problem?",
+        "Sort pairs by second element (end time). Greedy pick pairs where `curr[0] > prev[1]`.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Can this also be modeled as Longest Increasing Subsequence?"
+    ),
+    (
+        "What is the Video Stitching problem?",
+        "Given clips [start, end] and target T, find minimum clips to cover [0, T]. Greedy jump game pattern over intervals.",
+        "Advanced",
+        "Concept",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is an interval tree?",
+        "An augmented balanced binary search tree that stores intervals and allows efficiently finding all intervals that overlap with any given interval or point in O(log n + k) time.",
+        "Advanced",
+        "Concept",
+        "",
+        "What extra value is stored at each node in an interval tree?"
+    ),
+
+    # --- Matrix & Grid Navigation (20 items) ---
+    (
+        "How do you traverse an m x n matrix in Spiral Order?",
+        "Maintain four boundaries: top = 0, bottom = m - 1, left = 0, right = n - 1. Traverse left-to-right along top, top-to-bottom along right, right-to-left along bottom, bottom-to-top along left. Shrink boundaries until they cross.",
+        "Intermediate",
+        "Practical",
+        "function spiralOrder(matrix) {\n  const res = [];\n  let top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;\n  while (top <= bottom && left <= right) {\n    for (let c = left; c <= right; c++) res.push(matrix[top][c]);\n    top++;\n    for (let r = top; r <= bottom; r++) res.push(matrix[r][right]);\n    right--;\n    if (top <= bottom) {\n      for (let c = right; c >= left; c--) res.push(matrix[bottom][c]);\n      bottom--;\n    }\n    if (left <= right) {\n      for (let r = bottom; r >= top; r--) res.push(matrix[r][left]);\n      left++;\n    }\n  }\n  return res;\n}",
+        "Why are the `if (top <= bottom)` checks necessary inside the loop?"
+    ),
+    (
+        "How do you rotate an n x n 2D image/matrix by 90 degrees clockwise in-place?",
+        "Transpose the matrix (swap `matrix[i][j]` with `matrix[j][i]`), then reverse each individual row.",
+        "Intermediate",
+        "Practical",
+        "function rotate(matrix) {\n  const n = matrix.length;\n  for (let i = 0; i < n; i++) {\n    for (let j = i + 1; j < n; j++) {\n      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];\n    }\n  }\n  for (let i = 0; i < n; i++) matrix[i].reverse();\n}",
+        "How do you rotate 90 degrees counter-clockwise?"
+    ),
+    (
+        "How do you solve the Set Matrix Zeroes problem in O(1) extra space?",
+        "Use the first row and first column of the matrix itself as flags to indicate whether that row/col should be zeroed. Use two boolean variables to track if the first row and column originally contained zero.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why would zeroing the row immediately during first pass ruin subsequent checks?"
+    ),
+    (
+        "How do you search in an m x n 2D matrix where each row and column is sorted in ascending order?",
+        "Start at the top-right corner `(0, n - 1)`. If current element === target, return true. If element > target, move left (`c--`). If element < target, move down (`r++`). Runs in O(m + n) time.",
+        "Intermediate",
+        "Practical",
+        "function searchMatrix(matrix, target) {\n  let r = 0, c = matrix[0].length - 1;\n  while (r < matrix.length && c >= 0) {\n    if (matrix[r][c] === target) return true;\n    if (matrix[r][c] > target) c--;\n    else r++;\n  }\n  return false;\n}",
+        "Why can you also start from the bottom-left corner?"
+    ),
+    (
+        "How does the Word Search problem in a 2D grid use backtracking DFS?",
+        "For each cell matching word[0], launch DFS exploring 4 directions (up, down, left, right). Mark cell visited temporarily (e.g. `grid[r][c] = '#'`), recursively check next character, then restore cell during backtracking.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the space complexity of the DFS call stack?"
+    ),
+    (
+        "How does the Flood Fill algorithm work?",
+        "If starting pixel already matches newColor, return. Otherwise, record originalColor and recursively call floodFill on 4 adjacent pixels with originalColor, setting them to newColor.",
+        "Easy",
+        "Practical",
+        "",
+        "What happens if you do not check if originalColor === newColor?"
+    ),
+    (
+        "What is the Max Area of Island problem?",
+        "Traverse each cell. When a '1' is found, launch DFS that changes '1' to '0' and returns `1 + dfs(up) + dfs(down) + dfs(left) + dfs(right)`. Track maximum island area.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity when sinking islands in-place?"
+    ),
+    (
+        "What is the Surrounded Regions (capture regions) problem?",
+        "Boundary 'O' cells and their connected components cannot be captured. Launch DFS from all boundary 'O' cells marking them as safe ('#'). Then flip all remaining 'O's to 'X', and restore '#' back to 'O'.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why start from the boundary instead of checking internal cells?"
+    ),
+    (
+        "What is the Pacific Atlantic Water Flow problem?",
+        "Water flows from higher to lower/equal elevation. Reverse the flow: perform BFS/DFS from Pacific ocean edges moving uphill, and another from Atlantic ocean edges uphill. The intersection of reachable cells is the answer.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is reverse flow easier than searching from every internal cell?"
+    ),
+    (
+        "What is the Rotting Oranges problem and why is it solved with Multi-Source BFS?",
+        "All rotten oranges rot adjacent fresh oranges simultaneously minute by minute. Enqueue all initially rotten oranges in a BFS queue and process level by level to find total elapsed minutes.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What does it mean if fresh orange count > 0 after queue is empty?"
+    ),
+    (
+        "What is the 01 Matrix (find distance of nearest 0 for each cell) problem?",
+        "Multi-source BFS starting with all '0' cells initialized at distance 0 in the queue, expanding outwards to unvisited '1' cells.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Can this also be solved using two-pass Dynamic Programming?"
+    ),
+    (
+        "What is the Knight's Tour problem?",
+        "A knight must visit every square on an 8x8 chessboard exactly once. Solved using backtracking DFS augmented by Warnsdorff's heuristic (move to square with fewest subsequent moves).",
+        "Advanced",
+        "Concept",
+        "",
+        "How does Warnsdorff's rule speed up finding a valid tour?"
+    ),
+    (
+        "What is the output of rotating a 2x2 matrix [[1, 2], [3, 4]] clockwise?",
+        "Transpose gives [[1, 3], [2, 4]]. Reversing rows gives [[3, 1], [4, 2]].",
+        "Easy",
+        "Output",
+        "const mat = [[1, 2], [3, 4]];\nfor (let i = 0; i < 2; i++) for (let j = i + 1; j < 2; j++) [mat[i][j], mat[j][i]] = [mat[j][i], mat[i][j]];\nfor (let row of mat) row.reverse();\nconsole.log(JSON.stringify(mat));",
+        "What is the original top-left element's new position?"
+    ),
+    (
+        "What is wrong with this 2D grid boundary check?",
+        "Accessing `grid[r][c]` before verifying `r >= 0 && r < grid.length` causes TypeError: Cannot read properties of undefined when r is out of bounds.",
+        "Easy",
+        "Debugging",
+        "function isValid(grid, r, c) {\n  if (grid[r][c] === 1 && r >= 0 && r < grid.length && c >= 0 && c < grid[0].length) return true;\n  return false;\n}",
+        "What is the correct short-circuit evaluation order?"
+    ),
+    (
+        "Starting at top-right in an m x n row-and-column sorted matrix, what step should you take if current element is greater than target?",
+        "Move left (decrement column pointer) because all elements below in that column are even larger.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Move down", "B": "Move left", "C": "Move diagonally", "D": "Terminate search"},
+        "B",
+        "Why can you rule out the entire column?"
+    ),
+    (
+        "What is the Shortest Path in Binary Matrix problem?",
+        "Find shortest 8-direction path from (0,0) to (n-1, n-1) with 0s. Solved using standard BFS with queue tracking step counts in O(V + E) time.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does DFS not guarantee the shortest path in an unweighted grid?"
+    ),
+    (
+        "What is the Diagonal Traverse of a matrix?",
+        "Traverse diagonals where sum of indices `r + c` is constant, alternating direction (up-right vs down-left) on each diagonal.",
+        "Intermediate",
+        "Concept",
+        "",
+        "How many diagonals exist in an m x n matrix?"
+    ),
+    (
+        "What is the Walls and Gates problem?",
+        "Fill each empty room with distance to nearest gate. Multi-source BFS initialized with all gates in the queue.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is multi-source BFS superior to running separate BFS from each empty room?"
+    ),
+    (
+        "What is the Game of Life problem (Conway's)?",
+        "Cells live or die based on neighbor counts. Update in-place by encoding state transitions using temporary bits (e.g. 2 for dead->live, -1 for live->dead).",
+        "Intermediate",
+        "Practical",
+        "",
+        "What are the 4 standard transition rules in Conway's Game of Life?"
+    ),
+    (
+        "What is the Matrix Diagonal Sum problem?",
+        "Sum primary diagonal `mat[i][i]` and secondary diagonal `mat[i][n - 1 - i]`. If n is odd, subtract central element `mat[Math.floor(n/2)][Math.floor(n/2)]` counted twice.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+
+    # --- Monotonic Stack & Queue (20 items) ---
+    (
+        "How does a Monotonic Decreasing Stack find the Next Greater Element for each array item?",
+        "Traverse from right to left (or left to right). For each element, pop all smaller or equal elements from the stack. The top of the stack is the next greater element (or -1 if empty). Push current element onto stack. Total time is O(n).",
+        "Intermediate",
+        "Practical",
+        "function nextGreaterElements(nums) {\n  const res = new Array(nums.length).fill(-1);\n  const stack = [];\n  for (let i = nums.length - 1; i >= 0; i--) {\n    while (stack.length && stack[stack.length - 1] <= nums[i]) stack.pop();\n    if (stack.length) res[i] = stack[stack.length - 1];\n    stack.push(nums[i]);\n  }\n  return res;\n}",
+        "Why does every element enter and leave the stack at most once?"
+    ),
+    (
+        "How do you solve the Daily Temperatures problem?",
+        "Given array of daily temperatures, return an array such that `res[i]` is number of days until warmer weather. Use a monotonic decreasing stack storing indices. When a warmer temperature arrives, pop index and record `i - poppedIndex`.",
+        "Intermediate",
+        "Practical",
+        "function dailyTemperatures(T) {\n  const res = new Array(T.length).fill(0);\n  const stack = [];\n  for (let i = 0; i < T.length; i++) {\n    while (stack.length && T[i] > T[stack[stack.length - 1]]) {\n      const prev = stack.pop();\n      res[prev] = i - prev;\n    }\n    stack.push(i);\n  }\n  return res;\n}",
+        "What does it mean if an index remains in the stack after traversal?"
+    ),
+    (
+        "How do you solve the Largest Rectangle in Histogram problem in O(n) time?",
+        "Maintain a monotonic increasing stack of bar indices. When a bar shorter than stack top is encountered, pop the top. The popped bar's height is its value, width extends from current index to the new stack top: `width = stack.length ? (i - stack[top] - 1) : i`. Update max area.",
+        "Advanced",
+        "Practical",
+        "",
+        "Why is this algorithm O(n) instead of O(n^2)?"
+    ),
+    (
+        "What is the Online Stock Span problem?",
+        "Return the span of stock's price today (maximum consecutive days price <= today). Maintain stack of pairs `[price, span]`. While stack top price <= current price, pop and add its span to current span.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the amortized time complexity per `next()` call?"
+    ),
+    (
+        "How do you validate balanced parentheses with multiple bracket types '()', '{}', '[]' using a stack?",
+        "When encountering an opening bracket, push it onto stack. When encountering a closing bracket, pop from stack; if stack is empty or popped bracket does not match, return false. At end, return `stack.length === 0`.",
+        "Easy",
+        "Practical",
+        "function isValid(s) {\n  const stack = [], map = { ')': '(', '}': '{', ']': '[' };\n  for (const ch of s) {\n    if (ch in map) {\n      if (stack.pop() !== map[ch]) return false;\n    } else stack.push(ch);\n  }\n  return stack.length === 0;\n}",
+        "What is the space complexity?"
+    ),
+    (
+        "What is the Remove K Digits problem to form the smallest possible number?",
+        "Use a monotonic increasing stack of digits. While `k > 0` and current digit is smaller than stack top, pop stack and decrement k. After processing, slice off remaining k, remove leading zeroes, and return result.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does popping larger preceding digits greedily minimize the number?"
+    ),
+    (
+        "How does a Monotonic Queue maintain the Sliding Window Maximum?",
+        "A double-ended queue (deque) stores indices. When sliding window forward: 1) remove indices from front that fell out of window (`deque[0] < i - k + 1`), 2) pop from back while `nums[deque.back] <= nums[i]`, 3) push `i`. Deque front is max element.",
+        "Advanced",
+        "Practical",
+        "",
+        "What is the time complexity per element?"
+    ),
+    (
+        "What is the Asteroid Collision problem?",
+        "Positive asteroids move right; negative move left. Collisions only happen when stack top is positive and current asteroid is negative. Compare absolute sizes; smaller explodes, equal sizes both explode.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Do asteroids moving in opposite directions collide if stack top is negative and current is positive?"
+    ),
+    (
+        "What is the Next Greater Element II problem (circular array)?",
+        "Simulate circular array by iterating through the array twice (`2 * n` iterations) using index `i % n` with a monotonic stack.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does iterating twice cover all possible next greater elements?"
+    ),
+    (
+        "What is the Trapping Rain Water monotonic stack approach?",
+        "Maintain decreasing stack of bar indices. When a taller bar appears, pop the bottom of the basin. The water trapped is `(Math.min(height[current], height[stackTop]) - height[popped]) * (current - stackTop - 1)`.",
+        "Advanced",
+        "Concept",
+        "",
+        "How does horizontal layer calculation differ from two-pointer vertical column calculation?"
+    ),
+    (
+        "What is the output of dailyTemperatures on [73, 74, 75, 71, 69, 72, 76, 73]?",
+        "73->74 (1 day), 74->75 (1 day), 75->76 (4 days), 71->72 (2 days), 69->72 (1 day), 72->76 (1 day), 76->none (0), 73->none (0). Output: [1, 1, 4, 2, 1, 1, 0, 0].",
+        "Easy",
+        "Output",
+        "console.log(dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]));",
+        "What is the time complexity?"
+    ),
+    (
+        "What is wrong with this bracket matching function?",
+        "If string is `'('`, stack length is 1 at end, but function returns true because it never checked `stack.length === 0` at termination.",
+        "Easy",
+        "Debugging",
+        "function check(s) {\n  const stack = [];\n  for (let ch of s) {\n    if (ch === '(') stack.push(ch);\n    else if (ch === ')') {\n      if (!stack.length) return false;\n      stack.pop();\n    }\n  }\n  return true;\n}",
+        "How do you fix this bug?"
+    ),
+    (
+        "In a monotonic decreasing stack used for Next Greater Element, why are elements popped?",
+        "Because the new, incoming greater element will be closer and larger, rendering popped smaller elements useless for future queries to the left.",
+        "Intermediate",
+        "MCQ",
+        "",
+        {"A": "To save memory only", "B": "Because they are shadowed by a closer, larger element", "C": "To keep the array sorted", "D": "To reverse the list"},
+        "B",
+        "What is this shadowing property called?"
+    ),
+    (
+        "What is the 132 Pattern problem?",
+        "Find indices i < j < k such that `nums[i] < nums[k] < nums[j]`. Solved by traversing right-to-left using a monotonic stack to maintain candidates for `nums[k]` and `nums[j]` in O(n) time.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is right-to-left traversal simpler than left-to-right?"
+    ),
+    (
+        "What is the Sum of Subarray Minimums problem?",
+        "Find sum of min(b) for all subarrays b. For each element, find distance to Previous Less Element (PLE) and Next Less Element (NLE) using monotonic stacks. Element is minimum in `(i - ple) * (nle - i)` subarrays.",
+        "Advanced",
+        "Concept",
+        "",
+        "How do you avoid double-counting duplicate minimum elements?"
+    ),
+    (
+        "What is the Maximal Rectangle problem in a 2D binary matrix?",
+        "For each row, treat cumulative 1s as a histogram and apply the Largest Rectangle in Histogram algorithm in O(rows * cols) time.",
+        "Advanced",
+        "Practical",
+        "",
+        "How are histogram heights updated between rows?"
+    ),
+    (
+        "What is the Simplify Path problem (Unix file path canonicalization)?",
+        "Split path by `'/'`. Iterate parts: ignore empty strings and `'.'`; if `'..'`, pop from stack (if not empty); else push directory name onto stack. Join with `'/'`.",
+        "Intermediate",
+        "Practical",
+        "function simplifyPath(path) {\n  const stack = [];\n  for (const part of path.split('/')) {\n    if (part === '' || part === '.') continue;\n    if (part === '..') stack.pop();\n    else stack.push(part);\n  }\n  return '/' + stack.join('/');\n}",
+        "What does `/../` simplify to?"
+    ),
+    (
+        "What is the Basic Calculator II problem (evaluating expression with +, -, *, /)?",
+        "Maintain current number and last operator. If last operator was '+' push num; '-' push -num; '*' pop and multiply; '/' pop and truncate division. Sum stack elements at end.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is a stack used instead of evaluating left to right?"
+    ),
+    (
+        "What is the Decode String problem: e.g. '3[a2[c]]' -> 'accaccacc'?",
+        "Use two stacks: countStack and stringStack. When seeing '[', push current count and current string; on ']', pop count and repeat string, appending to popped previous string.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Min Stack design and its implementations?",
+        "A stack supporting `push`, `pop`, `top`, and `getMin` in O(1) time. Implemented using an auxiliary stack storing minimums, or storing pairs `[val, currentMin]` on each node.",
+        "Easy",
+        "Practical",
+        "class MinStack {\n  constructor() { this.s = []; this.minS = []; }\n  push(val) {\n    this.s.push(val);\n    const min = this.minS.length ? Math.min(val, this.minS[this.minS.length - 1]) : val;\n    this.minS.push(min);\n  }\n  pop() { this.s.pop(); this.minS.pop(); }\n  top() { return this.s[this.s.length - 1]; }\n  getMin() { return this.minS[this.minS.length - 1]; }\n}",
+        "Can Min Stack be implemented in O(1) extra space using mathematical difference encoding?"
+    ),
+
+    # --- Backtracking & Combinatorics (20 items) ---
+    (
+        "What is the general template for a Backtracking algorithm?",
+        "1) Base Case: check if solution is found, record it, and return. 2) Loop choices: iterate over all candidate choices. 3) Prune: skip invalid choices. 4) Make Choice: apply choice to state. 5) Recurse: explore path. 6) Undo Choice (Backtrack): revert state.",
+        "Easy",
+        "Concept",
+        "function backtrack(state, choices) {\n  if (isSolution(state)) { result.push([...state]); return; }\n  for (let choice of choices) {\n    if (!isValid(choice, state)) continue;\n    state.push(choice);\n    backtrack(state, nextChoices);\n    state.pop(); // backtrack\n  }\n}",
+        "What happens if you forget to undo the choice (state.pop())?"
+    ),
+    (
+        "How do you generate all subsets (Power Set) of unique numbers?",
+        "Use backtracking. At each index, branch into choices starting from current index to n - 1. Push current subset copy to result, push number, recurse with `i + 1`, and pop to backtrack. Produces 2^n subsets.",
+        "Easy",
+        "Practical",
+        "function subsets(nums) {\n  const res = [];\n  function dfs(start, curr) {\n    res.push([...curr]);\n    for (let i = start; i < nums.length; i++) {\n      curr.push(nums[i]);\n      dfs(i + 1, curr);\n      curr.pop();\n    }\n  }\n  dfs(0, []);\n  return res;\n}",
+        "What is the time complexity of generating all subsets?"
+    ),
+    (
+        "How do you generate all permutations of an array of distinct numbers?",
+        "Track used elements with a boolean array or Set. Loop from 0 to n - 1. If element is not used, mark used, push to path, recurse, then unmark used and pop. Produces n! permutations.",
+        "Intermediate",
+        "Practical",
+        "function permute(nums) {\n  const res = [], used = new Array(nums.length).fill(false);\n  function dfs(path) {\n    if (path.length === nums.length) { res.push([...path]); return; }\n    for (let i = 0; i < nums.length; i++) {\n      if (used[i]) continue;\n      used[i] = true; path.push(nums[i]);\n      dfs(path);\n      path.pop(); used[i] = false;\n    }\n  }\n  dfs([]);\n  return res;\n}",
+        "What is the time complexity of generating all permutations?"
+    ),
+    (
+        "How do you generate permutations with duplicate elements (Permutations II)?",
+        "Sort the input array. In the loop, skip duplicates: `if (i > 0 && nums[i] === nums[i - 1] && !used[i - 1]) continue;`. This ensures equal elements are only processed in sequential order.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is `!used[i - 1]` used as the pruning condition?"
+    ),
+    (
+        "How do you solve the Combination Sum problem where elements can be reused unlimited times?",
+        "Sort candidates. In backtracking loop, subtract candidate from target. Recurse passing `i` (not `i + 1`) to allow reuse of current element. If target becomes 0, record path; if target < 0, prune.",
+        "Intermediate",
+        "Practical",
+        "function combinationSum(candidates, target) {\n  const res = [];\n  function dfs(start, currTarget, path) {\n    if (currTarget === 0) { res.push([...path]); return; }\n    for (let i = start; i < candidates.length; i++) {\n      if (candidates[i] > currTarget) break;\n      path.push(candidates[i]);\n      dfs(i, currTarget - candidates[i], path);\n      path.pop();\n    }\n  }\n  candidates.sort((a, b) => a - b);\n  dfs(0, target, []);\n  return res;\n}",
+        "Why does sorting candidates allow `break` early?"
+    ),
+    (
+        "How do you solve the Combination Sum II problem (each number used at most once, with duplicates in input)?",
+        "Sort array. Recurse with `i + 1`. Skip duplicate siblings in loop: `if (i > start && nums[i] === nums[i - 1]) continue;`.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What is the difference between `i > start` and `i > 0`?"
+    ),
+    (
+        "Explain the N-Queens problem and how diagonal attacks are tracked in O(1).",
+        "Place queens row by row. To prevent attacks, track occupied columns with a set `cols`, positive diagonals `row + col` with `diag1`, and negative diagonals `row - col` with `diag2`. Backtrack if attack is possible.",
+        "Advanced",
+        "Practical",
+        "",
+        "Why does `row + col` remain constant along an anti-diagonal?"
+    ),
+    (
+        "How does a Sudoku Solver algorithm work using backtracking?",
+        "Traverse each empty cell `'.'`. Try digits '1' through '9'. Check if placing digit is valid in current row, column, and 3x3 box. If valid, place it and recurse. If recursion returns true, puzzle is solved; otherwise reset to `'.'` and try next digit.",
+        "Advanced",
+        "Practical",
+        "",
+        "How do you index the 3x3 sub-box for cell (r, c)?"
+    ),
+    (
+        "What is the Palindrome Partitioning problem?",
+        "Partition string such that every substring is a palindrome. For each prefix `s.slice(start, i + 1)`, if it is a palindrome, add to path and recurse on `i + 1`. Backtrack by popping.",
+        "Intermediate",
+        "Practical",
+        "",
+        "How can dynamic programming precomputation speed up palindrome checks?"
+    ),
+    (
+        "What is the Word Search II problem (find all words from dictionary in 2D board)?",
+        "Combining DFS backtracking on board with a Trie of the dictionary words. Prune grid exploration as soon as current prefix does not exist in the Trie.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is building a Trie of words faster than searching for each word separately?"
+    ),
+    (
+        "What is the Letter Combinations of a Phone Number problem?",
+        "Map digits 2-9 to phone letters. Backtrack across digit string: for digit at index, iterate through mapped letters, append to current combination, recurse on `index + 1`, and backtrack.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the maximum number of combinations for a 4-digit input?"
+    ),
+    (
+        "What is the Generate Parentheses problem?",
+        "Generate all valid combinations of n pairs of parentheses. Backtrack maintaining `open` and `close` counts. Can add '(' if `open < n`; can add ')' if `close < open`. If string length === 2 * n, record result.",
+        "Intermediate",
+        "Practical",
+        "function generateParenthesis(n) {\n  const res = [];\n  function dfs(curr, open, close) {\n    if (curr.length === 2 * n) { res.push(curr); return; }\n    if (open < n) dfs(curr + '(', open + 1, close);\n    if (close < open) dfs(curr + ')', open, close + 1);\n  }\n  dfs('', 0, 0);\n  return res;\n}",
+        "What sequence of numbers represents the total count of valid parentheses pairs for n?"
+    ),
+    (
+        "What is the output of subsets on [1, 2]?",
+        "Subsets of [1, 2] are: [], [1], [1, 2], [2]. Total 2^2 = 4 subsets.",
+        "Easy",
+        "Output",
+        "console.log(JSON.stringify(subsets([1, 2])));",
+        "How many subsets exist for [1, 2, 3]?"
+    ),
+    (
+        "What is wrong with this backtracking result recording: `res.push(curr)`?",
+        "`curr` is passed by reference. In JavaScript, all elements in `res` will point to the same array object, which ends up empty `[]` after all backtrack pops. It must push a copy: `res.push([...curr])`.",
+        "Easy",
+        "Debugging",
+        "function dfs(start, curr) {\n  res.push(curr); // Bug\n  for (let i = start; i < nums.length; i++) {\n    curr.push(nums[i]);\n    dfs(i + 1, curr);\n    curr.pop();\n  }\n}",
+        "Why does shallow copy `[...curr]` solve this issue?"
+    ),
+    (
+        "How many permutations exist for an array of 5 distinct elements?",
+        "5! = 5 * 4 * 3 * 2 * 1 = 120.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "25", "B": "32", "C": "120", "D": "24"},
+        "C",
+        "What is the number of subsets for 5 elements?"
+    ),
+    (
+        "What is the Restore IP Addresses problem?",
+        "Partition string into 4 valid integer segments between 0 and 255 without leading zeroes (except single '0'). Backtrack choosing segment lengths 1, 2, or 3.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why is '023' invalid in an IP address?"
+    ),
+    (
+        "What is the Word Break II problem?",
+        "Return all sentences formed by segmenting string with dictionary words. Solved using backtracking with memoization of remaining substrings.",
+        "Advanced",
+        "Concept",
+        "",
+        "Why is memoization essential to prevent exponential blowup?"
+    ),
+    (
+        "What is the Partition to K Equal Sum Subsets problem?",
+        "Determine if array can be partitioned into k subsets with sum `totalSum / k`. Backtrack placing numbers into k buckets with pruning.",
+        "Advanced",
+        "Concept",
+        "",
+        "What sorting order prunes the search tree fastest?"
+    ),
+    (
+        "What is the Combinations problem (choose k numbers from 1 to n)?",
+        "Backtrack picking numbers from start to `n - (k - curr.length) + 1`. When `curr.length === k`, record copy.",
+        "Easy",
+        "Practical",
+        "",
+        "How does `n - (k - curr.length) + 1` prune impossible branches?"
+    ),
+    (
+        "What is pruning in backtracking?",
+        "Pruning is abandoning a search path as soon as it is mathematically impossible to produce a valid or optimal solution, cutting off entire subtrees of the recursion tree.",
+        "Easy",
+        "Concept",
+        "",
+        "Give an example of pruning in Combination Sum."
+    ),
+
+    # --- Greedy Heuristics & Decision Making (20 items) ---
+    (
+        "Explain the Jump Game I problem and its greedy solution.",
+        "Given array where each element is max jump length, determine if you can reach the last index. Track `maxReach = 0`. Iterate: if `i > maxReach`, return false. Update `maxReach = Math.max(maxReach, i + nums[i])`. If `maxReach >= n - 1`, return true.",
+        "Intermediate",
+        "Practical",
+        "function canJump(nums) {\n  let maxReach = 0;\n  for (let i = 0; i < nums.length; i++) {\n    if (i > maxReach) return false;\n    maxReach = Math.max(maxReach, i + nums[i]);\n    if (maxReach >= nums.length - 1) return true;\n  }\n  return true;\n}",
+        "What is the time complexity?"
+    ),
+    (
+        "Explain the Jump Game II problem (minimum jumps to reach end).",
+        "Greedy BFS-like approach: maintain current jump boundary `currEnd` and farthest reach `farthest`. When iterating up to `n - 2`, update `farthest = Math.max(farthest, i + nums[i])`. When `i === currEnd`, increment jump count and set `currEnd = farthest`.",
+        "Intermediate",
+        "Practical",
+        "function jump(nums) {\n  let jumps = 0, currEnd = 0, farthest = 0;\n  for (let i = 0; i < nums.length - 1; i++) {\n    farthest = Math.max(farthest, i + nums[i]);\n    if (i === currEnd) {\n      jumps++;\n      currEnd = farthest;\n    }\n  }\n  return jumps;\n}",
+        "Why does the loop terminate at `nums.length - 2`?"
+    ),
+    (
+        "Explain the Gas Station problem (circular tour).",
+        "If `totalGas < totalCost`, completing the circuit is impossible (return -1). Otherwise, a unique start station is guaranteed to exist. Iterate with `tank = 0`. If `tank < 0`, reset `tank = 0` and set `start = i + 1`.",
+        "Intermediate",
+        "Practical",
+        "function canCompleteCircuit(gas, cost) {\n  let totalGas = 0, totalCost = 0, tank = 0, start = 0;\n  for (let i = 0; i < gas.length; i++) {\n    totalGas += gas[i]; totalCost += cost[i];\n    tank += gas[i] - cost[i];\n    if (tank < 0) { start = i + 1; tank = 0; }\n  }\n  return totalGas >= totalCost ? start : -1;\n}",
+        "Why can no station between old start and i be the answer if tank drops below 0 at i?"
+    ),
+    (
+        "Explain the Candy distribution problem.",
+        "Each child gets at least 1 candy; higher-rated child gets more than neighbors. Two-pass greedy: 1) Left-to-right: if `ratings[i] > ratings[i - 1]`, `candies[i] = candies[i - 1] + 1`. 2) Right-to-left: if `ratings[i] > ratings[i + 1]`, `candies[i] = Math.max(candies[i], candies[i + 1] + 1)`.",
+        "Advanced",
+        "Practical",
+        "",
+        "Why is `Math.max` used in the second pass?"
+    ),
+    (
+        "Explain the Lemonade Change problem.",
+        "Customers pay with $5, $10, or $20. Track counts of $5 and $10 bills. When receiving $10, give a $5. When receiving $20, greedily give a $10 and a $5 first (preserving flexible $5 bills); if no $10, give three $5 bills.",
+        "Easy",
+        "Practical",
+        "",
+        "Why is giving a $10 and $5 preferred over three $5 bills?"
+    ),
+    (
+        "What is the Task Scheduler problem (cooling interval n)?",
+        "Find maximum frequency task count `maxFreq` and how many tasks share that count `maxCount`. Answer is `Math.max(tasks.length, (maxFreq - 1) * (n + 1) + maxCount)`.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does the formula use `(maxFreq - 1) * (n + 1)`?"
+    ),
+    (
+        "What is the Maximum Units on a Truck problem (Fractional Knapsack variant)?",
+        "Sort box types descending by units per box. Greedily load boxes of highest unit yield until truck capacity is exhausted.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time complexity of this greedy solution?"
+    ),
+    (
+        "What is the Partition Labels greedy strategy?",
+        "Store last seen index of each letter. Traverse string extending boundary to max of last seen indices. When `i === end`, emit partition.",
+        "Easy",
+        "Concept",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Two City Scheduling problem?",
+        "Send 2n people to city A or B at minimum total cost. Sort candidates by refund difference `costA - costB`. Send first n people with smallest differences to city A, and remaining n people to city B.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does sorting by cost difference work?"
+    ),
+    (
+        "What is the Minimum Add to Make Parentheses Valid problem?",
+        "Track `openNeeded` and `closeNeeded`. For '(', increment open. For ')', if open > 0 decrement open; else increment closeNeeded. Return `openNeeded + closeNeeded` in O(n) time and O(1) space.",
+        "Easy",
+        "Practical",
+        "",
+        "Why is a stack not required?"
+    ),
+    (
+        "What is the output of canJump on [2, 3, 1, 1, 4]?",
+        "Returns true because from index 0 you can jump to 1, and from index 1 (max jump 3) you can reach the last index (index 4).",
+        "Easy",
+        "Output",
+        "console.log(canJump([2, 3, 1, 1, 4]));",
+        "What is the output on [3, 2, 1, 0, 4]?"
+    ),
+    (
+        "What is the output of canJump on [3, 2, 1, 0, 4]?",
+        "All jumps lead to index 3 where max jump is 0. Cannot progress past index 3 to reach 4. Returns false.",
+        "Easy",
+        "Output",
+        "console.log(canJump([3, 2, 1, 0, 4]));",
+        "What is maxReach when loop terminates?"
+    ),
+    (
+        "What is wrong with this greedy coin change for arbitrary denominations [1, 3, 4] and target 6?",
+        "Greedy takes 4, then 1, 1 (3 coins total: 4 + 1 + 1). Optimal is 3 + 3 (2 coins). Greedy fails for arbitrary non-canonical coin systems.",
+        "Intermediate",
+        "Debugging",
+        "function greedyCoin(coins, amount) {\n  coins.sort((a, b) => b - a);\n  let count = 0;\n  for (let c of coins) {\n    while (amount >= c) { amount -= c; count++; }\n  }\n  return count;\n}",
+        "What algorithm must be used when greedy fails for coins?"
+    ),
+    (
+        "Which property must hold for a greedy algorithm to produce an optimal solution?",
+        "Greedy Choice Property: a global optimum can be reached by selecting local optimums at each step.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "Overlapping subproblems", "B": "Greedy choice property", "C": "Divide and conquer", "D": "Exponential growth"},
+        "B",
+        "What other property is shared with Dynamic Programming?"
+    ),
+    (
+        "What is the Assign Cookies problem?",
+        "Sort children by greed factor and cookies by size. Use two pointers to satisfy the least greedy children with the smallest possible sufficient cookie.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Queue Reconstruction by Height problem?",
+        "Sort people descending by height; if heights equal, sort ascending by k (number of people in front). Insert people into result array at index k.",
+        "Intermediate",
+        "Practical",
+        "",
+        "Why does sorting taller people first work?"
+    ),
+    (
+        "What is the Minimum Number of Taps to Water a Garden problem?",
+        "Convert each tap's watering range into a jump range `[max(0, i - r), min(n, i + r)]`. Maps directly to Jump Game II.",
+        "Advanced",
+        "Concept",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Non-overlapping Intervals problem greedy sorting key?",
+        "Sort intervals by end time. Pick interval with earliest end time to leave maximum room for future intervals.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What is the time complexity?"
+    ),
+    (
+        "What is the Best Time to Buy and Sell Stock II problem (unlimited transactions)?",
+        "Add every positive price difference `prices[i] - prices[i - 1]` whenever `prices[i] > prices[i - 1]`.",
+        "Easy",
+        "Practical",
+        "function maxProfit(prices) {\n  let profit = 0;\n  for (let i = 1; i < prices.length; i++) {\n    if (prices[i] > prices[i - 1]) profit += prices[i] - prices[i - 1];\n  }\n  return profit;\n}",
+        "Why is it optimal to harvest every small upward slope?"
+    ),
+    (
+        "What is the Advantage Shuffle problem (Tian Ji horse race)?",
+        "Sort both arrays. If nums1's smallest element beats nums2's smallest element, pair them. Otherwise, sacrifice nums1's smallest against nums2's largest.",
+        "Intermediate",
+        "Practical",
+        "",
+        "What data structure is used to retrieve nums2 elements in order?"
+    ),
+
+    # --- Edge Cases, Invariants & Debugging (15 items) ---
+    (
+        "How do you prevent integer overflow when calculating midpoint in binary search?",
+        "Instead of `(left + right) / 2` which can overflow 32-bit signed integers if `left + right > 2^31 - 1`, use `left + Math.floor((right - left) / 2)`.",
+        "Easy",
+        "Concept",
+        "const mid = left + Math.floor((right - left) / 2);",
+        "Does JavaScript standard numbers suffer from 32-bit overflow by default?"
+    ),
+    (
+        "What edge cases should always be considered when testing an array problem?",
+        "1) Empty array `[]`. 2) Single element `[x]`. 3) Array with two elements. 4) All elements identical `[2, 2, 2]`. 5) Sorted in ascending and descending order. 6) Negative numbers and zeroes. 7) Large inputs up to 10^5.",
+        "Easy",
+        "Practical",
+        "",
+        "Why are arrays with all identical elements notorious for causing bugs in quicksort?"
+    ),
+    (
+        "What edge cases should always be considered for string problems?",
+        "1) Empty string `''`. 2) Single character `'a'`. 3) String with all identical characters `'aaaa'`. 4) Case sensitivity (uppercase vs lowercase). 5) Special characters, spaces, and punctuation. 6) Non-ASCII unicode characters.",
+        "Easy",
+        "Practical",
+        "",
+        "How do emoji characters affect `string.length` in JavaScript?"
+    ),
+    (
+        "What edge cases should always be tested for linked list problems?",
+        "1) Empty list `head === null`. 2) Single node `head.next === null`. 3) Two nodes. 4) Cycles or circular references. 5) Modifying the head node (use a dummy head node to simplify).",
+        "Easy",
+        "Practical",
+        "const dummy = { val: 0, next: head };",
+        "Why does a dummy head node simplify node deletions?"
+    ),
+    (
+        "What edge cases should always be tested for tree problems?",
+        "1) Empty tree `root === null`. 2) Single root node with no children. 3) Skewed tree (linked list structure). 4) Complete full tree. 5) Trees with duplicate values. 6) Negative node values.",
+        "Easy",
+        "Practical",
+        "",
+        "What is the maximum recursion depth on a skewed tree of n nodes?"
+    ),
+    (
+        "What is a dummy / sentinel node and why is it useful?",
+        "A dummy node is an auxiliary node placed at the head of a linked list or queue. It eliminates special conditional edge cases when inserting or deleting the head node.",
+        "Easy",
+        "Concept",
+        "",
+        "What does the dummy node's next pointer point to?"
+    ),
+    (
+        "What is wrong with this shallow array copy in a matrix creation: `new Array(m).fill([])`?",
+        "Each row in the matrix references the exact same array in memory. Modifying `matrix[0][0] = 1` updates every row simultaneously. Use `Array.from({ length: m }, () => [])`.",
+        "Easy",
+        "Debugging",
+        "const mat = new Array(3).fill([]);\nmat[0].push(5);\nconsole.log(mat[1]); // Output: [5]! Bug!",
+        "How do you properly create an m x n 2D grid in JavaScript?"
+    ),
+    (
+        "What is the output of `['10', '2', '1'].sort()` in JavaScript and why is it surprising?",
+        "Standard `.sort()` converts elements to strings and compares UTF-16 code units lexicographically, giving `['1', '10', '2']`. You must supply a comparator: `(a, b) => a - b`.",
+        "Easy",
+        "Output",
+        "console.log([10, 2, 1].sort());",
+        "What does `.sort((a, b) => a - b)` return?"
+    ),
+    (
+        "What is wrong with checking `if (count)` when count can be 0?",
+        "In JavaScript, `0` is falsy. If `count === 0`, `if (count)` evaluates to false even though count has a valid numeric value.",
+        "Easy",
+        "Debugging",
+        "let count = 0;\nif (count) { console.log('Has count'); } // Will not execute!",
+        "What check should be used instead?"
+    ),
+    (
+        "What is the time complexity of `array.shift()` and `array.unshift()` in JavaScript?",
+        "O(n) because all remaining elements in the array must be shifted in memory to update their indices. Using array as a queue with shift() makes an algorithm O(n^2) instead of O(n).",
+        "Easy",
+        "Concept",
+        "",
+        "How can a pointer index prevent O(n) queue dequeue overhead?"
+    ),
+    (
+        "What is the output of `parseInt('08')` in modern JavaScript?",
+        "In ES5+, it parses as decimal 8 (in legacy ES3 it was octal 0).",
+        "Easy",
+        "Output",
+        "console.log(parseInt('08'));",
+        "Why is it best practice to always pass radix 10: `parseInt(str, 10)`?"
+    ),
+    (
+        "What is the maximum safe integer in JavaScript?",
+        "Number.MAX_SAFE_INTEGER is `2^53 - 1` (9,007,199,254,740,991). Calculations exceeding this lose precision unless BigInt is used.",
+        "Easy",
+        "Concept",
+        "",
+        "How do you declare a BigInt literal in JavaScript?"
+    ),
+    (
+        "Which of the following creates a distinct 3x3 matrix initialized with 0?",
+        "`Array.from({ length: 3 }, () => new Array(3).fill(0))` creates 3 distinct row arrays.",
+        "Easy",
+        "MCQ",
+        "",
+        {"A": "new Array(3).fill(new Array(3).fill(0))", "B": "Array.from({ length: 3 }, () => new Array(3).fill(0))", "C": "new Array(3).fill([])", "D": "Array(3 * 3).fill(0)"},
+        "B",
+        "Why does option A cause a reference sharing bug?"
+    ),
+    (
+        "What does `Math.max()` with no arguments return in JavaScript?",
+        "It returns `-Infinity`, and `Math.min()` returns `+Infinity`.",
+        "Easy",
+        "Output",
+        "console.log(Math.max(), Math.min());",
+        "Why is this useful as an initial accumulator value?"
+    ),
+    (
+        "What is the purpose of testing with constraints where n = 10^5 and time limit is 1 second?",
+        "A 1-second limit allows roughly 10^8 basic operations. An O(n^2) algorithm will take 10^10 operations and trigger Time Limit Exceeded (TLE). You must design an O(n) or O(n log n) solution.",
+        "Intermediate",
+        "Concept",
+        "",
+        "What algorithm complexity is allowed when n <= 20?"
+    )
+]
+
+print(f"Total Problem Solving questions defined: {len(ps_items)}")
+
+with open('scripts/problemsolving_questions.py', 'w', encoding='utf-8') as f:
+    f.write('"""\nscripts/problemsolving_questions.py\n215 genuine fresher Problem Solving interview questions.\n"""\n\n')
+    f.write('ps_items = [\n')
+    for item in ps_items:
+        f.write(f"    {repr(item)},\n")
+    f.write(']\n')
+
+print("Saved to scripts/problemsolving_questions.py")

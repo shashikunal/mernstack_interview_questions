@@ -1,0 +1,336 @@
+# scripts/build_hr_part2.py
+import os
+
+hr_part2 = [
+    # Communication, Presentation & Standups
+    (
+        "How do you give an effective 60-second status update in daily standup meetings?",
+        "Follow the three standard agile questions: 1) What did you complete yesterday? (e.g. 'Completed user registration validation endpoint'). 2) What are you working on today? (e.g. 'Integrating JWT token verification middleware'). 3) Are there any blockers? (e.g. 'No blockers' or 'Waiting on API schema approval from lead'). Be concise and save detailed technical discussions for parking lot.",
+        "Easy",
+        "Practical",
+        "Standup formula:\n- Yesterday: Completed deliverables\n- Today: Planned deliverables\n- Blockers: Any impediment requiring assistance",
+        "Why should in-depth architectural debates be moved out of the 15-minute standup?"
+    ),
+    (
+        "What makes an email or Slack message effective when communicating with colleagues?",
+        "1) Use a clear, descriptive subject line or opening sentence. 2) State the purpose or ask immediately (BLUF: Bottom Line Up Front). 3) Use bullet points for readability. 4) Include necessary links, screenshots, or logs. 5) Clearly state expected next actions or deadlines (e.g., 'Please review by 3 PM').",
+        "Easy",
+        "Concept",
+        "BLUF Principle:\nState the action required first, followed by context, evidence, and deadline.",
+        "Why is sending 'Hi' without any context on Slack disruptive to colleagues?"
+    ),
+    (
+        "How do you write a clear and actionable bug report for your team?",
+        "Include: 1) Descriptive title. 2) Environment details (browser, OS, branch). 3) Exact numbered steps to reproduce. 4) Expected behavior. 5) Actual observed behavior. 6) Supporting evidence (console error screenshots, network payload logs). 7) Severity/priority level.",
+        "Easy",
+        "Practical",
+        "Bug Report Template:\n- Title: [Cart] Total calculation displays NaN when coupon applied\n- Steps: 1. Add item 2. Enter code 'SAVE10' 3. Click Apply\n- Expected: 10% discount applied\n- Actual: Price shows NaN\n- Console: TypeError: coupon.discount is undefined",
+        "Why are vague bug reports like 'login is broken' expensive for engineering teams?"
+    ),
+    (
+        "How do you practice active listening during technical discussions or meetings?",
+        "1) Give full undivided attention without multitasking on phones or other browser tabs. 2) Take concise notes on key decisions and action items. 3) Paraphrase or summarize what you heard to confirm understanding: 'Just to confirm, we are deprecating v1 endpoints by the end of this sprint, correct?'. 4) Ask clarifying questions before drawing conclusions.",
+        "Easy",
+        "Concept",
+        "Active listening stages:\nAttention -> Paraphrasing -> Clarifying questions -> Action item agreement.",
+        "How does active listening prevent costly rework caused by misunderstood requirements?"
+    ),
+    (
+        "How would you communicate with a teammate who has a different native language or accent?",
+        "1) Speak clearly, at a moderate pace, and avoid colloquial slang or idioms. 2) Be patient and respectful without interrupting. 3) Complement spoken discussions with written notes, diagrams, and bullet points in Slack or PR comments. 4) Verify mutual understanding politely.",
+        "Easy",
+        "Scenario",
+        "Key tactics:\n- Moderate pacing\n- Written meeting summaries\n- Diagrammatic architecture explanations",
+        "Why is written documentation a great equalizer in globally distributed teams?"
+    ),
+    (
+        "What would you do if you notice a teammate feeling overwhelmed or burned out?",
+        "Reach out privately with empathy: 'Hey, I noticed you have been taking on a lot of tickets lately. How are you holding up? Is there anything on your plate I can help unblock or test with you?' Sometimes just offering to take care of code reviews or repetitive tasks can provide relief.",
+        "Easy",
+        "Scenario",
+        "Compassionate peer support builds trust and strengthens overall team resilience.",
+        "When should a teammate's burnout risk be discussed with an engineering manager?"
+    ),
+    (
+        "How do you handle receiving conflicting priorities from two different senior leaders?",
+        "1) Do not guess or silently attempt to work twice as hard to satisfy both. 2) Bring both stakeholders together or loop them into a single transparent conversation. 3) Explain your current capacity and the trade-offs: 'Task A from Manager X will take 3 days; Task B from Manager Y will take 2 days. Which should take precedence for the sprint?' 4) Align on a shared priority order.",
+        "Intermediate",
+        "Scenario",
+        "Resolution path:\nTransparent communication -> Explicit trade-off demonstration -> Shared executive alignment.",
+        "Why is it important not to take sides when managing competing stakeholder requests?"
+    ),
+    (
+        "How do you deal with 'Imposter Syndrome' as a fresher entering the software industry?",
+        "1) Acknowledge that feeling out of depth is completely normal when encountering massive production codebases. 2) Focus on continuous incremental learning rather than knowing everything on day one. 3) Keep a 'Brag Sheet' or wins log of bugs fixed, PRs merged, and concepts learned. 4) Remember that seniors were hired to guide you.",
+        "Easy",
+        "Concept",
+        "Healthy mindset:\nCompare yourself today to where you were 3 months ago, not to a staff engineer with 15 years of experience.",
+        "Why is asking questions viewed by good managers as confidence rather than incompetence?"
+    ),
+    (
+        "Describe a time you took initiative on a project without being explicitly told to do so.",
+        "Use STAR: Situation: In our college project repo, setting up the local environment required 15 manual steps that frequently caused errors for new teammates. Task: Streamline onboarding. Action: I wrote a Docker Compose file and a comprehensive README with a single 'docker-compose up' command. Result: Onboarding time was cut from 3 hours to 10 minutes, and the whole team adopted it.",
+        "Intermediate",
+        "Scenario",
+        "STAR framework highlighting proactive problem identification and autonomous execution.",
+        "Why is taking initiative one of the highest-rated traits in engineering evaluations?"
+    ),
+    (
+        "How do you approach learning from failure when a production bug is traced back to your code?",
+        "1) Take immediate ownership without deflecting blame or making excuses. 2) Assist actively in resolving the immediate incident (rollback or hotfix). 3) Participate openly in the blameless post-mortem. 4) Identify why the bug slipped through (missing test case, edge case assumption) and add automated tests to prevent recurrence.",
+        "Intermediate",
+        "Scenario",
+        "Core principle: Blameless post-mortems treat incidents as opportunities to make the system and testing pipeline stronger.",
+        "What is the difference between a blameless post-mortem and assigning personal blame?"
+    ),
+    (
+        "What is your approach to work-life balance during demanding sprints?",
+        "Manage energy intentionally: During intense sprint crunch periods, stay disciplined during working hours by minimizing distractions. When the workday concludes, disconnect to recharge with physical exercise, family, and sleep. Rested engineers write significantly fewer bugs than exhausted ones.",
+        "Easy",
+        "Concept",
+        "Work-life balance is not just about hours, but about maintaining sustainable mental clarity and focus.",
+        "How does sustained lack of sleep directly impair coding and debugging capabilities?"
+    ),
+    (
+        "How would you handle a situation where a client or user is frustrated with a software glitch?",
+        "1) Listen attentively without interrupting and validate their frustration ('I completely understand how disruptive this is to your workflow'). 2) Remain calm and professional, never taking frustration personally. 3) Reassure them that the team is actively investigating. 4) Provide realistic status updates and deliver a verified solution.",
+        "Intermediate",
+        "Scenario",
+        "Principles:\nEmpathy -> De-escalation -> Actionable investigation -> Transparent updates.",
+        "Why should you never make unrealistic promises (e.g., 'it will be fixed in 5 minutes') to an angry client?"
+    ),
+    (
+        "What would you do if you were asked to work on a weekend to fix an unexpected emergency?",
+        "Demonstrate team commitment: If it is a genuine, critical emergency (such as a production outage or major client launch), step up enthusiastically to support the team. However, treat emergencies as exceptions, and participate in post-incident reviews to ensure proper monitoring prevents repeated weekend emergencies.",
+        "Easy",
+        "Scenario",
+        "Balance readiness to support critical incidents with an understanding of sustainable operational practices.",
+        "How can automated alerting and on-call rotations prevent weekend panics?"
+    ),
+    (
+        "How do you stay motivated when working on legacy code with no documentation?",
+        "Treat legacy code as a detective puzzle: 1) Read existing unit tests to understand intended behavior. 2) Use git log and git blame to read past commit messages and PR contexts. 3) Write small test assertions to verify assumptions. 4) Document your findings in the README as you explore, turning confusion into valuable team knowledge.",
+        "Intermediate",
+        "Concept",
+        "Approach:\nRead tests -> Git archeology -> Experiment with isolated test scripts -> Write missing docs.",
+        "Why is reading legacy code an essential skill for junior engineers in real companies?"
+    ),
+    (
+        "What would you do if you discovered that your project timeline is impossible to meet?",
+        "Sound the alarm early with data: 1) Prepare an estimate breakdown showing hours required versus available calendar days. 2) Present options to the project manager: Option A: Descope non-critical features to hit the date with an MVP. Option B: Extend the deadline to include all features. Option C: Add paired assistance from another teammate.",
+        "Intermediate",
+        "Scenario",
+        "Key insight: Leaders appreciate solutions and trade-offs rather than silent failures at the finish line.",
+        "What is the 'Iron Triangle' of project management (Scope, Time, Cost/Quality)?"
+    ),
+    (
+        "How do you handle ambiguous requirements when a user story has very little detail?",
+        "1) Do not start coding based on assumptions. 2) Write down specific clarifying questions: What is the expected user flow? What happens on error? Are there permissions? 3) Schedule a quick 10-minute sync with the Product Manager or Lead to clarify scope. 4) Document agreed decisions directly in the Jira ticket.",
+        "Intermediate",
+        "Scenario",
+        "Protocol:\nIdentify ambiguity -> Formulate concrete questions -> Sync with PM -> Document acceptance criteria.",
+        "Why is spending 15 minutes clarifying requirements better than rewriting 2 days of code?"
+    ),
+    (
+        "What does 'diversity and inclusion' mean to you in an engineering team?",
+        "It means creating an environment where individuals from diverse backgrounds, genders, cultures, and neurodivergent perspectives feel valued, respected, and psychologically safe to share ideas. Diverse teams design better software because they anticipate broader user needs and avoid groupthink.",
+        "Easy",
+        "Concept",
+        "Core benefits:\n- Wider perspective in system design\n- Psychological safety for innovation\n- Prevention of blind spots in product accessibility",
+        "How does cognitive diversity improve technical problem-solving discussions?"
+    ),
+    (
+        "How do you handle being interrupted frequently while in a deep programming flow state?",
+        "1) Use team status indicators (e.g. Slack 'Focus Time / In the zone' status). 2) Block calendar slots for uninterrupted coding deep work. 3) For urgent in-person or chat queries, acknowledge quickly: 'Let me finish this function logic and I will ping you in 15 minutes.' 4) Set aside designated office hours for reviews and ad-hoc syncs.",
+        "Easy",
+        "Practical",
+        "Techniques:\nStatus signaling -> Focus blocks on calendar -> Gentle deferral with committed callback time.",
+        "What is the average time required for a developer to regain deep focus after an interruption?"
+    ),
+    (
+        "How do you handle working on multiple Git branches or switching context between features?",
+        "1) Keep commits small, descriptive, and atomic. 2) Use git stash with clear names (git stash save 'WIP auth modal') when switching urgently to a hotfix. 3) Write brief scratch notes about current status before context switching so resuming the original branch is instantaneous.",
+        "Easy",
+        "Practical",
+        "Workflow:\nAtomic commits -> git stash save 'description' -> Clean branch switch -> Resume with git stash pop.",
+        "Why is leaving uncommitted half-finished code across branches a recipe for merge confusion?"
+    ),
+    (
+        "What do you do if you finish your sprint tasks ahead of schedule?",
+        "1) Notify your team lead in the standup or chat. 2) Review pending pull requests from teammates to help them get unblocked. 3) Pick up unassigned bugs or tech debt items from the backlog. 4) Improve test coverage or write documentation for complex modules.",
+        "Easy",
+        "Scenario",
+        "Constructive avenues:\n- Review peers' PRs\n- Pick backlog tickets\n- Write integration tests & documentation\n- Self-study upcoming tech stack dependencies",
+        "Why does helping peers merge their PRs improve overall team velocity more than hoarding solo work?"
+    ),
+    (
+        "How would you handle a situation where a client asks for a feature that violates web accessibility (a11y)?",
+        "Educate and propose accessible alternatives: Explain that inaccessible designs (such as poor color contrast or missing keyboard navigation) lock out users with visual or physical impairments and expose the company to legal liabilities. Present an alternative design that preserves their visual aesthetic while passing WCAG contrast requirements.",
+        "Intermediate",
+        "Scenario",
+        "Approach: Explain user and legal impact -> Present visually appealing accessible alternative.",
+        "What are WCAG guidelines and why do enterprises treat them as mandatory requirements?"
+    ),
+    (
+        "How do you handle constructive disagreement during a design review or sprint retrospective?",
+        "1) Focus on the shared goal of building the best product. 2) Avoid defensive reactions and listen actively to peers' points. 3) Weigh technical arguments based on measurable metrics: performance, maintainability, developer ergonomics, and simplicity. 4) Be open to changing your mind when presented with superior evidence.",
+        "Intermediate",
+        "Concept",
+        "Healthy debate principles:\nFacts over opinions -> User focus -> Humility to adopt better ideas.",
+        "Why is ego the biggest obstacle to good software engineering?"
+    ),
+    (
+        "How do you keep documentation from becoming outdated in a fast-moving project?",
+        "Treat documentation as part of the Definition of Done (DoD). Whenever a pull request alters API endpoints, environment variables, or workflows, update the README or Swagger documentation in that same PR. If documentation changes accompany code changes, they never fall behind.",
+        "Easy",
+        "Practical",
+        "Rule:\nNo PR modifying API contracts is merged without updating corresponding API docs.",
+        "Why is documentation stored directly in Markdown within the code repo easier to maintain than external wikis?"
+    ),
+    (
+        "What would you do if a senior engineer gives you feedback that you feel is technically incorrect?",
+        "1) Research thoroughly and build a small isolated proof-of-concept test script. 2) Schedule a brief 1-on-1: 'I tested the proposed approach in this fiddle; here is the benchmark and error log I observed. Could you help me understand if I missed something?' 3) This allows them to see the data without feeling challenged publicly.",
+        "Intermediate",
+        "Scenario",
+        "Protocol: Evidence-based prototype + Respectful inquiry + Collaborative exploration.",
+        "Why is asking questions more persuasive than making declarative statements like 'You are wrong'?"
+    ),
+    (
+        "How do you organize your physical and digital workspace for maximum focus?",
+        "Physical: Keep desk decluttered, use an ergonomic chair and monitor at eye level, and keep water nearby. Digital: Use dual monitors or virtual desktops (one for code/terminal, one for browser/docs), silence non-essential phone and email notifications during coding sprints, and keep project folders organized.",
+        "Easy",
+        "Practical",
+        "Focus habits:\nErgonomic setup + Clutter-free screen + Muted non-critical notifications.",
+        "How does a clutter-free workspace reduce cognitive fatigue over an 8-hour workday?"
+    ),
+    (
+        "What do you do when you feel unmotivated or hit a creative block?",
+        "1) Step away from the screen for 10 minutes to take a walk or get water; diffuse thinking often untangles complex logic. 2) Switch to paper and sketch the problem with diagrams and flowcharts. 3) Tackle a small, easy task (like formatting code or fixing a typo) to build positive momentum.",
+        "Easy",
+        "Practical",
+        "Techniques:\nMicro-break -> Pen-and-paper sketching -> Small win momentum.",
+        "What is the difference between focused mode and diffuse mode thinking in problem solving?"
+    ),
+    (
+        "How would you handle a situation where you suspect a teammate is plagiarizing code or violating licenses?",
+        "1) Verify facts carefully without making premature public accusations. 2) Check if the code comes from a copyleft license (like GPL) that could legally taint proprietary company software. 3) Privately ask the teammate about the source. 4) If confirmed, bring it to the attention of the engineering lead to protect the company legally.",
+        "Intermediate",
+        "Scenario",
+        "Licensing compliance is a major corporate legal risk; handle with discretion and lead escalation.",
+        "What is the legal difference between an MIT open-source license and a GPL-3.0 copyleft license?"
+    ),
+    (
+        "How do you approach learning from code written by other engineers in the company repo?",
+        "1) Study merged pull requests from experienced staff engineers to see how they structure commits, write tests, and handle errors. 2) Trace execution paths of core features from route to database. 3) Adopt established patterns so your code looks indistinguishable from existing idiomatic repo style.",
+        "Easy",
+        "Concept",
+        "Best practices:\nInspect merged PRs -> Analyze error handling patterns -> Mirror repo conventions.",
+        "Why is consistency across a codebase more important than individual personal styling preferences?"
+    ),
+    (
+        "How do you manage your emotions when an interview or code pairing session is not going well?",
+        "1) Take a deep breath and reset mentally; interviewers care just as much about resilience as perfect solutions. 2) Verbalize where you are stuck calmly: 'I realize my current approach has O(N^2) complexity; let me reconsider using a hash map to optimize lookups.' 3) Treat the interviewer as a collaborative teammate.",
+        "Easy",
+        "Scenario",
+        "Mindset: Maintain composure, think aloud, and demonstrate coachability under pressure.",
+        "Why do interviewers often give hints to test how well a candidate listens and adapts?"
+    ),
+    (
+        "What does 'psychological safety' in a team mean to you?",
+        "It is a team culture where members feel safe to ask questions, admit mistakes, propose novel ideas, and challenge assumptions without fear of humiliation, blame, or retribution. Teams with high psychological safety learn faster and build significantly higher-quality software.",
+        "Easy",
+        "Concept",
+        "Key attributes:\n- Safe to ask 'dumb' questions\n- Blameless error reporting\n- Encouragement of diverse ideas",
+        "How did Google's Project Aristotle discover that psychological safety was the #1 predictor of team success?"
+    ),
+    (
+        "How do you prepare for an important technical presentation or demo to clients?",
+        "1) Know your audience and focus on value delivered rather than deep code syntax. 2) Prepare a reliable demo script with clean test data, avoiding live production surprises. 3) Have backup screenshots or a recorded video in case network connection drops. 4) Practice transitions and timing beforehand.",
+        "Easy",
+        "Practical",
+        "Demo rules:\n- Focus on user workflow\n- Use realistic test data\n- Always have an offline backup recording",
+        "Why is having an offline video backup essential when giving live software demonstrations?"
+    ),
+    (
+        "How do you ensure you understand the business context behind the features you code?",
+        "Always ask the 'Why': Who is the user? What business problem or friction are they experiencing? How will success be measured (e.g. higher conversion, faster checkout)? Understanding the business rationale helps engineers make smarter technical trade-offs and avoid unnecessary complexity.",
+        "Easy",
+        "Concept",
+        "Formula:\nBusiness problem + User persona + Success metric = Smarter engineering architecture.",
+        "Why is an engineer who understands business metrics more valuable than a pure syntax coder?"
+    ),
+    (
+        "What would you do if you notice a teammate is consistently late to daily standups?",
+        "If it is impacting team flow, mention it casually and privately in a friendly manner: 'Hey, we missed your update in standup today; is everything okay with the morning timing?' Avoid judging; there may be personal or commute difficulties. Let the scrum master or manager handle formal attendance if it persists.",
+        "Easy",
+        "Scenario",
+        "Peer handling:\nCheck in privately with care -> Avoid policing -> Let leadership handle policy enforcement.",
+        "Why should peers avoid acting like disciplinary managers towards their teammates?"
+    ),
+    (
+        "How do you handle rapid context switching between multiple projects or tickets?",
+        "1) Keep a digital logbook (like Obsidian or Notion) with bullet points of your current mental state before switching. 2) Limit Work-In-Progress (WIP) to maximum 2 tickets at a time. 3) Batch communication checks (email/Slack) at set intervals rather than reacting continuously.",
+        "Easy",
+        "Practical",
+        "Techniques:\nWIP limits -> State snapshot notes -> Scheduled communication batching.",
+        "What is 'attention residue' and how does it reduce cognitive efficiency during task switching?"
+    ),
+    (
+        "How do you celebrate milestones and successes with your team?",
+        "Acknowledge specific individual contributions publicly: 'Special shoutout to Sarah for resolving the difficult CORS bug that unblocked our release!' Share gratitude in team retrospectives or virtual coffee catch-ups. Celebrating wins fosters strong camaraderie and morale for the next sprint.",
+        "Easy",
+        "Scenario",
+        "Celebrate effort and collective delivery, especially acknowledging behind-the-scenes support work.",
+        "Why is peer recognition often more meaningful than top-down awards?"
+    ),
+    (
+        "What is your philosophy on writing comments in source code?",
+        "Good code should be self-documenting through clear variable, function, and component names. Use comments to explain the 'Why' (the business context, non-obvious workarounds, or links to issue tickets) rather than the 'What' (which should be obvious from clean code).",
+        "Easy",
+        "Concept",
+        "// BAD: Increment i by 1\ni++;\n\n// GOOD: Workaround for Safari 14 WebKit rendering glitch (Issue #412)\ncontainer.style.transform = 'translateZ(0)';",
+        "Why do redundant comments often become misleading lies as code evolves?"
+    ),
+    (
+        "How do you handle feeling stuck on a career or skill plateau?",
+        "1) Seek guidance from a mentor or manager during 1-on-1s. 2) Step outside your comfort zone: pick up unfamiliar tasks (like backend profiling or CI/CD pipelines). 3) Read advanced technical books or open-source source code. 4) Build an end-to-end challenging project from scratch.",
+        "Easy",
+        "Scenario",
+        "Strategies:\n- Mentorship alignment\n- Taking on high-learning tasks\n- Deepening foundational computer science principles",
+        "Why does stepping into uncomfortable technical challenges trigger the fastest growth?"
+    ),
+    (
+        "How do you handle working on a feature that gets canceled by leadership right before launch?",
+        "Acknowledge that business pivots and market changes are normal in technology. Focus on the learning and reusable components created during the effort. Document what was built and archive the branch cleanly. Maintain a positive, forward-looking attitude towards the new priority.",
+        "Intermediate",
+        "Scenario",
+        "Perspective:\nCancelled projects are not wasted time; they provide valuable architectural and domain lessons.",
+        "What is the 'Sunk Cost Fallacy' and why must engineering teams avoid clinging to canceled ideas?"
+    ),
+    (
+        "What steps do you take to prevent personal burnout during your first year on the job?",
+        "1) Set clear boundaries between work and personal time. 2) Don't hesitate to ask questions rather than struggling in isolation for days. 3) Prioritize regular sleep, nutrition, and exercise. 4) Remember that a software engineering career is a marathon, not a sprint.",
+        "Easy",
+        "Practical",
+        "Burnout prevention:\nAsk for help early + Maintain physical health + Disconnect after hours.",
+        "Why are enthusiastic freshers particularly vulnerable to early career burnout?"
+    ),
+    (
+        "What makes a good code reviewer?",
+        "A good code reviewer: 1) Reviews promptly to avoid blocking peers. 2) Praises clean, clever, or well-tested solutions. 3) Explains the rationale behind requested changes rather than issuing commands. 4) Differentiates between critical blocking issues and optional nitpicks. 5) Remains kind and respectful at all times.",
+        "Easy",
+        "Concept",
+        "Code review checklist:\n- Timely turnaround\n- Positive reinforcement\n- Clear rationale for suggestions\n- Distinguishing blockers from 'nit:' suggestions",
+        "What does prefixing a review comment with 'nit:' indicate to the author?"
+    )
+]
+
+# Write part 2 to scripts/hr_part2.py
+with open("scripts/hr_part2.py", "w", encoding="utf-8") as f:
+    f.write("# scripts/hr_part2.py\n")
+    f.write("hr_questions_part2 = [\n")
+    for q in hr_part2:
+        f.write(f"    {repr(q)},\n")
+    f.write("]\n")
+
+print(f"Total HR questions part 2: {len(hr_part2)}")
