@@ -1,453 +1,627 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Fresher Interview Practice — Modern Q&A Drill Platform</title>
-  <meta name="description" content="High-density, modern developer interview practice and drill tool for freshers. Direct questions, clear answers, interactive filters, and weak-area practice.">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>DevPrep — Modern Technical Interview Preparation Platform</title>
+  <meta name="description" content="Clean, minimal, professional interview preparation platform. 5,478+ verified questions, theory concepts, interactive MCQs, coding problems, and mock tests.">
+  <meta name="theme-color" content="#ffffff">
 
-  <!-- Google Fonts: Plus Jakarta Sans for headers & Inter for reading -->
+  <!-- Typography: Inter for UI/Content, JetBrains Mono for Code Snippets -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./clean-reader.css?v=4.1">
+  <link rel="stylesheet" href="./clean-reader.css?v=8.0">
 </head>
-<body class="font-md">
+<body>
 
-  <!-- 1. Compact Header -->
-  <header class="app-header">
-    <div class="app-container">
-      <div class="header-inner">
-        <div class="header-top-row">
-          <div class="brand-wrap">
-            <span class="brand-logo-badge">DEV / FRESHER</span>
-            <div class="brand-title-wrap">
-              <h1>Fresher Interview Practice</h1>
-              <p>Practice technical, coding, aptitude and interview questions.</p>
-            </div>
-          </div>
-
-          <div class="header-actions-row">
-            <!-- Start Drill Button -->
-            <button id="btn-start-drill" class="btn-header-action btn-header-primary" title="Launch custom practice drill session">
-              ⚡ Start Drill
-            </button>
-
-            <!-- Practice Weak Areas Button -->
-            <button id="btn-quick-weak" class="btn-header-action" title="Filter to questions marked as Needs Practice">
-              ⚠ Weak Areas (<span id="weak-count-header">0</span>)
-            </button>
-
-            <!-- Toggle Hide/Show All Answers -->
-            <button id="btn-toggle-all-answers" class="btn-header-action" title="Toggle visibility of all answers to test recall">
-              🙈 Hide All Answers
-            </button>
-
-            <!-- Text Size Scaler -->
-            <div class="font-scale-group" title="Adjust typography reading size">
-              <button class="btn-font-scale" data-size="sm">A-</button>
-              <button class="btn-font-scale active" data-size="md">A</button>
-              <button class="btn-font-scale" data-size="lg">A+</button>
-              <button class="btn-font-scale" data-size="xl">XL</button>
-            </div>
-
-            <!-- Theme Toggle -->
-            <button id="btn-toggle-theme" class="btn-header-action" title="Switch between dark and light themes">
-              🌙
-            </button>
-          </div>
+  <!-- ========================================================================
+       1. Application Header (Logo, Search, Quick Stats, Theme Toggle)
+       ======================================================================== -->
+  <header class="app-header" id="app-header">
+    <div class="header-left">
+      <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Toggle Navigation">☰</button>
+      <a href="#" class="app-brand" id="brand-link">
+        <span class="brand-icon">⚡</span>
+        <div>
+          <div class="brand-title">DevPrep</div>
+          <div class="brand-subtitle">Interview Platform</div>
         </div>
+      </a>
+    </div>
 
-        <!-- Search Input Bar -->
-        <div class="search-bar-wrap">
-          <span class="search-icon-left">🔍</span>
-          <input 
-            type="text" 
-            id="search-input" 
-            class="search-input-box" 
-            placeholder="Search questions, answers, topics, SQL, code, or aptitude formulas (e.g. 'prototype', 'event loop', 'two sum')..."
-            autocomplete="off"
-            spellcheck="false"
-          >
-          <button id="search-clear" class="search-clear-btn" title="Clear search">&times;</button>
-        </div>
+    <!-- Global Instant Search -->
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="global-search-input" 
+        class="search-input" 
+        placeholder="Search questions, answers, topics, or formulas... (Press '/' to focus)" 
+        autocomplete="off" 
+        spellcheck="false"
+      >
+      <kbd class="search-kbd">/</kbd>
+      <button id="search-clear-btn" class="search-clear-btn" aria-label="Clear search">&times;</button>
+    </div>
+
+    <div class="header-right">
+      <!-- Live Streak / Practiced Counter -->
+      <div class="header-stat-pill" title="Daily assessment streak">
+        <span>Streak:</span>
+        <strong id="header-streak-count">🔥 0</strong>
       </div>
+
+      <div class="header-stat-pill" title="Total questions marked as practiced">
+        <span>Practiced:</span>
+        <strong id="header-practiced-count">0</strong>
+      </div>
+
+      <!-- Theme Switcher (Light / Dark) -->
+      <button id="btn-theme-toggle" class="btn-icon" title="Toggle color theme" aria-label="Toggle theme">
+        🌙
+      </button>
     </div>
   </header>
 
-  <!-- 2. Horizontal Subject Navigation Strip -->
-  <nav class="subject-nav-container" aria-label="Subject navigation">
-    <div class="app-container">
-      <div id="subject-scroll-track" class="subject-scroll-track">
-        <!-- Rendered dynamically -->
+  <!-- ========================================================================
+       2. Application Shell (Sidebar + Main Content Area)
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- Compact Navigation Sidebar -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-scroll">
+
+        <!-- Section: Dashboard -->
+        <div class="sidebar-section">
+          <ul class="sidebar-nav-list">
+            <li>
+              <button class="nav-item-btn active" data-tab="dashboard">
+                <span class="nav-item-content">
+                  <span class="nav-icon">📊</span>
+                  <span>Dashboard</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: LEARN -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Learn</div>
+          <ul class="sidebar-nav-list">
+            <li>
+              <button class="nav-item-btn" data-tab="questions">
+                <span class="nav-item-content">
+                  <span class="nav-icon">📖</span>
+                  <span>Interview Questions</span>
+                </span>
+                <span class="nav-badge" id="badge-total-questions">5,478</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item-btn" data-tab="theory">
+                <span class="nav-item-content">
+                  <span class="nav-icon">📚</span>
+                  <span>Theory &amp; Concepts</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: PRACTICE -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Practice</div>
+          <ul class="sidebar-nav-list">
+            <li>
+              <button class="nav-item-btn" data-tab="mcq">
+                <span class="nav-item-content">
+                  <span class="nav-icon">⚡</span>
+                  <span>MCQ Assessment</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item-btn" data-tab="coding">
+                <span class="nav-item-content">
+                  <span class="nav-icon">💻</span>
+                  <span>Coding Problems</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: TEST -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Test</div>
+          <ul class="sidebar-nav-list">
+            <li>
+              <button class="nav-item-btn" id="btn-sidebar-mock-test">
+                <span class="nav-item-content">
+                  <span class="nav-icon">🎯</span>
+                  <span>Mock Tests &amp; Drill</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: TRACK -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Track</div>
+          <ul class="sidebar-nav-list">
+            <li>
+              <button class="nav-item-btn" data-tab="progress">
+                <span class="nav-item-content">
+                  <span class="nav-icon">📈</span>
+                  <span>Progress</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item-btn" data-tab="weak">
+                <span class="nav-item-content">
+                  <span class="nav-icon">⚠</span>
+                  <span>Weak Areas</span>
+                </span>
+                <span class="nav-badge" id="badge-weak-count">0</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item-btn" data-tab="saved">
+                <span class="nav-item-content">
+                  <span class="nav-icon">★</span>
+                  <span>Bookmarks</span>
+                </span>
+                <span class="nav-badge" id="badge-saved-count">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
       </div>
-    </div>
-  </nav>
 
-  <!-- 3. Dynamic Topic Navigation Strip (Shows when a subject is active) -->
-  <div id="topic-subtopic-container" class="topic-subtopic-container">
-    <div class="app-container">
-      <div id="topic-scroll-track" class="topic-scroll-track">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-  </div>
-
-  <div class="app-container">
-    <!-- 4. Breadcrumb Bar -->
-    <div id="breadcrumb-bar" class="breadcrumb-bar">
-      <!-- Breadcrumb items populated dynamically -->
-    </div>
-
-    <!-- 5. Filter Toolbar -->
-    <div class="filter-toolbar">
-      <!-- Desktop Filter Dropdowns -->
-      <div class="filter-selects-group">
-        <!-- Topic Select -->
-        <select id="select-topic" class="filter-select" aria-label="Filter by Topic">
-          <option value="All">All Topics</option>
-        </select>
-
-        <!-- Subtopic Select -->
-        <select id="select-subtopic" class="filter-select" aria-label="Filter by Subtopic">
-          <option value="All">All Subtopics</option>
-        </select>
-
-        <!-- Difficulty -->
-        <select id="select-difficulty" class="filter-select" aria-label="Filter by Difficulty">
-          <option value="All">All Difficulties</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Fresher Coding">Fresher Coding</option>
-        </select>
-
-        <!-- Question Type -->
-        <select id="select-type" class="filter-select" aria-label="Filter by Question Type">
-          <option value="All">All Question Types</option>
-          <option value="Concept">Concept</option>
-          <option value="Coding">Coding</option>
-          <option value="Scenario">Scenario</option>
-          <option value="Output">Output Prediction</option>
-          <option value="SQL Query">SQL Query</option>
-          <option value="Aptitude">Aptitude</option>
-          <option value="Logical Reasoning">Logical Reasoning</option>
-          <option value="Debugging">Debugging</option>
-          <option value="Project">Project Discussion</option>
-          <option value="HR">HR & Behavioral</option>
-        </select>
-
-        <!-- Interview Round -->
-        <select id="select-round" class="filter-select" aria-label="Filter by Interview Round">
-          <option value="All">All Rounds</option>
-          <option value="Technical Round">Technical Round</option>
-          <option value="Online Test">Online Test</option>
-          <option value="Coding Round">Coding Round</option>
-          <option value="Project Discussion">Project Discussion</option>
-          <option value="HR Round">HR Round</option>
-        </select>
-
-        <!-- Frequency -->
-        <select id="select-frequency" class="filter-select" aria-label="Filter by Frequency">
-          <option value="All">All Frequencies</option>
-          <option value="High">High Frequency</option>
-          <option value="Medium">Medium Frequency</option>
-          <option value="Low">Low Frequency</option>
-        </select>
-
-        <!-- Practice Status -->
-        <select id="select-status" class="filter-select" aria-label="Filter by Status">
-          <option value="All">All Statuses</option>
-          <option value="not_practiced">Not Practiced</option>
-          <option value="practiced">✓ Practiced</option>
-          <option value="need_practice">⚠ Needs Practice</option>
-          <option value="saved">★ Saved</option>
-        </select>
-
-        <!-- Sort Option -->
-        <select id="select-sort" class="filter-select" aria-label="Sort Questions">
-          <option value="default">Default Order</option>
-          <option value="freq">Frequently Asked First</option>
-          <option value="diff_asc">Difficulty: Easy → Hard</option>
-          <option value="diff_desc">Difficulty: Hard → Easy</option>
-          <option value="need_first">Needs Practice First</option>
-          <option value="saved_first">Saved First</option>
+      <!-- Quick Subject Switcher Footer -->
+      <div class="sidebar-footer">
+        <label for="sidebar-subject-select" style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:4px;">Filter Subject:</label>
+        <select id="sidebar-subject-select" class="sidebar-subject-select" aria-label="Select Subject">
+          <option value="All">All Subjects (5,478 Qs)</option>
         </select>
       </div>
+    </aside>
 
-      <!-- Mobile Filters Trigger Button -->
-      <button id="btn-open-drawer" class="btn-mobile-filters-trigger">
-        ⚙ Filters <span id="mobile-filter-badge"></span>
-      </button>
+    <!-- Main Content Container -->
+    <main class="app-main" id="app-main" role="main">
 
-      <!-- Right Metadata Count -->
-      <div class="toolbar-right-meta">
-        <span id="results-count-badge" class="results-count-badge">Loading questions...</span>
-      </div>
-    </div>
+      <!-- ====================================================================
+           VIEW 1: Dashboard Overview
+           ==================================================================== -->
+      <section id="view-dashboard" class="view-panel active">
+        <div class="dashboard-header">
+          <div class="dashboard-greeting">Good morning · Preparation Workspace</div>
+          <h1 class="dashboard-title">Developer Interview Dashboard</h1>
+          <p class="dashboard-desc">Master full-stack technical concepts, practice interactive assessment drills, and track your interview readiness.</p>
+        </div>
 
-    <!-- 6. Active Filter Chips -->
-    <div id="active-chips-bar" class="active-chips-bar" style="display:none;">
-      <!-- Filter chips rendered dynamically -->
-    </div>
+        <!-- Continue Learning Card -->
+        <div class="continue-card" id="continue-card">
+          <div class="continue-info">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent-primary); margin-bottom:4px;">Continue Learning</div>
+            <h3 id="continue-subject-title">JavaScript · Core Concepts</h3>
+            <p id="continue-subject-desc">Pick up where you left off. 5,478+ technical interview questions with verified answers.</p>
+          </div>
+          <button id="btn-continue-learning" class="btn-primary">
+            Continue Practice →
+          </button>
+        </div>
 
-    <!-- 7. Main Questions List (Compact Developer View) -->
-    <main id="questions-list-container" class="questions-list" role="feed">
-      <!-- Question rows rendered dynamically -->
+        <!-- Preparation Counts (Calculated dynamically from 100% real existing data) -->
+        <div class="section-header-row">
+          <h2>Your Preparation</h2>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Theory Questions</div>
+            <div class="stat-value" id="dash-theory-count">0</div>
+            <div class="stat-subtext">Concept &amp; scenario fundamentals</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">MCQ Practice</div>
+            <div class="stat-value" id="dash-mcq-count">0</div>
+            <div class="stat-subtext">Assessment questions available</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Interview Q&amp;A</div>
+            <div class="stat-value" id="dash-interview-count">0</div>
+            <div class="stat-subtext">Technical &amp; round questions</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Coding Problems</div>
+            <div class="stat-value" id="dash-coding-count">0</div>
+            <div class="stat-subtext">Hands-on code snippets &amp; DSA</div>
+          </div>
+        </div>
+
+        <!-- Subject Curriculum Grid -->
+        <div class="section-header-row" style="margin-top:var(--space-8);">
+          <h2>Subject Curriculum</h2>
+          <span style="font-size:13px; color:var(--text-muted);">22 Subjects · 5,478+ Verified Questions</span>
+        </div>
+
+        <div class="subject-grid" id="dashboard-subject-grid">
+          <!-- Populated dynamically from real subject data -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 2: Interview Questions / Reading Stream
+           ==================================================================== -->
+      <section id="view-questions" class="view-panel">
+        <div class="view-header">
+          <div class="view-title-row">
+            <h1 id="questions-view-title">Interview Questions</h1>
+            <span id="questions-count-meta" style="font-size:13px; color:var(--text-muted); font-weight:500;">Showing 0 questions</span>
+          </div>
+          <p id="questions-view-desc" style="font-size:14px; color:var(--text-secondary); margin-bottom:var(--space-4);">Clean reading experience with verified answers, code snippets, and follow-up prompts.</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+          <select id="filter-subject" class="filter-select" aria-label="Subject filter">
+            <option value="All">All Subjects</option>
+          </select>
+
+          <select id="filter-topic" class="filter-select" aria-label="Topic filter">
+            <option value="All">All Topics</option>
+          </select>
+
+          <select id="filter-difficulty" class="filter-select" aria-label="Difficulty filter">
+            <option value="All">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Fresher Coding">Coding</option>
+          </select>
+
+          <select id="filter-type" class="filter-select" aria-label="Question type filter">
+            <option value="All">All Types</option>
+            <option value="Concept">Concept</option>
+            <option value="Coding">Coding</option>
+            <option value="Scenario">Scenario</option>
+            <option value="Output">Output</option>
+            <option value="SQL Query">SQL Query</option>
+            <option value="Aptitude">Aptitude</option>
+            <option value="Logical Reasoning">Logical Reasoning</option>
+            <option value="HR">HR</option>
+          </select>
+
+          <select id="filter-status" class="filter-select" aria-label="Status filter">
+            <option value="All">All Statuses</option>
+            <option value="practiced">✓ Practiced</option>
+            <option value="weak">⚠ Needs Practice</option>
+            <option value="saved">★ Bookmarked</option>
+            <option value="unpracticed">⚪ Unpracticed</option>
+          </select>
+
+          <select id="filter-sort" class="filter-select" aria-label="Sort order">
+            <option value="default">Default Order</option>
+            <option value="freq">Frequently Asked First</option>
+            <option value="diff_asc">Difficulty: Easy → Hard</option>
+            <option value="diff_desc">Difficulty: Hard → Easy</option>
+            <option value="weak_first">Weak Areas First</option>
+          </select>
+        </div>
+
+        <!-- Topic Pills Horizontal Scroll -->
+        <div id="topic-chips-container" style="margin-bottom:var(--space-5); display:none;">
+          <div class="filter-pills-scroll" id="topic-chips-track"></div>
+        </div>
+
+        <!-- Question Cards Stream -->
+        <div class="questions-stream" id="questions-stream-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" id="pagination-controls">
+          <div class="pagination-info" id="pagination-info-text">Page 1 of 1</div>
+          <div class="pagination-buttons">
+            <button id="btn-page-prev" class="btn-page">← Previous</button>
+            <button id="btn-page-next" class="btn-page">Next →</button>
+            <select id="select-per-page" class="filter-select" style="height:32px; font-size:12px;">
+              <option value="25">25 per page</option>
+              <option value="50" selected>50 per page</option>
+              <option value="100">100 per page</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 3: MCQ Assessment Mode (Selectable Options, Instant Grading)
+           ==================================================================== -->
+      <section id="view-mcq" class="view-panel">
+        <div class="view-header">
+          <div class="view-title-row">
+            <h1>Interactive MCQ Assessment</h1>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="header-stat-pill">
+                <span>Score:</span> <strong id="mcq-score-display">0 / 0</strong>
+              </div>
+              <div class="header-stat-pill">
+                <span>Accuracy:</span> <strong id="mcq-accuracy-display">0%</strong>
+              </div>
+              <button id="btn-reset-mcq-score" class="btn-secondary" style="padding:4px 10px; font-size:12px;">↺ Reset</button>
+            </div>
+          </div>
+          <p style="font-size:14px; color:var(--text-secondary); margin-bottom:var(--space-4);">Select the best answer option for each question. Instant feedback with verified answer keys and in-depth explanations.</p>
+        </div>
+
+        <div class="filter-bar">
+          <select id="mcq-filter-subject" class="filter-select" aria-label="MCQ subject">
+            <option value="All">All Subjects</option>
+          </select>
+          <select id="mcq-filter-difficulty" class="filter-select" aria-label="MCQ difficulty">
+            <option value="All">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Fresher Coding">Coding</option>
+          </select>
+          <select id="mcq-filter-status" class="filter-select" aria-label="MCQ status">
+            <option value="All">All Questions</option>
+            <option value="unanswered">⚪ Unanswered Only</option>
+            <option value="correct">✓ Correct</option>
+            <option value="incorrect">✕ Incorrect</option>
+          </select>
+        </div>
+
+        <div class="questions-stream" id="mcq-stream-container">
+          <!-- Populated dynamically with interactive MCQ cards -->
+        </div>
+
+        <div class="pagination-container" id="mcq-pagination-controls">
+          <div class="pagination-info" id="mcq-pagination-info">Page 1 of 1</div>
+          <div class="pagination-buttons">
+            <button id="btn-mcq-prev" class="btn-page">← Previous</button>
+            <button id="btn-mcq-next" class="btn-page">Next →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 4: Theory & Concepts
+           ==================================================================== -->
+      <section id="view-theory" class="view-panel">
+        <div class="view-header">
+          <div class="view-title-row">
+            <h1>Theory &amp; Concepts</h1>
+            <span id="theory-count-meta" style="font-size:13px; color:var(--text-muted); font-weight:500;"></span>
+          </div>
+          <p style="font-size:14px; color:var(--text-secondary); margin-bottom:var(--space-4);">Focused concept notes, architectural patterns, and foundational theory for technical rounds.</p>
+        </div>
+
+        <div class="filter-bar">
+          <select id="theory-filter-subject" class="filter-select">
+            <option value="All">All Subjects</option>
+          </select>
+          <select id="theory-filter-topic" class="filter-select">
+            <option value="All">All Topics</option>
+          </select>
+        </div>
+
+        <div class="questions-stream" id="theory-stream-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 5: Coding Problems
+           ==================================================================== -->
+      <section id="view-coding" class="view-panel">
+        <div class="view-header">
+          <div class="view-title-row">
+            <h1>Coding &amp; Problem Solving</h1>
+            <span id="coding-count-meta" style="font-size:13px; color:var(--text-muted); font-weight:500;"></span>
+          </div>
+          <p style="font-size:14px; color:var(--text-secondary); margin-bottom:var(--space-4);">Hands-on coding questions, algorithm implementations, and output prediction problems.</p>
+        </div>
+
+        <div class="filter-bar">
+          <select id="coding-filter-subject" class="filter-select">
+            <option value="All">All Subjects</option>
+          </select>
+          <select id="coding-filter-difficulty" class="filter-select">
+            <option value="All">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Fresher Coding">Coding</option>
+          </select>
+        </div>
+
+        <div class="questions-stream" id="coding-stream-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 6: Progress & Weak Areas Tracker
+           ==================================================================== -->
+      <section id="view-progress" class="view-panel">
+        <div class="view-header">
+          <div class="view-title-row">
+            <h1>Preparation Progress</h1>
+            <button id="btn-practice-weak-now" class="btn-primary" style="font-size:12.5px;">
+              ⚠ Practice Weak Areas Now
+            </button>
+          </div>
+          <p style="font-size:14px; color:var(--text-secondary); margin-bottom:var(--space-4);">Track your mastery across subjects, assessment accuracy, and areas needing follow-up practice.</p>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom:var(--space-6);">
+          <div class="stat-card">
+            <div class="stat-label">Total Practiced</div>
+            <div class="stat-value" id="prog-total-practiced">0</div>
+            <div class="stat-subtext" id="prog-practiced-pct">0% of curriculum</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Assessment Accuracy</div>
+            <div class="stat-value" id="prog-accuracy">0%</div>
+            <div class="stat-subtext" id="prog-answered-stats">0 questions evaluated</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Weak Areas Flagged</div>
+            <div class="stat-value" id="prog-weak-count" style="color:var(--color-warning);">0</div>
+            <div class="stat-subtext">Needs more practice</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Saved Bookmarks</div>
+            <div class="stat-value" id="prog-saved-count" style="color:var(--color-purple);">0</div>
+            <div class="stat-subtext">Marked for review</div>
+          </div>
+        </div>
+
+        <!-- Subject Breakdown Bars -->
+        <h2 style="margin-bottom:var(--space-4);">Progress by Subject</h2>
+        <div id="progress-subjects-list" style="display:flex; flex-direction:column; gap:12px; margin-bottom:var(--space-8);">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
     </main>
-
-    <!-- 8. Pagination Bar -->
-    <div id="pagination-bar" class="pagination-bar">
-      <div class="pagination-controls">
-        <button id="btn-prev-page" class="btn-page-nav">← Previous</button>
-        <span id="page-indicator" class="page-indicator">Page 1 of 1</span>
-        <button id="btn-next-page" class="btn-page-nav">Next →</button>
-      </div>
-
-      <div class="page-size-selector">
-        <label for="select-page-size" style="font-size:12px; color:var(--text-muted); margin-right:4px;">Per Page:</label>
-        <select id="select-page-size" class="filter-select">
-          <option value="25">25</option>
-          <option value="50" selected>50</option>
-          <option value="100">100</option>
-          <option value="all">All (249)</option>
-        </select>
-      </div>
-    </div>
   </div>
 
-  <!-- 9. Drill Mode Overlay Modal -->
-  <div id="drill-modal" class="drill-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="drill-title">
-    <div class="drill-card-modal">
-      <div class="drill-modal-header">
-        <span id="drill-progress-text" class="drill-progress-text">Drill Setup</span>
-        <button id="btn-close-drill" class="drill-close-btn" aria-label="Close Drill">&times;</button>
+  <!-- ========================================================================
+       3. Mock Test & Assessment Drill Dialog
+       ======================================================================== -->
+  <div id="drill-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="drill-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title" id="drill-modal-title">Assessment Drill Session</span>
+        <button id="btn-close-drill-modal" class="modal-close-btn" aria-label="Close dialog">&times;</button>
       </div>
-      <div class="drill-progress-bar-track">
-        <div id="drill-progress-bar-fill" class="drill-progress-bar-fill"></div>
+      <div class="progress-track">
+        <div id="drill-progress-bar" class="progress-fill"></div>
       </div>
 
-      <!-- Step A: Setup Panel -->
-      <div id="drill-setup-panel" class="drill-modal-body">
-        <h2 id="drill-title" style="font-size:18px; margin-bottom:6px; font-family:var(--font-display);">Practice Drill Session</h2>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Test your interview recall on real fresher questions. Answers are hidden until you click Reveal.</p>
+      <!-- Setup Panel -->
+      <div id="drill-panel-setup" class="modal-body">
+        <h3 style="margin-bottom:6px;">Custom Assessment Drill</h3>
+        <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:16px;">Configure an assessment drill session tailored to your current study targets.</p>
 
-        <div class="drawer-fields">
-          <div class="drawer-field-group">
-            <label class="drawer-label" for="drill-subject-select">Target Subject:</label>
-            <select id="drill-subject-select" class="filter-select">
-              <option value="All">All Subjects (249 Qs)</option>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">Target Subject:</label>
+            <select id="drill-select-subject" class="filter-select" style="width:100%; height:38px;">
+              <option value="All">All Subjects (5,478 Qs)</option>
             </select>
           </div>
 
-          <div class="drawer-field-group">
-            <label class="drawer-label" for="drill-topic-select">Topic:</label>
-            <select id="drill-topic-select" class="filter-select">
-              <option value="All">All Topics</option>
-            </select>
-          </div>
-
-          <div class="drawer-field-group">
-            <label class="drawer-label" for="drill-difficulty-select">Difficulty:</label>
-            <select id="drill-difficulty-select" class="filter-select">
+          <div>
+            <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">Difficulty:</label>
+            <select id="drill-select-difficulty" class="filter-select" style="width:100%; height:38px;">
               <option value="All">All Difficulties</option>
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
-              <option value="Fresher Coding">Fresher Coding</option>
+              <option value="Fresher Coding">Coding</option>
             </select>
           </div>
 
-          <div class="drawer-field-group">
-            <label class="drawer-label" for="drill-type-select">Question Type:</label>
-            <select id="drill-type-select" class="filter-select">
-              <option value="All">All Types</option>
-              <option value="Concept">Concept</option>
-              <option value="Coding">Coding</option>
-              <option value="Scenario">Scenario</option>
-              <option value="Output">Output</option>
-              <option value="SQL Query">SQL Query</option>
-              <option value="Aptitude">Aptitude</option>
-              <option value="Logical Reasoning">Logical Reasoning</option>
-              <option value="Debugging">Debugging</option>
-              <option value="Project">Project Discussion</option>
-              <option value="HR">HR &amp; Behavioral</option>
-            </select>
-          </div>
-
-          <div class="drawer-field-group">
-            <label class="drawer-label" for="drill-count-select">Number of Questions:</label>
-            <select id="drill-count-select" class="filter-select">
-              <option value="10">10 Questions (Quick 5-min drill)</option>
+          <div>
+            <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">Session Length:</label>
+            <select id="drill-select-count" class="filter-select" style="width:100%; height:38px;">
+              <option value="10">10 Questions (Quick 5-min review)</option>
               <option value="20" selected>20 Questions (Standard session)</option>
               <option value="30">30 Questions (Deep practice)</option>
-              <option value="all">All Matching Questions</option>
+              <option value="50">50 Questions (Full mock test)</option>
             </select>
           </div>
         </div>
 
-        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button id="btn-begin-drill" class="btn-drawer-apply" style="flex:2;">
-            ▶ Begin Drill
+        <div style="margin-top:20px; display:flex; gap:10px;">
+          <button id="btn-start-drill-session" class="btn-primary" style="flex:2; justify-content:center;">
+            ▶ Start Assessment Drill
           </button>
-          <button id="btn-drill-weak-only" class="btn-drawer-clear" style="flex:1;">
+          <button id="btn-drill-weak-session" class="btn-secondary" style="flex:1; justify-content:center;">
             ⚠ Drill Weak Areas Only
           </button>
         </div>
       </div>
 
-      <!-- Step B: Active Runner Panel -->
-      <div id="drill-runner-panel" class="drill-modal-body" style="display:none;">
-        <div id="drill-q-meta" class="q-meta-tags" style="margin:0 0 10px 0;"></div>
-        <h3 id="drill-q-title" class="drill-q-title">Question goes here...</h3>
-
-        <div class="drill-prompt-box">
-          💡 <strong>Self-Test Prompt:</strong> Formulate how you would answer this concisely to the interviewer before revealing the answer.
+      <!-- Active Runner Panel -->
+      <div id="drill-panel-runner" class="modal-body" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div id="drill-q-meta" class="card-meta-row" style="margin:0;"></div>
+          <span id="drill-counter-text" style="font-size:12px; font-family:var(--font-mono); color:var(--text-muted);">Q 1 / 20</span>
         </div>
 
-        <div style="margin-bottom:14px;">
-          <button id="btn-drill-reveal-answer" class="btn-header-action btn-header-primary">
-            👁 Reveal Answer
+        <h3 id="drill-q-title" style="margin-bottom:16px; font-size:18px; line-height:1.45;">Question</h3>
+
+        <!-- Interactive Drill Options -->
+        <div id="drill-options-container" class="mcq-options-list"></div>
+
+        <div style="margin-bottom:12px;">
+          <button id="btn-drill-reveal-answer" class="btn-secondary" style="font-size:12px;">
+            🔑 Reveal Answer Key
           </button>
         </div>
 
-        <!-- Hidden Answer Container -->
-        <div id="drill-answer-box" class="drill-answer-box">
-          <div class="answer-section-label">Answer</div>
-          <div id="drill-answer-text" class="answer-text-content"></div>
+        <!-- Answer Drawer -->
+        <div id="drill-answer-drawer" class="answer-drawer">
+          <div id="drill-answer-key-pill" class="answer-key-pill">🔑 Answer Key: Option A</div>
+          <div class="answer-section-label">Verified Solution</div>
+          <div id="drill-answer-text" class="answer-content"></div>
 
-          <div id="drill-explanation-wrap" style="display:none;">
-            <div class="answer-section-label">Key Explanation</div>
-            <div id="drill-explanation-text" class="answer-explanation"></div>
+          <div id="drill-expl-wrap" style="margin-top:12px; display:none;">
+            <div class="answer-section-label">Explanation</div>
+            <div id="drill-expl-text" class="explanation-content"></div>
           </div>
 
-          <div id="drill-code-wrap" style="display:none;">
+          <div id="drill-code-wrap" style="margin-top:12px; display:none;">
             <div class="answer-section-label">Code Example</div>
-            <div class="code-snippet-box">
+            <div class="code-box">
               <pre><code id="drill-code-text"></code></pre>
             </div>
           </div>
-
-          <div id="drill-followup-wrap" class="q-followup-box" style="display:none;">
-            <strong>Follow-Up:</strong> <span id="drill-followup-text"></span>
-          </div>
         </div>
       </div>
 
-      <!-- Step C: Summary Panel -->
-      <div id="drill-summary-panel" class="drill-modal-body" style="display:none;">
-        <h2 style="font-size:18px; margin-bottom:6px; color:var(--accent-green); font-family:var(--font-display);">✓ Drill Complete</h2>
-        <p id="drill-summary-stats" style="font-size:14px; color:var(--text-secondary); margin-bottom:16px;"></p>
-
-        <div id="drill-weak-topics-wrap" style="margin-bottom:20px; display:none;">
-          <div class="answer-section-label" style="color:var(--accent-rose);">Topics Needing Further Practice:</div>
-          <ul id="drill-weak-topics-list" style="margin-left:20px; font-size:13px; color:var(--text-primary); margin-top:6px;"></ul>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button id="btn-drill-again" class="btn-drawer-apply">
-            Start Another Drill
-          </button>
-          <button id="btn-drill-practice-weak-now" class="btn-drawer-clear">
-            Practice These Weak Areas
-          </button>
+      <!-- Summary Panel -->
+      <div id="drill-panel-summary" class="modal-body" style="display:none;">
+        <h2 style="color:var(--color-success); margin-bottom:6px;">✓ Drill Complete</h2>
+        <p id="drill-summary-text" style="font-size:14px; color:var(--text-secondary); margin-bottom:16px;"></p>
+        <div style="display:flex; gap:10px;">
+          <button id="btn-drill-again" class="btn-primary">Start Another Drill</button>
+          <button id="btn-close-drill-summary" class="btn-secondary">Back to Dashboard</button>
         </div>
       </div>
 
-      <!-- Runner Footer Controls -->
-      <div id="drill-runner-footer" class="drill-modal-footer" style="display:none;">
-        <div style="display:flex; gap:8px;">
-          <button id="btn-drill-mark-gotit" class="btn-q-action active-practiced" title="Mark this question as practiced">
-            ✓ Got It (Practiced)
-          </button>
-          <button id="btn-drill-mark-need" class="btn-q-action active-need" title="Mark this question for future practice">
-            ⚠ Needs Practice
-          </button>
-        </div>
-
+      <!-- Runner Footer Navigation -->
+      <div id="drill-runner-footer" class="modal-footer" style="display:none;">
         <div style="display:flex; gap:6px;">
-          <button id="btn-drill-prev" class="btn-page-nav">← Previous</button>
-          <button id="btn-drill-next" class="btn-page-nav">Next →</button>
+          <button id="btn-drill-gotit" class="btn-card-action active-practiced">✓ Practiced</button>
+          <button id="btn-drill-need" class="btn-card-action active-weak">⚠ Needs Practice</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button id="btn-drill-prev-q" class="btn-page">← Prev</button>
+          <button id="btn-drill-next-q" class="btn-page">Next →</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 10. Mobile Filter Drawer -->
-  <div id="mobile-drawer" class="mobile-filter-drawer" role="dialog" aria-modal="true" aria-label="Filter Options">
-    <div class="drawer-header">
-      <span class="drawer-title">Filter Questions</span>
-      <button id="btn-close-drawer" class="drawer-close-btn">&times;</button>
-    </div>
+  <!-- Toast Notification -->
+  <div id="toast-notice" class="toast-notice"></div>
 
-    <div class="drawer-fields">
-      <div class="drawer-field-group">
-        <label class="drawer-label" for="drawer-topic">Topic:</label>
-        <select id="drawer-topic" class="filter-select"></select>
-      </div>
-
-      <div class="drawer-field-group">
-        <label class="drawer-label" for="drawer-difficulty">Difficulty:</label>
-        <select id="drawer-difficulty" class="filter-select">
-          <option value="All">All Difficulties</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Fresher Coding">Fresher Coding</option>
-        </select>
-      </div>
-
-      <div class="drawer-field-group">
-        <label class="drawer-label" for="drawer-type">Question Type:</label>
-        <select id="drawer-type" class="filter-select">
-          <option value="All">All Types</option>
-          <option value="Concept">Concept</option>
-          <option value="Coding">Coding</option>
-          <option value="Scenario">Scenario</option>
-          <option value="Output">Output</option>
-          <option value="SQL Query">SQL Query</option>
-          <option value="Aptitude">Aptitude</option>
-          <option value="Logical Reasoning">Logical Reasoning</option>
-          <option value="Debugging">Debugging</option>
-          <option value="Project">Project Discussion</option>
-          <option value="HR">HR & Behavioral</option>
-        </select>
-      </div>
-
-      <div class="drawer-field-group">
-        <label class="drawer-label" for="drawer-round">Interview Round:</label>
-        <select id="drawer-round" class="filter-select">
-          <option value="All">All Rounds</option>
-          <option value="Technical Round">Technical Round</option>
-          <option value="Online Test">Online Test</option>
-          <option value="Coding Round">Coding Round</option>
-          <option value="Project Discussion">Project Discussion</option>
-          <option value="HR Round">HR Round</option>
-        </select>
-      </div>
-
-      <div class="drawer-field-group">
-        <label class="drawer-label" for="drawer-status">Practice Status:</label>
-        <select id="drawer-status" class="filter-select">
-          <option value="All">All Statuses</option>
-          <option value="not_practiced">Not Practiced</option>
-          <option value="practiced">✓ Practiced</option>
-          <option value="need_practice">⚠ Needs Practice</option>
-          <option value="saved">★ Saved</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="drawer-actions">
-      <button id="btn-drawer-apply" class="btn-drawer-apply">Apply Filters</button>
-      <button id="btn-drawer-clear" class="btn-drawer-clear">Clear All</button>
-    </div>
-  </div>
-
-  <!-- Toast Notification Element -->
-  <div id="toast-msg" class="toast-msg"></div>
-
-  <!-- Data and Application Logic Scripts -->
-  <script src="./fresher-data.js?v=4.1"></script>
-  <script src="./clean-reader.js?v=4.1"></script>
+  <!-- Scripts: 100% Real Questions Data & Clean Application Logic -->
+  <script src="./fresher-data.js?v=8.0"></script>
+  <script src="./clean-reader.js?v=8.0"></script>
 </body>
 </html>
