@@ -42,6 +42,7 @@
 
     // Filters
     selectedSubject: localStorage.getItem('devprep_subject') || 'All',
+    selectedTopic: 'All',
     selectedDifficulty: 'All',
     selectedStatus: 'All',
     searchQuery: '',
@@ -73,7 +74,10 @@
     dom.btnThemeToggle = document.getElementById('btn-theme-toggle');
 
     // Left Pane (Explorer)
+    dom.selectSubject = document.getElementById('select-subject');
+    dom.selectTopic = document.getElementById('select-topic');
     dom.explorerSearchInput = document.getElementById('explorer-search-input');
+    dom.explorerSearchClear = document.getElementById('explorer-search-clear');
     dom.subjectCarouselTrack = document.getElementById('subject-carousel-track');
     dom.selectDifficulty = document.getElementById('select-difficulty');
     dom.selectStatus = document.getElementById('select-status');
@@ -260,7 +264,17 @@
       result = result.filter(q => q.subject.toLowerCase() === state.selectedSubject.toLowerCase());
     }
 
-    // 2. Difficulty Filter
+    // 2. Topic Filter
+    if (state.selectedTopic !== 'All') {
+      const targetTopic = state.selectedTopic.toLowerCase();
+      result = result.filter(q => {
+        const t = (q.topic || '').toLowerCase();
+        const st = (q.subTopic || '').toLowerCase();
+        return t === targetTopic || st === targetTopic;
+      });
+    }
+
+    // 3. Difficulty Filter
     if (state.selectedDifficulty !== 'All') {
       result = result.filter(q => q.difficulty.toLowerCase() === state.selectedDifficulty.toLowerCase());
     }
@@ -590,6 +604,75 @@
     if (dom.hudPracticed) dom.hudPracticed.textContent = state.practicedIds.size.toLocaleString();
   }
 
+  // Populate Subject Select Dropdown
+  function populateSubjectDropdown() {
+    if (!dom.selectSubject) return;
+    const totalCount = state.allQuestions.length;
+    let html = `<option value="All">All Subjects (${totalCount.toLocaleString()})</option>`;
+
+    SUBJECTS.filter(s => s !== 'All').forEach(sub => {
+      const cnt = state.allQuestions.filter(q => q.subject.toLowerCase() === sub.toLowerCase()).length;
+      html += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)} (${cnt.toLocaleString()})</option>`;
+    });
+
+    dom.selectSubject.innerHTML = html;
+    dom.selectSubject.value = state.selectedSubject;
+  }
+
+  // Populate & Update Topic Select Dropdown dynamically based on selected subject
+  function updateTopicDropdown() {
+    if (!dom.selectTopic) return;
+
+    // Filter questions by current subject
+    const subjectQuestions = (state.selectedSubject === 'All')
+      ? state.allQuestions
+      : state.allQuestions.filter(q => q.subject.toLowerCase() === state.selectedSubject.toLowerCase());
+
+    // Gather distinct topics with counts
+    const topicCounts = new Map();
+    subjectQuestions.forEach(q => {
+      if (q.topic && q.topic.trim()) {
+        const t = q.topic.trim();
+        topicCounts.set(t, (topicCounts.get(t) || 0) + 1);
+      }
+    });
+
+    // Sort topics: by question count descending, then alphabetical
+    const sortedTopics = Array.from(topicCounts.entries()).sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0]);
+    });
+
+    const prefix = state.selectedSubject === 'All' ? 'All Topics' : `All ${state.selectedSubject} Topics`;
+    let html = `<option value="All">${prefix} (${subjectQuestions.length.toLocaleString()})</option>`;
+
+    sortedTopics.forEach(([topicName, count]) => {
+      html += `<option value="${escapeHtml(topicName)}">${escapeHtml(topicName)} (${count.toLocaleString()})</option>`;
+    });
+
+    dom.selectTopic.innerHTML = html;
+
+    // Reset selectedTopic to 'All' if it's not in the new subject pool
+    if (state.selectedTopic !== 'All' && !topicCounts.has(state.selectedTopic)) {
+      state.selectedTopic = 'All';
+    }
+    dom.selectTopic.value = state.selectedTopic;
+  }
+
+  // Synchronize Subject Carousel Active Pill with Selected Subject
+  function syncSubjectCarousel() {
+    if (!dom.subjectCarouselTrack) return;
+    const chips = dom.subjectCarouselTrack.querySelectorAll('.subject-chip');
+    chips.forEach(c => {
+      const sub = c.getAttribute('data-subject');
+      const isAct = (sub === state.selectedSubject);
+      c.classList.toggle('active', isAct);
+      if (isAct) {
+        c.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      }
+    });
+  }
+
   // Render 22 Subject Carousel Track in Explorer Header
   function renderSubjectCarousel() {
     if (!dom.subjectCarouselTrack) return;
@@ -603,15 +686,17 @@
       const chip = document.createElement('button');
       chip.className = `subject-chip ${sub === state.selectedSubject ? 'active' : ''}`;
       chip.type = 'button';
+      chip.setAttribute('data-subject', sub);
       chip.textContent = `${sub} (${count})`;
 
       chip.addEventListener('click', () => {
         state.selectedSubject = sub;
         localStorage.setItem('devprep_subject', sub);
+        if (dom.selectSubject) dom.selectSubject.value = sub;
 
-        // Update active chip classes
-        dom.subjectCarouselTrack.querySelectorAll('.subject-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
+        state.selectedTopic = 'All';
+        updateTopicDropdown();
+        syncSubjectCarousel();
 
         state.selectedIndex = 0;
         applyFilters();
@@ -688,18 +773,18 @@
   function jumpToQuestionFromCmd(q) {
     closeCmdPalette();
 
-    // Reset subject filter if question is outside current subject
-    if (state.selectedSubject !== 'All' && q.subject !== state.selectedSubject) {
+    // Reset subject/topic filter if question is outside current selection
+    if (state.selectedSubject !== 'All' && q.subject.toLowerCase() !== state.selectedSubject.toLowerCase()) {
       state.selectedSubject = 'All';
-      if (dom.subjectCarouselTrack) {
-        dom.subjectCarouselTrack.querySelectorAll('.subject-chip').forEach(c => {
-          c.classList.toggle('active', c.textContent.startsWith('All'));
-        });
-      }
+      if (dom.selectSubject) dom.selectSubject.value = 'All';
+      syncSubjectCarousel();
     }
+    state.selectedTopic = 'All';
+    updateTopicDropdown();
 
     state.searchQuery = '';
     if (dom.explorerSearchInput) dom.explorerSearchInput.value = '';
+    if (dom.explorerSearchClear) dom.explorerSearchClear.style.display = 'none';
 
     applyFilters();
 
@@ -713,16 +798,50 @@
 
   // Setup Event Listeners
   function setupEventListeners() {
-    // 1. Search with Debounce
+    // 0. Subject & Topic Top Navigation Selects
+    if (dom.selectSubject) {
+      dom.selectSubject.addEventListener('change', (e) => {
+        state.selectedSubject = e.target.value;
+        localStorage.setItem('devprep_subject', state.selectedSubject);
+        state.selectedTopic = 'All';
+        updateTopicDropdown();
+        syncSubjectCarousel();
+        state.selectedIndex = 0;
+        applyFilters();
+      });
+    }
+
+    if (dom.selectTopic) {
+      dom.selectTopic.addEventListener('change', (e) => {
+        state.selectedTopic = e.target.value;
+        state.selectedIndex = 0;
+        applyFilters();
+      });
+    }
+
+    // 1. Search with Debounce & Clear Button
     let searchTimer = null;
     if (dom.explorerSearchInput) {
       dom.explorerSearchInput.addEventListener('input', (e) => {
+        if (dom.explorerSearchClear) {
+          dom.explorerSearchClear.style.display = e.target.value ? 'flex' : 'none';
+        }
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
           state.searchQuery = e.target.value;
           state.selectedIndex = 0;
           applyFilters();
         }, 120);
+      });
+    }
+
+    if (dom.explorerSearchClear) {
+      dom.explorerSearchClear.addEventListener('click', () => {
+        if (dom.explorerSearchInput) dom.explorerSearchInput.value = '';
+        dom.explorerSearchClear.style.display = 'none';
+        state.searchQuery = '';
+        state.selectedIndex = 0;
+        applyFilters();
       });
     }
 
@@ -901,10 +1020,18 @@
       dom.brandReset.addEventListener('click', (e) => {
         e.preventDefault();
         state.selectedSubject = 'All';
+        state.selectedTopic = 'All';
         state.searchQuery = '';
+        state.selectedDifficulty = 'All';
+        state.selectedStatus = 'All';
         state.selectedIndex = 0;
         if (dom.explorerSearchInput) dom.explorerSearchInput.value = '';
-        renderSubjectCarousel();
+        if (dom.explorerSearchClear) dom.explorerSearchClear.style.display = 'none';
+        if (dom.selectSubject) dom.selectSubject.value = 'All';
+        if (dom.selectDifficulty) dom.selectDifficulty.value = 'All';
+        if (dom.selectStatus) dom.selectStatus.value = 'All';
+        updateTopicDropdown();
+        syncSubjectCarousel();
         applyFilters();
       });
     }
@@ -1010,6 +1137,8 @@
       dom.btnThemeToggle.textContent = storedTheme === 'light' ? '🌙' : '☀️';
     }
 
+    populateSubjectDropdown();
+    updateTopicDropdown();
     renderSubjectCarousel();
     setupEventListeners();
     applyFilters();

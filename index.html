@@ -63,14 +63,42 @@
     <!-- LEFT PANE: Fast Question Explorer -->
     <aside class="explorer-pane" aria-label="Questions Explorer">
       <div class="explorer-top">
-        <input 
-          type="text" 
-          id="explorer-search-input" 
-          class="explorer-input-box" 
-          placeholder="Filter questions by keyword or topic..."
-          autocomplete="off"
-          spellcheck="false"
-        >
+        <!-- Top Subject & Topic Navigation Selectors -->
+        <div class="explorer-nav-dropdowns">
+          <div class="nav-select-group">
+            <label for="select-subject" class="nav-select-label">
+              <span class="nav-label-icon">📚</span> Subject
+            </label>
+            <div class="nav-select-wrapper">
+              <select id="select-subject" class="explorer-nav-select" aria-label="Filter questions by Subject">
+                <option value="All">All Subjects (5,478)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="nav-select-group">
+            <label for="select-topic" class="nav-select-label">
+              <span class="nav-label-icon">🎯</span> Topic
+            </label>
+            <div class="nav-select-wrapper">
+              <select id="select-topic" class="explorer-nav-select" aria-label="Filter questions by Topic">
+                <option value="All">All Topics</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="explorer-search-wrapper">
+          <input 
+            type="text" 
+            id="explorer-search-input" 
+            class="explorer-input-box" 
+            placeholder="Filter questions by keyword or topic..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button id="explorer-search-clear" class="explorer-search-clear" title="Clear search" aria-label="Clear search" style="display:none;">✕</button>
+        </div>
 
         <!-- 22 Subject Carousel Track -->
         <div class="subject-carousel" id="subject-carousel-track">
