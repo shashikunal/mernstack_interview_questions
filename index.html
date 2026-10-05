@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./clean-reader.css?v=10.0">
+  <link rel="stylesheet" href="./clean-reader.css?v=12.0">
 </head>
 <body>
 
@@ -21,18 +21,19 @@
        ======================================================================== -->
   <header class="workspace-header">
     <div class="header-left">
-      <a href="#" class="brand-wrap" id="brand-reset" title="DevPrep Workspace">
+      <a href="#" class="brand-wrap" id="brand-reset" title="DevPrep — Easy Learning Portal">
         <span class="brand-spark">⚡</span>
-        <span>DevPrep</span>
+        <span class="brand-name">DevPrep</span>
+        <span class="brand-tag">Easy Interview Guide</span>
       </a>
     </div>
 
-    <!-- Center Command Palette Button (Ctrl+K) -->
+    <!-- Center Search Button (Ctrl+K) -->
     <div class="header-center">
-      <button id="btn-open-cmd" class="cmd-search-btn" title="Open Command Palette (Ctrl+K / Cmd+K)">
+      <button id="btn-open-cmd" class="cmd-search-btn" title="Search any question (Ctrl+K)">
         <span style="display:flex; align-items:center; gap:8px;">
           <span>🔍</span>
-          <span>Search or jump to question...</span>
+          <span>Search any question or topic...</span>
         </span>
         <kbd class="kbd-badge">Ctrl K</kbd>
       </button>
@@ -40,35 +41,36 @@
 
     <div class="header-right">
       <div class="hud-chip" title="Daily streak of correct answers">
+        <span>Streak:</span>
         <strong id="hud-streak">🔥 0</strong>
       </div>
 
-      <div class="hud-chip" title="Total questions marked as practiced">
-        <span>Practiced:</span>
+      <div class="hud-chip" title="Total questions marked as learned">
+        <span>Learned:</span>
         <strong id="hud-practiced">0</strong>
       </div>
 
       <!-- Theme Switcher -->
-      <button id="btn-theme-toggle" class="btn-icon" title="Toggle dark/light theme" aria-label="Toggle theme">
+      <button id="btn-theme-toggle" class="btn-icon" title="Switch dark/light mode" aria-label="Toggle theme">
         🌙
       </button>
     </div>
   </header>
 
   <!-- ========================================================================
-       Curriculum Module Switcher Bar (AI & Prompt Engineering vs Full-Stack)
+       Curriculum Module Switcher Bar (Simple English)
        ======================================================================== -->
-  <nav class="curriculum-tabs-bar" aria-label="Curriculum Modules">
+  <nav class="curriculum-tabs-bar" aria-label="Learning Guides">
     <div class="curriculum-tabs-inner">
-      <button id="tab-curriculum-ai" class="curriculum-tab-btn active-important" aria-selected="true" role="tab" title="AI, Generative AI & Prompt Engineering Masterclass">
-        <span class="tab-badge-glow">⭐ MOST IMPORTANT</span>
-        <span class="tab-title">✨ AI + GenAI + Prompt Engineering</span>
-        <span class="tab-count-pill">85 Modules</span>
+      <button id="tab-curriculum-ai" class="curriculum-tab-btn active-important" aria-selected="true" role="tab" title="AI & Vibe Coding Guide">
+        <span class="tab-badge-glow">⭐ RECOMMENDED</span>
+        <span class="tab-title">🤖 AI &amp; Vibe Coding Guide</span>
+        <span class="tab-count-pill">249 Questions</span>
       </button>
 
-      <button id="tab-curriculum-fullstack" class="curriculum-tab-btn" aria-selected="false" role="tab" title="Full-Stack MERN & Web Developer Question Bank">
-        <span class="tab-title">💻 Full-Stack MERN & Web Dev</span>
-        <span class="tab-count-pill">5,478 Qs</span>
+      <button id="tab-curriculum-fullstack" class="curriculum-tab-btn" aria-selected="false" role="tab" title="Full-Stack Web Development Question Bank">
+        <span class="tab-title">🌐 Full-Stack Web Development</span>
+        <span class="tab-count-pill">5,478 Questions</span>
       </button>
     </div>
   </nav>
@@ -85,7 +87,7 @@
         <div class="explorer-nav-dropdowns">
           <div class="nav-select-group">
             <label for="select-subject" class="nav-select-label">
-              <span class="nav-label-icon">📚</span> Subject
+              <span class="nav-label-icon">📚</span> Subject:
             </label>
             <div class="nav-select-wrapper">
               <select id="select-subject" class="explorer-nav-select" aria-label="Filter questions by Subject">
@@ -96,7 +98,7 @@
 
           <div class="nav-select-group">
             <label for="select-topic" class="nav-select-label">
-              <span class="nav-label-icon">🎯</span> Topic
+              <span class="nav-label-icon">🎯</span> Topic:
             </label>
             <div class="nav-select-wrapper">
               <select id="select-topic" class="explorer-nav-select" aria-label="Filter questions by Topic">
@@ -111,7 +113,7 @@
             type="text" 
             id="explorer-search-input" 
             class="explorer-input-box" 
-            placeholder="Filter questions by keyword or topic..."
+            placeholder="Type to filter questions..."
             autocomplete="off"
             spellcheck="false"
           >
@@ -166,14 +168,14 @@
             </div>
 
             <div class="focus-actions">
-              <button id="btn-focus-practice" class="btn-focus-action" title="Mark as practiced">
-                ✓ Mark Practiced
+              <button id="btn-focus-practice" class="btn-focus-action" title="Mark this question as learned">
+                ✓ Mark as Learned
               </button>
-              <button id="btn-focus-weak" class="btn-focus-action" title="Flag as needing practice">
-                ⚠ Flag Weak
+              <button id="btn-focus-weak" class="btn-focus-action" title="Mark for practice">
+                ⚠ Need Practice
               </button>
-              <button id="btn-focus-save" class="btn-focus-action" title="Bookmark question">
-                ★ Bookmark
+              <button id="btn-focus-save" class="btn-focus-action" title="Save question">
+                ★ Save
               </button>
             </div>
           </div>
@@ -185,43 +187,43 @@
           </div>
         </div>
 
-        <!-- Mode Switcher: Solution View vs MCQ Quiz View vs Vibe Studio -->
+        <!-- Mode Switcher: Simple & Friendly English -->
         <div class="view-mode-tabs" role="tablist">
           <button class="view-mode-btn active" id="btn-mode-solution" data-mode="solution" role="tab" aria-selected="true">
-            📖 Verified Solution View
+            📖 Questions &amp; Answers
           </button>
           <button class="view-mode-btn" id="btn-mode-quiz" data-mode="quiz" role="tab" aria-selected="false">
-            ⚡ Interactive MCQ Quiz
-          </button>
-          <button class="view-mode-btn" id="btn-mode-course" data-mode="course" role="tab" aria-selected="false">
-            🚀 28-Step Vibe Coding Roadmap &amp; Projects
+            ✍️ Take a Quiz
           </button>
           <button class="view-mode-btn" id="btn-mode-videos" data-mode="videos" role="tab" aria-selected="false">
-            🎬 14 Video Lessons
+            🎬 Video Lessons
+          </button>
+          <button class="view-mode-btn" id="btn-mode-course" data-mode="course" role="tab" aria-selected="false">
+            🗺️ Step-by-Step AI Guide
           </button>
           <button class="view-mode-btn" id="btn-mode-prompts" data-mode="prompts" role="tab" aria-selected="false">
-            ⚡ Prompt Lab &amp; Token Optimizer
+            💡 Practice Prompts
           </button>
         </div>
 
-        <!-- MODE 1: Verified Solution View -->
+        <!-- MODE 1: Questions & Answers View -->
         <div id="solution-view-panel" class="solution-box">
           <div class="solution-section">
-            <div class="solution-label">Verified Interview Answer</div>
+            <div class="solution-label">💡 Simple Answer</div>
             <div class="solution-body" id="focus-answer-text"></div>
           </div>
 
           <div class="solution-section" id="focus-expl-wrap" style="display:none;">
-            <div class="solution-label">Solution &amp; In-Depth Explanation</div>
+            <div class="solution-label">🔍 In-Depth Explanation</div>
             <div class="explanation-card" id="focus-expl-text"></div>
           </div>
 
           <div class="solution-section" id="focus-code-wrap" style="display:none;">
-            <div class="solution-label">Implementation Example (JetBrains Mono)</div>
+            <div class="solution-label">💻 Code Example</div>
             <div class="code-container">
               <div class="code-header">
-                <span>Code snippet</span>
-                <button class="btn-code-copy" id="btn-code-copy">Copy</button>
+                <span>Code Example</span>
+                <button class="btn-code-copy" id="btn-code-copy">📋 Copy Code</button>
               </div>
               <pre><code id="focus-code-text"></code></pre>
             </div>
@@ -229,31 +231,31 @@
 
           <div class="solution-section" id="focus-followup-wrap" style="display:none;">
             <div class="followup-alert">
-              <strong>Interviewer Follow-Up:</strong> <span id="focus-followup-text"></span>
+              <strong>🎯 What Interviewers Might Ask Next:</strong> <span id="focus-followup-text"></span>
             </div>
           </div>
 
           <div class="solution-section" id="focus-ref-wrap" style="display:none;">
             <div style="font-size:12.5px; color:var(--text-muted);">
-              <strong>Reference:</strong> <span id="focus-ref-text"></span>
+              <strong>📚 Learning Resource:</strong> <span id="focus-ref-text"></span>
             </div>
           </div>
         </div>
 
-        <!-- MODE 2: Interactive MCQ Quiz View -->
+        <!-- MODE 2: Take a Quiz View -->
         <div id="quiz-view-panel" style="display:none;">
           <div class="mcq-options-container" id="focus-mcq-options">
             <!-- Populated dynamically: [A], [B], [C], [D] -->
           </div>
 
           <div class="solution-box" id="quiz-solution-drawer" style="display:none;">
-            <div class="solution-answer-key-pill" id="quiz-key-pill">🔑 Answer Key: Option A</div>
+            <div class="solution-answer-key-pill" id="quiz-key-pill">✅ Correct Answer</div>
             <div class="solution-section">
-              <div class="solution-label">Verified Answer</div>
+              <div class="solution-label">Simple Answer</div>
               <div class="solution-body" id="quiz-drawer-answer"></div>
             </div>
             <div class="solution-section" id="quiz-drawer-expl-wrap" style="display:none;">
-              <div class="solution-label">Explanation</div>
+              <div class="solution-label">Why This Is Correct</div>
               <div class="explanation-card" id="quiz-drawer-expl"></div>
             </div>
           </div>
@@ -274,18 +276,18 @@
           <!-- Dynamically populated from window.AI_VIBE_COURSE_DATA.promptExercises -->
         </div>
 
-        <!-- Bottom Keyboard & Navigation Bar -->
+        <!-- Bottom Navigation Bar -->
         <div class="focus-bottom-nav">
           <div class="shortcut-hints">
-            <span><kbd>J</kbd> Next</span>
-            <span><kbd>K</kbd> Prev</span>
-            <span><kbd>1-4</kbd> Pick MCQ</span>
+            <span><kbd>J</kbd> Next Question</span>
+            <span><kbd>K</kbd> Previous Question</span>
+            <span><kbd>1-4</kbd> Pick Option</span>
             <span><kbd>Ctrl K</kbd> Search</span>
           </div>
 
           <div class="nav-buttons-group">
             <button id="btn-nav-prev" class="btn-nav btn-nav-secondary">
-              ← Prev (K)
+              ← Previous (K)
             </button>
             <button id="btn-nav-next" class="btn-nav btn-nav-primary">
               Next (J) →
@@ -324,7 +326,7 @@
 
   <!-- 100% Real Question Data & Workspace Engine -->
   <script src="./fresher-data.js?v=10.0"></script>
-  <script src="./ai-genai-data.js?v=1.0"></script>
-  <script src="./clean-reader.js?v=10.0"></script>
+  <script src="./ai-genai-data.js?v=12.0"></script>
+  <script src="./clean-reader.js?v=12.0"></script>
 </body>
 </html>

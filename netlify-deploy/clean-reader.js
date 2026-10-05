@@ -567,7 +567,7 @@
     if (dom.quizSolutionDrawer) {
       if (userAnswer) {
         dom.quizSolutionDrawer.style.display = 'block';
-        if (dom.quizKeyPill) dom.quizKeyPill.textContent = `🔑 Verified Answer Key: Option ${mcq.correct}`;
+        if (dom.quizKeyPill) dom.quizKeyPill.textContent = `✅ Correct Answer: Option ${mcq.correct}`;
         if (dom.quizDrawerAnswer) dom.quizDrawerAnswer.textContent = q.answer;
         if (q.shortExplanation) {
           dom.quizDrawerExplWrap.style.display = 'block';
@@ -646,33 +646,29 @@
 
     let html = `
       <div class="vibe-hero-banner">
-        <div class="vibe-hero-badge">⭐ MOST IMPORTANT CURRICULUM MODULE</div>
-        <div class="vibe-hero-title">AI + Generative AI + Prompt Engineering + Vibe Coding Masterclass</div>
+        <div class="vibe-hero-badge">🗺️ STEP-BY-STEP ROADMAP</div>
+        <div class="vibe-hero-title">28-Step Guide to Modern AI Coding</div>
         <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:12px;">
-          Practical, project-oriented engineering system designed specifically for Freshers, React, JavaScript, TypeScript, MERN, and Full-Stack Developers.
+          A simple, easy-to-follow path from basic concepts to building real web projects with AI tools.
         </p>
         <div class="vibe-hero-philosophy">
-          <span>Core Engineering Methodology:</span>
-          <span class="philosophy-step">Understand</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Practice</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Use AI Tools</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Vibe Code</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Build</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Test</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Optimize</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Explain</span> <span class="philosophy-arrow">→</span>
-          <span class="philosophy-step">Interview</span>
+          <span>Your Simple Learning Flow:</span>
+          <span class="philosophy-step">1. Learn Concept</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">2. Try with AI</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">3. Build Project</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">4. Test Code</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">5. Ace Interview</span>
         </div>
       </div>
 
       <div class="vibe-filter-bar">
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'All' ? 'active' : ''}" data-stepfilter="All">All Steps (28)</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'fund' ? 'active' : ''}" data-stepfilter="fund">Steps 1–3: Fundamentals &amp; Tools</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'vibe' ? 'active' : ''}" data-stepfilter="vibe">Steps 4–9: Vibe Coding, Prompts &amp; Rules</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'stack' ? 'active' : ''}" data-stepfilter="stack">Steps 10–13: Full-Stack AI Integration</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'rag' ? 'active' : ''}" data-stepfilter="rag">Steps 14–19: LLM, RAG &amp; Agents</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'projects' ? 'active' : ''}" data-stepfilter="projects">Steps 20–26: Security, Eval &amp; 6 Projects</button>
-        <button class="vibe-filter-pill ${activeCourseStepFilter === 'practice' ? 'active' : ''}" data-stepfilter="practice">Steps 27–28: Videos &amp; Practice</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'All' ? 'active' : ''}" data-stepfilter="All">All 28 Steps</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'fund' ? 'active' : ''}" data-stepfilter="fund">Steps 1–3: Basics &amp; Tools</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'vibe' ? 'active' : ''}" data-stepfilter="vibe">Steps 4–9: AI Coding &amp; Prompts</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'stack' ? 'active' : ''}" data-stepfilter="stack">Steps 10–13: Connecting Full-Stack</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'rag' ? 'active' : ''}" data-stepfilter="rag">Steps 14–19: RAG &amp; AI Agents</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'projects' ? 'active' : ''}" data-stepfilter="projects">Steps 20–26: Real Projects &amp; Security</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'practice' ? 'active' : ''}" data-stepfilter="practice">Steps 27–28: Videos &amp; Exercises</button>
       </div>
 
       <div class="vibe-steps-container" style="display:flex; flex-direction:column; gap:22px;">
@@ -795,10 +791,10 @@
 
     let html = `
       <div class="vibe-hero-banner">
-        <div class="vibe-hero-badge">🎬 14 PRACTICAL VIDEO MODULES</div>
-        <div class="vibe-hero-title">AI Coding Tools &amp; Vibe Coding Video Masterclass</div>
+        <div class="vibe-hero-badge">🎬 14 VIDEO LESSONS</div>
+        <div class="vibe-hero-title">Watch &amp; Learn: AI Coding Videos</div>
         <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:0;">
-          Short, high-impact demonstration modules covering Cursor, Claude Code, Antigravity, Copilot, debugging, testing, and token optimization. All code and prompts are authentic and verified.
+          Simple, step-by-step video lessons showing how to code with Cursor, Copilot, and Claude. Click any lesson to watch inline or in theater view.
         </p>
       </div>
 
@@ -806,12 +802,37 @@
     `;
 
     courseData.videos.forEach(vid => {
+      const ytId = vid.youtubeId || '68H2u-rT1_k';
+      const thumbUrl = vid.thumbnailUrl || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+      const watchUrl = vid.videoUrl || `https://www.youtube.com/watch?v=${ytId}`;
+      const questions = Array.isArray(vid.interviewQuestions)
+        ? vid.interviewQuestions
+        : (vid.interviewQuestion ? [vid.interviewQuestion] : []);
+
       html += `
-        <div class="vibe-video-card">
-          <div class="vibe-video-player-mock">
-            <div class="vibe-video-badge-pill">${escapeHtml(vid.duration || '12 mins')} • ${escapeHtml(vid.difficulty || 'All Levels')}</div>
-            <div class="vibe-video-play-btn">▶</div>
-            <div style="font-size:12px; font-weight:600; opacity:0.85;">Interactive Demonstration Studio</div>
+        <div class="vibe-video-card" id="card-${escapeHtml(vid.id)}">
+          <!-- Video Player Container (Thumbnail or Live Iframe) -->
+          <div class="vibe-video-player-container" id="player-container-${escapeHtml(vid.id)}" data-ytid="${escapeHtml(ytId)}" data-title="${escapeHtml(vid.title)}">
+            <div class="vibe-video-thumb-screen" data-vid-id="${escapeHtml(vid.id)}" style="background-image: linear-gradient(180deg, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0.85) 100%), url('${thumbUrl}');">
+              <div class="vibe-video-badge-pill">${escapeHtml(vid.duration || '15 mins')} • ${escapeHtml(vid.difficulty || 'All Levels')}</div>
+              <button class="vibe-video-play-btn" aria-label="Play ${escapeHtml(vid.title)}" title="Play Video Lesson">
+                <span class="vibe-play-icon">▶</span>
+              </button>
+              <div class="vibe-play-hint">Click to Play Lesson</div>
+            </div>
+          </div>
+
+          <!-- Video Action Bar -->
+          <div class="vibe-video-action-bar">
+            <button class="btn-video-act btn-video-play-inline" data-vid-id="${escapeHtml(vid.id)}" title="Play video right here">
+              ▶ Play Inline
+            </button>
+            <button class="btn-video-act btn-video-theater" data-vid-id="${escapeHtml(vid.id)}" title="Open large theater studio player">
+              ⛶ Theater View
+            </button>
+            <a href="${escapeHtml(watchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-video-act btn-video-yt" title="Open directly on YouTube">
+              ↗ YouTube
+            </a>
           </div>
 
           <h3 class="vibe-video-title">${escapeHtml(vid.title)}</h3>
@@ -819,25 +840,28 @@
 
           <div style="margin-bottom:12px;">
             <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Demonstration:</div>
-            <div style="font-size:12.5px; color:var(--text-secondary);">${escapeHtml(vid.demonstration || '')}</div>
+            <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.5;">${escapeHtml(vid.demonstration || '')}</div>
           </div>
 
           ${vid.promptUsed ? `
             <div class="vibe-video-prompt-box">
-              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:8px;">${escapeHtml(vid.promptUsed)}</span>
-              <button class="btn-copy-prompt" style="background:var(--accent-primary); color:#ffffff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;" data-prompt="${escapeHtml(vid.promptUsed)}">Copy</button>
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:8px;" title="${escapeHtml(vid.promptUsed)}">${escapeHtml(vid.promptUsed)}</span>
+              <button class="btn-copy-prompt" style="background:var(--accent-primary); color:#ffffff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;" data-prompt="${escapeHtml(vid.promptUsed)}">Copy Prompt</button>
             </div>
           ` : ''}
 
           ${vid.exercise ? `
-            <div style="background:rgba(37,99,235,0.04); border:1px dashed var(--accent-border); border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px; margin-bottom:12px;">
+            <div class="vibe-video-exercise-box">
               <strong>Student Exercise:</strong> ${escapeHtml(vid.exercise)}
             </div>
           ` : ''}
 
-          ${vid.interviewQuestion ? `
-            <div style="font-size:12px; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:8px;">
-              <strong>Target Interview Question:</strong> ${escapeHtml(vid.interviewQuestion)}
+          ${questions.length > 0 ? `
+            <div class="vibe-video-questions-box">
+              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">Target Interview Questions:</div>
+              <ul style="margin:0; padding-left:18px; font-size:12.5px; color:var(--text-secondary);">
+                ${questions.map(q => `<li style="margin-bottom:4px;">${escapeHtml(q)}</li>`).join('')}
+              </ul>
             </div>
           ` : ''}
         </div>
@@ -847,14 +871,223 @@
     html += `</div>`;
     dom.videosViewPanel.innerHTML = html;
 
+    // Attach click handlers
+    attachVideoPanelEvents(courseData.videos);
+  }
+
+  function attachVideoPanelEvents(videos) {
+    if (!dom.videosViewPanel) return;
+
+    // 1. Copy Prompt buttons
     dom.videosViewPanel.querySelectorAll('.btn-copy-prompt').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const text = btn.getAttribute('data-prompt');
         if (text && navigator.clipboard) {
           navigator.clipboard.writeText(text);
           showToast('Prompt copied to clipboard!');
         }
       });
+    });
+
+    // 2. Play Inline via thumbnail click
+    dom.videosViewPanel.querySelectorAll('.vibe-video-thumb-screen').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const vidId = thumb.getAttribute('data-vid-id');
+        const videoObj = videos.find(v => v.id === vidId);
+        if (videoObj) playVideoInline(videoObj, videos);
+      });
+    });
+
+    // 3. Play Inline via button
+    dom.videosViewPanel.querySelectorAll('.btn-video-play-inline').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const vidId = btn.getAttribute('data-vid-id');
+        const videoObj = videos.find(v => v.id === vidId);
+        if (videoObj) playVideoInline(videoObj, videos);
+      });
+    });
+
+    // 4. Theater modal view
+    dom.videosViewPanel.querySelectorAll('.btn-video-theater').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const vidId = btn.getAttribute('data-vid-id');
+        const videoObj = videos.find(v => v.id === vidId);
+        if (videoObj) openVideoTheaterModal(videoObj);
+      });
+    });
+  }
+
+  function playVideoInline(videoObj, allVideos) {
+    const container = document.getElementById(`player-container-${videoObj.id}`);
+    if (!container) return;
+    const ytId = videoObj.youtubeId || '68H2u-rT1_k';
+    const watchUrl = videoObj.videoUrl || `https://www.youtube.com/watch?v=${ytId}`;
+
+    container.innerHTML = `
+      <div class="vibe-inline-player-wrapper">
+        <div class="vibe-inline-top-bar">
+          <span class="vibe-inline-title" title="${escapeHtml(videoObj.title)}">▶ ${escapeHtml(videoObj.title)}</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn-inline-theater" data-vid-id="${escapeHtml(videoObj.id)}" title="Switch to theater modal">⛶ Theater</button>
+            <a href="${escapeHtml(watchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-inline-yt" title="Open directly on YouTube">↗ YouTube</a>
+            <button class="btn-inline-close" data-vid-id="${escapeHtml(videoObj.id)}" title="Close video player">✕ Close</button>
+          </div>
+        </div>
+        <div class="vibe-inline-iframe-box">
+          <iframe 
+            class="vibe-video-iframe"
+            src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytId)}?autoplay=1&rel=0&enablejsapi=1" 
+            title="${escapeHtml(videoObj.title)}"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    `;
+
+    container.querySelector('.btn-inline-close')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      restoreVideoThumbnail(videoObj, allVideos);
+    });
+
+    container.querySelector('.btn-inline-theater')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openVideoTheaterModal(videoObj);
+    });
+  }
+
+  function restoreVideoThumbnail(videoObj, allVideos) {
+    const container = document.getElementById(`player-container-${videoObj.id}`);
+    if (!container) return;
+    const ytId = videoObj.youtubeId || '68H2u-rT1_k';
+    const thumbUrl = videoObj.thumbnailUrl || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+    container.innerHTML = `
+      <div class="vibe-video-thumb-screen" data-vid-id="${escapeHtml(videoObj.id)}" style="background-image: linear-gradient(180deg, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0.85) 100%), url('${thumbUrl}');">
+        <div class="vibe-video-badge-pill">${escapeHtml(videoObj.duration || '15 mins')} • ${escapeHtml(videoObj.difficulty || 'All Levels')}</div>
+        <button class="vibe-video-play-btn" aria-label="Play ${escapeHtml(videoObj.title)}" title="Play Video Lesson">
+          <span class="vibe-play-icon">▶</span>
+        </button>
+        <div class="vibe-play-hint">Click to Play Lesson</div>
+      </div>
+    `;
+
+    container.querySelector('.vibe-video-thumb-screen')?.addEventListener('click', () => {
+      playVideoInline(videoObj, allVideos);
+    });
+  }
+
+  function openVideoTheaterModal(videoObj) {
+    let modalOverlay = document.getElementById('video-theater-overlay');
+    if (!modalOverlay) {
+      modalOverlay = document.createElement('div');
+      modalOverlay.id = 'video-theater-overlay';
+      modalOverlay.className = 'vibe-theater-overlay';
+      document.body.appendChild(modalOverlay);
+    }
+
+    const ytId = videoObj.youtubeId || '68H2u-rT1_k';
+    const watchUrl = videoObj.videoUrl || `https://www.youtube.com/watch?v=${ytId}`;
+    const questions = Array.isArray(videoObj.interviewQuestions)
+      ? videoObj.interviewQuestions
+      : (videoObj.interviewQuestion ? [videoObj.interviewQuestion] : []);
+
+    modalOverlay.innerHTML = `
+      <div class="vibe-theater-box" role="dialog" aria-modal="true" aria-labelledby="theater-title">
+        <div class="vibe-theater-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="vibe-hero-badge" style="margin-bottom:0;">🎬 VIDEO MASTERCLASS</span>
+            <span style="font-size:12px; color:var(--text-muted);">${escapeHtml(videoObj.duration || '15 mins')} • ${escapeHtml(videoObj.difficulty || 'All Levels')}</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <a href="${escapeHtml(watchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-theater-yt" title="Open directly on YouTube">
+              ↗ Watch on YouTube
+            </a>
+            <button id="btn-close-theater" class="btn-theater-close" title="Close theater (Esc)">✕</button>
+          </div>
+        </div>
+
+        <div class="vibe-theater-player-wrap">
+          <iframe 
+            class="vibe-theater-iframe"
+            src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytId)}?autoplay=1&rel=0&enablejsapi=1" 
+            title="${escapeHtml(videoObj.title)}"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="vibe-theater-info">
+          <h2 id="theater-title" class="vibe-theater-title">${escapeHtml(videoObj.title)}</h2>
+          <p class="vibe-theater-desc">${escapeHtml(videoObj.objective || '')}</p>
+
+          <div class="vibe-theater-section">
+            <h4 style="margin:0 0 6px 0; font-size:12.5px; text-transform:uppercase; color:var(--accent-primary); letter-spacing:0.5px;">Demonstration Walkthrough</h4>
+            <p style="font-size:13.5px; color:var(--text-secondary); line-height:1.6; margin:0;">${escapeHtml(videoObj.demonstration || '')}</p>
+          </div>
+
+          ${videoObj.promptUsed ? `
+            <div class="vibe-theater-section">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 style="margin:0; font-size:12.5px; text-transform:uppercase; color:var(--accent-primary); letter-spacing:0.5px;">Production Prompt</h4>
+                <button id="theater-copy-prompt" class="btn-copy-prompt" style="background:var(--accent-primary); color:#ffffff; border:none; padding:4px 10px; border-radius:4px; font-size:11.5px; cursor:pointer;" data-prompt="${escapeHtml(videoObj.promptUsed)}">📋 Copy Prompt</button>
+              </div>
+              <div style="background:var(--bg-hover); padding:10px 14px; border-radius:6px; font-family:var(--font-mono); font-size:12px; border:1px solid var(--border-color); color:var(--text-primary); line-height:1.5;">
+                ${escapeHtml(videoObj.promptUsed)}
+              </div>
+            </div>
+          ` : ''}
+
+          ${videoObj.exercise ? `
+            <div class="vibe-theater-section">
+              <h4 style="margin:0 0 6px 0; font-size:12.5px; text-transform:uppercase; color:var(--accent-primary); letter-spacing:0.5px;">Hands-On Exercise</h4>
+              <div style="background:rgba(37,99,235,0.05); border:1px dashed var(--accent-border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--text-primary); line-height:1.5;">
+                ${escapeHtml(videoObj.exercise)}
+              </div>
+            </div>
+          ` : ''}
+
+          ${questions.length > 0 ? `
+            <div class="vibe-theater-section">
+              <h4 style="margin:0 0 8px 0; font-size:12.5px; text-transform:uppercase; color:var(--accent-primary); letter-spacing:0.5px;">Target Interview Questions</h4>
+              <ul style="margin:0; padding-left:20px; font-size:13px; color:var(--text-secondary); line-height:1.6;">
+                ${questions.map(q => `<li style="margin-bottom:6px;"><strong>${escapeHtml(q)}</strong></li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    modalOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Close Handler
+    const closeHandler = () => {
+      modalOverlay.style.display = 'none';
+      modalOverlay.innerHTML = '';
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', escHandler);
+    };
+
+    const escHandler = (e) => {
+      if (e.key === 'Escape') closeHandler();
+    };
+
+    document.getElementById('btn-close-theater')?.addEventListener('click', closeHandler);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeHandler();
+    });
+    document.addEventListener('keydown', escHandler);
+
+    document.getElementById('theater-copy-prompt')?.addEventListener('click', () => {
+      if (videoObj.promptUsed && navigator.clipboard) {
+        navigator.clipboard.writeText(videoObj.promptUsed);
+        showToast('Prompt copied to clipboard!');
+      }
     });
   }
 
@@ -868,10 +1101,10 @@
 
     let html = `
       <div class="vibe-hero-banner">
-        <div class="vibe-hero-badge">⚡ PROMPT ENGINEERING LAB</div>
-        <div class="vibe-hero-title">12 Enterprise Prompt Engineering &amp; Token Optimization Labs</div>
+        <div class="vibe-hero-badge">💡 PRACTICE PROMPTS</div>
+        <div class="vibe-hero-title">12 Simple Examples: How to Write Better Prompts</div>
         <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:0;">
-          Direct side-by-side analysis of vague, token-heavy prompts vs high-precision enterprise prompt templates with token comparison metrics.
+          Side-by-side examples of weak prompts vs. clear, effective prompts, with simple explanations of why they work better.
         </p>
       </div>
 
@@ -883,26 +1116,26 @@
         <article class="vibe-prompt-card">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
             <div>
-              <span class="mini-badge mini-badge-subject">Lab ${pe.id}</span>
+              <span class="mini-badge mini-badge-subject">Example ${pe.id}</span>
               <h3 style="font-size:17px; font-weight:700; color:var(--text-primary); margin-top:4px;">${escapeHtml(pe.title)}</h3>
             </div>
-            <button class="btn-copy-prompt" style="background:var(--color-success); color:#ffffff; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer;" data-prompt="${escapeHtml(pe.improvedPrompt)}">📋 Copy Improved Prompt</button>
+            <button class="btn-copy-prompt" style="background:var(--color-success); color:#ffffff; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer;" data-prompt="${escapeHtml(pe.improvedPrompt)}">📋 Copy Better Prompt</button>
           </div>
 
           <div class="vibe-prompt-compare-cols">
             <div class="vibe-prompt-col bad">
-              <span class="vibe-prompt-tag bad">✕ Bad Prompt</span>
+              <span class="vibe-prompt-tag bad">✕ Weak Prompt</span>
               <div class="vibe-prompt-text">${escapeHtml(pe.badPrompt)}</div>
               <div style="font-size:12px; color:var(--color-error); line-height:1.5;">
-                <strong>Why it is bad:</strong> ${escapeHtml(pe.whyBad)}
+                <strong>Why this is weak:</strong> ${escapeHtml(pe.whyBad)}
               </div>
             </div>
 
             <div class="vibe-prompt-col improved">
-              <span class="vibe-prompt-tag improved">✓ Improved Enterprise Prompt</span>
+              <span class="vibe-prompt-tag improved">✓ Better Prompt (Clear &amp; Specific)</span>
               <div class="vibe-prompt-text">${escapeHtml(pe.improvedPrompt)}</div>
               <div style="font-size:12px; color:var(--color-success); line-height:1.5;">
-                <strong>Expected Output:</strong> ${escapeHtml(pe.expectedOutput)}
+                <strong>What you get:</strong> ${escapeHtml(pe.expectedOutput)}
               </div>
             </div>
           </div>
