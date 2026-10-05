@@ -56,6 +56,24 @@
   </header>
 
   <!-- ========================================================================
+       Curriculum Module Switcher Bar (AI & Prompt Engineering vs Full-Stack)
+       ======================================================================== -->
+  <nav class="curriculum-tabs-bar" aria-label="Curriculum Modules">
+    <div class="curriculum-tabs-inner">
+      <button id="tab-curriculum-ai" class="curriculum-tab-btn active-important" aria-selected="true" role="tab" title="AI, Generative AI & Prompt Engineering Masterclass">
+        <span class="tab-badge-glow">⭐ MOST IMPORTANT</span>
+        <span class="tab-title">✨ AI + GenAI + Prompt Engineering</span>
+        <span class="tab-count-pill">85 Modules</span>
+      </button>
+
+      <button id="tab-curriculum-fullstack" class="curriculum-tab-btn" aria-selected="false" role="tab" title="Full-Stack MERN & Web Developer Question Bank">
+        <span class="tab-title">💻 Full-Stack MERN & Web Dev</span>
+        <span class="tab-count-pill">5,478 Qs</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
        2. Split-Screen Workspace (Left Explorer + Right Focus Reader)
        ======================================================================== -->
   <div class="workspace-body">
@@ -167,13 +185,22 @@
           </div>
         </div>
 
-        <!-- Mode Switcher: Solution View vs MCQ Quiz View -->
-        <div class="view-mode-tabs">
-          <button class="view-mode-btn active" id="btn-mode-solution" data-mode="solution">
+        <!-- Mode Switcher: Solution View vs MCQ Quiz View vs Vibe Studio -->
+        <div class="view-mode-tabs" role="tablist">
+          <button class="view-mode-btn active" id="btn-mode-solution" data-mode="solution" role="tab" aria-selected="true">
             📖 Verified Solution View
           </button>
-          <button class="view-mode-btn" id="btn-mode-quiz" data-mode="quiz">
+          <button class="view-mode-btn" id="btn-mode-quiz" data-mode="quiz" role="tab" aria-selected="false">
             ⚡ Interactive MCQ Quiz
+          </button>
+          <button class="view-mode-btn" id="btn-mode-course" data-mode="course" role="tab" aria-selected="false">
+            🚀 28-Step Vibe Coding Roadmap &amp; Projects
+          </button>
+          <button class="view-mode-btn" id="btn-mode-videos" data-mode="videos" role="tab" aria-selected="false">
+            🎬 14 Video Lessons
+          </button>
+          <button class="view-mode-btn" id="btn-mode-prompts" data-mode="prompts" role="tab" aria-selected="false">
+            ⚡ Prompt Lab &amp; Token Optimizer
           </button>
         </div>
 
@@ -232,6 +259,21 @@
           </div>
         </div>
 
+        <!-- MODE 3: 28-Step Vibe Coding Roadmap & Projects Studio -->
+        <div id="course-view-panel" class="vibe-studio-panel" style="display:none;">
+          <!-- Dynamically populated from window.AI_VIBE_COURSE_DATA.steps -->
+        </div>
+
+        <!-- MODE 4: 14 Video Lessons Masterclass -->
+        <div id="videos-view-panel" class="vibe-studio-panel" style="display:none;">
+          <!-- Dynamically populated from window.AI_VIBE_COURSE_DATA.videos -->
+        </div>
+
+        <!-- MODE 5: 12 Prompt Engineering Lab & Token Optimizer -->
+        <div id="prompts-view-panel" class="vibe-studio-panel" style="display:none;">
+          <!-- Dynamically populated from window.AI_VIBE_COURSE_DATA.promptExercises -->
+        </div>
+
         <!-- Bottom Keyboard & Navigation Bar -->
         <div class="focus-bottom-nav">
           <div class="shortcut-hints">
@@ -282,6 +324,7 @@
 
   <!-- 100% Real Question Data & Workspace Engine -->
   <script src="./fresher-data.js?v=10.0"></script>
+  <script src="./ai-genai-data.js?v=1.0"></script>
   <script src="./clean-reader.js?v=10.0"></script>
 </body>
 </html>

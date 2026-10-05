@@ -7,9 +7,10 @@
 (function () {
   'use strict';
 
-  // 22 Curriculum Subjects
+  // Curriculum Subjects (Featured AI Module + 22 Full-Stack Subjects)
   const SUBJECTS = [
     'All',
+    'AI & Generative AI',
     'HTML',
     'CSS',
     'JavaScript',
@@ -40,8 +41,8 @@
     filteredQuestions: [],
     selectedIndex: 0,
 
-    // Filters
-    selectedSubject: localStorage.getItem('devprep_subject') || 'All',
+    // Filters (Default to AI & Generative AI Module)
+    selectedSubject: localStorage.getItem('devprep_subject') || 'AI & Generative AI',
     selectedTopic: 'All',
     selectedDifficulty: 'All',
     selectedStatus: 'All',
@@ -73,6 +74,10 @@
     dom.hudPracticed = document.getElementById('hud-practiced');
     dom.btnThemeToggle = document.getElementById('btn-theme-toggle');
 
+    // Curriculum Module Switcher Tabs (AI vs Full-Stack)
+    dom.tabCurriculumAi = document.getElementById('tab-curriculum-ai');
+    dom.tabCurriculumFullstack = document.getElementById('tab-curriculum-fullstack');
+
     // Left Pane (Explorer)
     dom.selectSubject = document.getElementById('select-subject');
     dom.selectTopic = document.getElementById('select-topic');
@@ -99,8 +104,14 @@
     // View Mode Tabs
     dom.btnModeSolution = document.getElementById('btn-mode-solution');
     dom.btnModeQuiz = document.getElementById('btn-mode-quiz');
+    dom.btnModeCourse = document.getElementById('btn-mode-course');
+    dom.btnModeVideos = document.getElementById('btn-mode-videos');
+    dom.btnModePrompts = document.getElementById('btn-mode-prompts');
     dom.solutionViewPanel = document.getElementById('solution-view-panel');
     dom.quizViewPanel = document.getElementById('quiz-view-panel');
+    dom.courseViewPanel = document.getElementById('course-view-panel');
+    dom.videosViewPanel = document.getElementById('videos-view-panel');
+    dom.promptsViewPanel = document.getElementById('prompts-view-panel');
 
     // Solution Elements
     dom.focusAnswerText = document.getElementById('focus-answer-text');
@@ -448,11 +459,35 @@
     if (dom.focusQTitle) dom.focusQTitle.textContent = q.question;
 
     // 4. View Mode Switcher
-    if (dom.btnModeSolution && dom.btnModeQuiz) {
-      dom.btnModeSolution.classList.toggle('active', state.viewMode === 'solution');
-      dom.btnModeQuiz.classList.toggle('active', state.viewMode === 'quiz');
-      dom.solutionViewPanel.style.display = (state.viewMode === 'solution') ? 'block' : 'none';
-      dom.quizViewPanel.style.display = (state.viewMode === 'quiz') ? 'block' : 'none';
+    const isSolution = (state.viewMode === 'solution');
+    const isQuiz = (state.viewMode === 'quiz');
+    const isCourse = (state.viewMode === 'course');
+    const isVideos = (state.viewMode === 'videos');
+    const isPrompts = (state.viewMode === 'prompts');
+
+    if (dom.btnModeSolution) dom.btnModeSolution.classList.toggle('active', isSolution);
+    if (dom.btnModeQuiz) dom.btnModeQuiz.classList.toggle('active', isQuiz);
+    if (dom.btnModeCourse) dom.btnModeCourse.classList.toggle('active', isCourse);
+    if (dom.btnModeVideos) dom.btnModeVideos.classList.toggle('active', isVideos);
+    if (dom.btnModePrompts) dom.btnModePrompts.classList.toggle('active', isPrompts);
+
+    if (dom.solutionViewPanel) dom.solutionViewPanel.style.display = isSolution ? 'block' : 'none';
+    if (dom.quizViewPanel) dom.quizViewPanel.style.display = isQuiz ? 'block' : 'none';
+    if (dom.courseViewPanel) dom.courseViewPanel.style.display = isCourse ? 'flex' : 'none';
+    if (dom.videosViewPanel) dom.videosViewPanel.style.display = isVideos ? 'flex' : 'none';
+    if (dom.promptsViewPanel) dom.promptsViewPanel.style.display = isPrompts ? 'flex' : 'none';
+
+    if (isCourse) {
+      renderCoursePanel();
+      return;
+    }
+    if (isVideos) {
+      renderVideosPanel();
+      return;
+    }
+    if (isPrompts) {
+      renderPromptsPanel();
+      return;
     }
 
     // 5. Populate Solution View (100% Real Question/Answer Data)
@@ -579,6 +614,323 @@
     updateHUD();
   }
 
+  // =========================================================================
+  // VIBE CODING STUDIO: 28-Step Course, 14 Videos, 12 Prompt Exercises
+  // =========================================================================
+
+  let activeCourseStepFilter = 'All';
+
+  function renderCoursePanel() {
+    if (!dom.courseViewPanel) return;
+    const courseData = window.AI_VIBE_COURSE_DATA;
+    if (!courseData || !courseData.steps) {
+      dom.courseViewPanel.innerHTML = '<div style="padding:20px; color:var(--text-muted);">Course data loading...</div>';
+      return;
+    }
+
+    const steps = courseData.steps;
+    let filteredSteps = steps;
+    if (activeCourseStepFilter === 'fund') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 1 && s.stepNumber <= 3);
+    } else if (activeCourseStepFilter === 'vibe') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 4 && s.stepNumber <= 9);
+    } else if (activeCourseStepFilter === 'stack') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 10 && s.stepNumber <= 13);
+    } else if (activeCourseStepFilter === 'rag') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 14 && s.stepNumber <= 19);
+    } else if (activeCourseStepFilter === 'projects') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 20 && s.stepNumber <= 26);
+    } else if (activeCourseStepFilter === 'practice') {
+      filteredSteps = steps.filter(s => s.stepNumber >= 27 && s.stepNumber <= 28);
+    }
+
+    let html = `
+      <div class="vibe-hero-banner">
+        <div class="vibe-hero-badge">⭐ MOST IMPORTANT CURRICULUM MODULE</div>
+        <div class="vibe-hero-title">AI + Generative AI + Prompt Engineering + Vibe Coding Masterclass</div>
+        <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:12px;">
+          Practical, project-oriented engineering system designed specifically for Freshers, React, JavaScript, TypeScript, MERN, and Full-Stack Developers.
+        </p>
+        <div class="vibe-hero-philosophy">
+          <span>Core Engineering Methodology:</span>
+          <span class="philosophy-step">Understand</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Practice</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Use AI Tools</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Vibe Code</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Build</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Test</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Optimize</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Explain</span> <span class="philosophy-arrow">→</span>
+          <span class="philosophy-step">Interview</span>
+        </div>
+      </div>
+
+      <div class="vibe-filter-bar">
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'All' ? 'active' : ''}" data-stepfilter="All">All Steps (28)</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'fund' ? 'active' : ''}" data-stepfilter="fund">Steps 1–3: Fundamentals &amp; Tools</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'vibe' ? 'active' : ''}" data-stepfilter="vibe">Steps 4–9: Vibe Coding, Prompts &amp; Rules</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'stack' ? 'active' : ''}" data-stepfilter="stack">Steps 10–13: Full-Stack AI Integration</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'rag' ? 'active' : ''}" data-stepfilter="rag">Steps 14–19: LLM, RAG &amp; Agents</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'projects' ? 'active' : ''}" data-stepfilter="projects">Steps 20–26: Security, Eval &amp; 6 Projects</button>
+        <button class="vibe-filter-pill ${activeCourseStepFilter === 'practice' ? 'active' : ''}" data-stepfilter="practice">Steps 27–28: Videos &amp; Practice</button>
+      </div>
+
+      <div class="vibe-steps-container" style="display:flex; flex-direction:column; gap:22px;">
+    `;
+
+    filteredSteps.forEach(step => {
+      let workflowHtml = '';
+      if (step.workflow) {
+        workflowHtml = `
+          <div class="vibe-workflow-box">
+            <div style="font-size:11px; text-transform:uppercase; color:#94a3b8; margin-bottom:6px; font-weight:700;">Workflow Diagram:</div>
+            <pre><code>${escapeHtml(step.workflow)}</code></pre>
+          </div>
+        `;
+      }
+
+      let activityHtml = '';
+      if (step.studentActivity) {
+        activityHtml = `
+          <div class="vibe-activity-box">
+            <div class="vibe-activity-title">🛠️ Student Hands-On Activity: ${escapeHtml(step.studentActivity.title)}</div>
+            <p style="font-size:13.5px; margin-bottom:10px;">${escapeHtml(step.studentActivity.task)}</p>
+            <button class="vibe-model-solution-toggle" type="button" data-step-id="${step.id}">💡 Show Model Solution &amp; Checklist</button>
+            <div class="vibe-model-solution-content" id="solution-${step.id}">
+              <div style="font-weight:600; color:var(--accent-primary); margin-bottom:6px;">Model Approach:</div>
+              <p style="margin-bottom:8px;">${escapeHtml(step.studentActivity.modelSolution || '')}</p>
+              ${step.studentActivity.checklist ? `
+                <div style="font-weight:600; color:var(--text-primary); margin-top:8px; margin-bottom:4px;">Verification Checklist:</div>
+                <ul style="padding-left:18px; margin:0;">
+                  ${step.studentActivity.checklist.map(c => `<li>✓ ${escapeHtml(c)}</li>`).join('')}
+                </ul>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      let projectRulesHtml = '';
+      if (step.projectRules) {
+        projectRulesHtml = `
+          <div class="vibe-workflow-box" style="margin-top:14px;">
+            <div style="font-size:11px; text-transform:uppercase; color:#38bdf8; margin-bottom:6px; font-weight:700;">Enterprise PROJECT_RULES.md Blueprint:</div>
+            <pre><code>${escapeHtml(step.projectRules)}</code></pre>
+          </div>
+        `;
+      }
+
+      let architectureHtml = '';
+      if (step.architecture) {
+        architectureHtml = `
+          <div class="vibe-workflow-box" style="margin-top:14px;">
+            <div style="font-size:11px; text-transform:uppercase; color:#a78bfa; margin-bottom:6px; font-weight:700;">System Architecture Blueprint:</div>
+            <pre><code>${escapeHtml(step.architecture)}</code></pre>
+          </div>
+        `;
+      }
+
+      let itemsHtml = '';
+      if (step.items && step.items.length) {
+        itemsHtml = `
+          <ul style="padding-left:20px; margin:12px 0;">
+            ${step.items.map(it => `<li>${escapeHtml(it)}</li>`).join('')}
+          </ul>
+        `;
+      }
+
+      html += `
+        <article class="vibe-step-card" id="step-card-${step.stepNumber}">
+          <div class="vibe-step-header">
+            <div>
+              <span class="vibe-step-num-pill">STEP ${step.stepNumber} OF 28</span>
+              <h2 class="vibe-step-title">${escapeHtml(step.title)}</h2>
+            </div>
+            <span class="badge badge-subject">Practical Module</span>
+          </div>
+
+          <div class="vibe-step-body">
+            <p>${escapeHtml(step.description || '')}</p>
+            ${itemsHtml}
+            ${workflowHtml}
+            ${projectRulesHtml}
+            ${architectureHtml}
+            ${activityHtml}
+          </div>
+        </article>
+      `;
+    });
+
+    html += `</div>`;
+    dom.courseViewPanel.innerHTML = html;
+
+    // Attach event listeners for step category filter pills
+    dom.courseViewPanel.querySelectorAll('.vibe-filter-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        activeCourseStepFilter = e.target.getAttribute('data-stepfilter');
+        renderCoursePanel();
+      });
+    });
+
+    // Attach toggle listeners for student activity model solutions
+    dom.courseViewPanel.querySelectorAll('.vibe-model-solution-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const stepId = btn.getAttribute('data-step-id');
+        const content = dom.courseViewPanel.querySelector(`#solution-${stepId}`);
+        if (content) {
+          const isOpen = content.classList.toggle('open');
+          btn.textContent = isOpen ? '✕ Hide Model Solution' : '💡 Show Model Solution & Checklist';
+        }
+      });
+    });
+  }
+
+  function renderVideosPanel() {
+    if (!dom.videosViewPanel) return;
+    const courseData = window.AI_VIBE_COURSE_DATA;
+    if (!courseData || !courseData.videos) {
+      dom.videosViewPanel.innerHTML = '<div style="padding:20px; color:var(--text-muted);">Video lessons loading...</div>';
+      return;
+    }
+
+    let html = `
+      <div class="vibe-hero-banner">
+        <div class="vibe-hero-badge">🎬 14 PRACTICAL VIDEO MODULES</div>
+        <div class="vibe-hero-title">AI Coding Tools &amp; Vibe Coding Video Masterclass</div>
+        <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:0;">
+          Short, high-impact demonstration modules covering Cursor, Claude Code, Antigravity, Copilot, debugging, testing, and token optimization. All code and prompts are authentic and verified.
+        </p>
+      </div>
+
+      <div class="vibe-video-grid">
+    `;
+
+    courseData.videos.forEach(vid => {
+      html += `
+        <div class="vibe-video-card">
+          <div class="vibe-video-player-mock">
+            <div class="vibe-video-badge-pill">${escapeHtml(vid.duration || '12 mins')} • ${escapeHtml(vid.difficulty || 'All Levels')}</div>
+            <div class="vibe-video-play-btn">▶</div>
+            <div style="font-size:12px; font-weight:600; opacity:0.85;">Interactive Demonstration Studio</div>
+          </div>
+
+          <h3 class="vibe-video-title">${escapeHtml(vid.title)}</h3>
+          <p class="vibe-video-desc">${escapeHtml(vid.objective || '')}</p>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Demonstration:</div>
+            <div style="font-size:12.5px; color:var(--text-secondary);">${escapeHtml(vid.demonstration || '')}</div>
+          </div>
+
+          ${vid.promptUsed ? `
+            <div class="vibe-video-prompt-box">
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:8px;">${escapeHtml(vid.promptUsed)}</span>
+              <button class="btn-copy-prompt" style="background:var(--accent-primary); color:#ffffff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;" data-prompt="${escapeHtml(vid.promptUsed)}">Copy</button>
+            </div>
+          ` : ''}
+
+          ${vid.exercise ? `
+            <div style="background:rgba(37,99,235,0.04); border:1px dashed var(--accent-border); border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px; margin-bottom:12px;">
+              <strong>Student Exercise:</strong> ${escapeHtml(vid.exercise)}
+            </div>
+          ` : ''}
+
+          ${vid.interviewQuestion ? `
+            <div style="font-size:12px; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:8px;">
+              <strong>Target Interview Question:</strong> ${escapeHtml(vid.interviewQuestion)}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    dom.videosViewPanel.innerHTML = html;
+
+    dom.videosViewPanel.querySelectorAll('.btn-copy-prompt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-prompt');
+        if (text && navigator.clipboard) {
+          navigator.clipboard.writeText(text);
+          showToast('Prompt copied to clipboard!');
+        }
+      });
+    });
+  }
+
+  function renderPromptsPanel() {
+    if (!dom.promptsViewPanel) return;
+    const courseData = window.AI_VIBE_COURSE_DATA;
+    if (!courseData || !courseData.promptExercises) {
+      dom.promptsViewPanel.innerHTML = '<div style="padding:20px; color:var(--text-muted);">Prompt exercises loading...</div>';
+      return;
+    }
+
+    let html = `
+      <div class="vibe-hero-banner">
+        <div class="vibe-hero-badge">⚡ PROMPT ENGINEERING LAB</div>
+        <div class="vibe-hero-title">12 Enterprise Prompt Engineering &amp; Token Optimization Labs</div>
+        <p style="color:var(--text-secondary); font-size:13.5px; line-height:1.6; margin-bottom:0;">
+          Direct side-by-side analysis of vague, token-heavy prompts vs high-precision enterprise prompt templates with token comparison metrics.
+        </p>
+      </div>
+
+      <div class="vibe-prompt-grid">
+    `;
+
+    courseData.promptExercises.forEach(pe => {
+      html += `
+        <article class="vibe-prompt-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+            <div>
+              <span class="mini-badge mini-badge-subject">Lab ${pe.id}</span>
+              <h3 style="font-size:17px; font-weight:700; color:var(--text-primary); margin-top:4px;">${escapeHtml(pe.title)}</h3>
+            </div>
+            <button class="btn-copy-prompt" style="background:var(--color-success); color:#ffffff; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer;" data-prompt="${escapeHtml(pe.improvedPrompt)}">📋 Copy Improved Prompt</button>
+          </div>
+
+          <div class="vibe-prompt-compare-cols">
+            <div class="vibe-prompt-col bad">
+              <span class="vibe-prompt-tag bad">✕ Bad Prompt</span>
+              <div class="vibe-prompt-text">${escapeHtml(pe.badPrompt)}</div>
+              <div style="font-size:12px; color:var(--color-error); line-height:1.5;">
+                <strong>Why it is bad:</strong> ${escapeHtml(pe.whyBad)}
+              </div>
+            </div>
+
+            <div class="vibe-prompt-col improved">
+              <span class="vibe-prompt-tag improved">✓ Improved Enterprise Prompt</span>
+              <div class="vibe-prompt-text">${escapeHtml(pe.improvedPrompt)}</div>
+              <div style="font-size:12px; color:var(--color-success); line-height:1.5;">
+                <strong>Expected Output:</strong> ${escapeHtml(pe.expectedOutput)}
+              </div>
+            </div>
+          </div>
+
+          <div class="token-metric-strip">
+            <div>
+              <strong>Token Metrics:</strong> ${escapeHtml(pe.tokenComparison || 'Significant token savings with constrained generation')}
+            </div>
+            <span class="token-savings-pill">70%+ Token Efficiency</span>
+          </div>
+        </article>
+      `;
+    });
+
+    html += `</div>`;
+    dom.promptsViewPanel.innerHTML = html;
+
+    dom.promptsViewPanel.querySelectorAll('.btn-copy-prompt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-prompt');
+        if (text && navigator.clipboard) {
+          navigator.clipboard.writeText(text);
+          showToast('Improved prompt copied to clipboard!');
+        }
+      });
+    });
+  }
+
   // Next / Previous Navigation
   function nextQuestion() {
     if (state.selectedIndex < state.filteredQuestions.length - 1) {
@@ -608,11 +960,13 @@
   function populateSubjectDropdown() {
     if (!dom.selectSubject) return;
     const totalCount = state.allQuestions.length;
-    let html = `<option value="All">All Subjects (${totalCount.toLocaleString()})</option>`;
+    let html = `<option value="All">All Full-Stack & AI Bank (${totalCount.toLocaleString()})</option>`;
 
     SUBJECTS.filter(s => s !== 'All').forEach(sub => {
       const cnt = state.allQuestions.filter(q => q.subject.toLowerCase() === sub.toLowerCase()).length;
-      html += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)} (${cnt.toLocaleString()})</option>`;
+      const isAi = (sub === 'AI & Generative AI');
+      const label = isAi ? `⭐ [MOST IMPORTANT] AI & Generative AI (${cnt.toLocaleString()})` : `${sub} (${cnt.toLocaleString()})`;
+      html += `<option value="${escapeHtml(sub)}">${escapeHtml(label)}</option>`;
     });
 
     dom.selectSubject.innerHTML = html;
@@ -659,8 +1013,22 @@
     dom.selectTopic.value = state.selectedTopic;
   }
 
+  // Synchronize Curriculum Switcher Tabs with Current State
+  function syncCurriculumTabs() {
+    const isAi = (state.selectedSubject === 'AI & Generative AI');
+    if (dom.tabCurriculumAi) {
+      dom.tabCurriculumAi.classList.toggle('active-important', isAi);
+      dom.tabCurriculumAi.setAttribute('aria-selected', isAi ? 'true' : 'false');
+    }
+    if (dom.tabCurriculumFullstack) {
+      dom.tabCurriculumFullstack.classList.toggle('active-fullstack', !isAi);
+      dom.tabCurriculumFullstack.setAttribute('aria-selected', !isAi ? 'true' : 'false');
+    }
+  }
+
   // Synchronize Subject Carousel Active Pill with Selected Subject
   function syncSubjectCarousel() {
+    syncCurriculumTabs();
     if (!dom.subjectCarouselTrack) return;
     const chips = dom.subjectCarouselTrack.querySelectorAll('.subject-chip');
     chips.forEach(c => {
@@ -683,11 +1051,12 @@
         ? state.allQuestions.length 
         : state.allQuestions.filter(q => q.subject === sub).length;
 
+      const isAi = (sub === 'AI & Generative AI');
       const chip = document.createElement('button');
-      chip.className = `subject-chip ${sub === state.selectedSubject ? 'active' : ''}`;
+      chip.className = `subject-chip ${sub === state.selectedSubject ? 'active' : ''} ${isAi ? 'chip-ai-featured' : ''}`;
       chip.type = 'button';
       chip.setAttribute('data-subject', sub);
-      chip.textContent = `${sub} (${count})`;
+      chip.textContent = isAi ? `⭐ AI & GenAI (${count})` : `${sub} (${count})`;
 
       chip.addEventListener('click', () => {
         state.selectedSubject = sub;
@@ -798,6 +1167,35 @@
 
   // Setup Event Listeners
   function setupEventListeners() {
+    // Top Curriculum Module Switcher (AI vs Full-Stack)
+    if (dom.tabCurriculumAi) {
+      dom.tabCurriculumAi.addEventListener('click', () => {
+        state.selectedSubject = 'AI & Generative AI';
+        localStorage.setItem('devprep_subject', 'AI & Generative AI');
+        state.selectedTopic = 'All';
+        if (dom.selectSubject) dom.selectSubject.value = 'AI & Generative AI';
+        updateTopicDropdown();
+        syncSubjectCarousel();
+        state.selectedIndex = 0;
+        applyFilters();
+        showToast('⭐ Active: AI + Generative AI + Prompt Engineering Masterclass');
+      });
+    }
+
+    if (dom.tabCurriculumFullstack) {
+      dom.tabCurriculumFullstack.addEventListener('click', () => {
+        state.selectedSubject = 'All';
+        localStorage.setItem('devprep_subject', 'All');
+        state.selectedTopic = 'All';
+        if (dom.selectSubject) dom.selectSubject.value = 'All';
+        updateTopicDropdown();
+        syncSubjectCarousel();
+        state.selectedIndex = 0;
+        applyFilters();
+        showToast('💻 Active: Full-Stack MERN Question Bank (5,478 Qs)');
+      });
+    }
+
     // 0. Subject & Topic Top Navigation Selects
     if (dom.selectSubject) {
       dom.selectSubject.addEventListener('change', (e) => {
@@ -875,6 +1273,27 @@
       dom.btnModeQuiz.addEventListener('click', () => {
         state.viewMode = 'quiz';
         localStorage.setItem('devprep_mode', 'quiz');
+        renderFocusPane();
+      });
+    }
+
+    if (dom.btnModeCourse) {
+      dom.btnModeCourse.addEventListener('click', () => {
+        state.viewMode = 'course';
+        renderFocusPane();
+      });
+    }
+
+    if (dom.btnModeVideos) {
+      dom.btnModeVideos.addEventListener('click', () => {
+        state.viewMode = 'videos';
+        renderFocusPane();
+      });
+    }
+
+    if (dom.btnModePrompts) {
+      dom.btnModePrompts.addEventListener('click', () => {
+        state.viewMode = 'prompts';
         renderFocusPane();
       });
     }
@@ -1122,11 +1541,12 @@
   function init() {
     cacheDOMElements();
 
-    const rawData = window.FRESHER_QUESTIONS_DATA || window.FRESHER_QUESTIONS;
-    if (rawData && Array.isArray(rawData)) {
-      state.allQuestions = rawData;
-    } else {
-      console.error('FRESHER_QUESTIONS_DATA not loaded.');
+    const rawData = window.FRESHER_QUESTIONS_DATA || window.FRESHER_QUESTIONS || [];
+    const rawAiData = window.AI_GENAI_QUESTIONS_DATA || window.AI_GENAI_QUESTIONS || [];
+    state.allQuestions = [...rawAiData, ...rawData];
+
+    if (state.allQuestions.length === 0) {
+      console.error('Questions data not loaded.');
       return;
     }
 
@@ -1140,6 +1560,7 @@
     populateSubjectDropdown();
     updateTopicDropdown();
     renderSubjectCarousel();
+    syncCurriculumTabs();
     setupEventListeners();
     applyFilters();
     updateHUD();
