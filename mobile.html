@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>DevPrep Mobile — Developer Interview Reader & AI Masterclass</title>
+  <meta name="description" content="Mobile-first developer interview preparation reader. 5,727+ authentic questions including AI & Generative AI curriculum with thumb-friendly controls, dark mode, and offline study capability.">
+  <meta name="theme-color" content="#0b0f19">
+
+  <!-- Mobile App Capable -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="alternate icon" type="image/png" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./mobile-fresher.css?v=3.1">
+</head>
+<body class="font-md">
+
+  <!-- 1. Sticky Mobile Header -->
+  <header class="mobile-header">
+    <div class="header-top-row">
+      <div class="brand-group">
+        <!-- Hamburger Menu Button -->
+        <button id="btn-hamburger" class="btn-hamburger" aria-label="Open navigation menu" title="Open Menu">
+          <span>☰</span>
+        </button>
+        <div class="brand-wrap">
+          <span class="brand-icon">⚡</span>
+          <div>
+            <div class="brand-title">DevPrep <span class="badge-fresher">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-tools">
+        <a href="/" class="btn-tool" title="Switch to Full Desktop IDE" style="text-decoration:none;">💻 IDE</a>
+        <button id="btn-toggle-hide" class="btn-tool" aria-label="Toggle answer visibility">🙈 Hide</button>
+        <div class="font-scale-group" aria-label="Font size controls">
+          <button class="btn-font" data-size="sm" title="Smaller font">A-</button>
+          <button class="btn-font active" data-size="md" title="Default font">A</button>
+          <button class="btn-font" data-size="lg" title="Large font">A+</button>
+          <button class="btn-font" data-size="xl" title="Extra large font">A++</button>
+        </div>
+        <button id="btn-toggle-theme" class="btn-tool" aria-label="Toggle dark/light mode">🌙</button>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-container">
+      <span class="search-icon-left">🔍</span>
+      <input 
+        type="search" 
+        id="search-input" 
+        class="search-box" 
+        placeholder="Search 5,727+ questions, AI topics, code..." 
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button id="search-clear" class="search-clear-btn" aria-label="Clear search">✕</button>
+    </div>
+  </header>
+
+  <!-- 2. Scrollable Subject Filter Strip (Features AI & GenAI first) -->
+  <nav id="subject-strip" class="subject-strip" aria-label="Subject filter"></nav>
+
+  <!-- 3. Status Filter Row -->
+  <div class="status-filter-row">
+    <div class="quick-tabs" role="tablist">
+      <button id="tab-status-all" class="btn-quick active" data-status="all">All</button>
+      <button id="tab-status-need" class="btn-quick" data-status="need">Needs Review</button>
+      <button id="tab-status-saved" class="btn-quick" data-status="saved">Saved ★</button>
+      <button id="tab-status-practiced" class="btn-quick" data-status="practiced">Done ✓</button>
+    </div>
+    <div id="feed-count" class="feed-counter">Loading questions...</div>
+  </div>
+
+  <!-- 4. Main Mobile Question Reading Feed -->
+  <main id="mobile-feed" class="mobile-feed" role="feed" aria-busy="true"></main>
+
+  <!-- 5. Floating Bottom Navigation Bar -->
+  <nav class="mobile-bottom-bar" aria-label="Quick Actions">
+    <button id="btn-bottom-menu" class="bottom-btn" title="Open Navigation Menu">
+      <span>☰ Menu</span>
+    </button>
+    <button id="btn-bottom-weak" class="bottom-btn">
+      <span>⚠ Review Weak</span>
+    </button>
+    <a href="/" class="bottom-btn" style="text-decoration:none;">
+      <span>💻 IDE</span>
+    </a>
+    <button id="btn-scroll-top" class="bottom-btn bottom-btn-primary">
+      <span>↑ Top</span>
+    </button>
+  </nav>
+
+  <!-- 6. Hamburger Off-Canvas Slide Drawer -->
+  <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true"></div>
+  <aside id="nav-drawer" class="nav-drawer" aria-label="Mobile Navigation Menu">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <span class="brand-icon">⚡</span>
+        <div>
+          <div class="drawer-brand-title">DevPrep Portal</div>
+          <div class="drawer-brand-sub">5,727 Interview Questions</div>
+        </div>
+      </div>
+      <button id="btn-drawer-close" class="btn-drawer-close" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="drawer-scroll-body">
+      <!-- Curriculum Section -->
+      <div class="drawer-section">
+        <div class="drawer-section-heading">⭐ FEATURED CURRICULUM</div>
+        
+        <button class="drawer-curriculum-card active" id="drawer-card-ai" data-subject="AI & Generative AI">
+          <span class="curr-icon">🤖</span>
+          <div class="curr-details">
+            <div class="curr-title">AI & Vibe Coding Guide</div>
+            <div class="curr-desc">249 Questions • GenAI, LLMs, Prompt Engineering & Agents</div>
+          </div>
+          <span class="curr-badge">NEW</span>
+        </button>
+
+        <button class="drawer-curriculum-card" id="drawer-card-all" data-subject="All">
+          <span class="curr-icon">🌐</span>
+          <div class="curr-details">
+            <div class="curr-title">Full Master Question Bank</div>
+            <div class="curr-desc">5,727 Questions • All 24 Subjects</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Quick Study Filters -->
+      <div class="drawer-section">
+        <div class="drawer-section-heading">🎯 STUDY STATUS FILTERS</div>
+        <div class="drawer-filter-chips">
+          <button class="drawer-filter-chip" data-status="all">All Questions</button>
+          <button class="drawer-filter-chip" data-status="need">⚠ Needs Review</button>
+          <button class="drawer-filter-chip" data-status="saved">★ Saved Bookmarks</button>
+          <button class="drawer-filter-chip" data-status="practiced">✓ Practiced Done</button>
+        </div>
+      </div>
+
+      <!-- Subject Explorer List -->
+      <div class="drawer-section">
+        <div class="drawer-section-heading">📚 ALL SUBJECTS (5,727 Qs)</div>
+        <div class="drawer-subjects-list" id="drawer-subjects-list">
+          <!-- Populated dynamically by mobile-fresher.js -->
+        </div>
+      </div>
+
+      <!-- PWA Install Action -->
+      <div class="drawer-section" id="drawer-install-section">
+        <button id="btn-install-pwa" class="drawer-install-btn">
+          <span>📲 Install App to Home Screen</span>
+        </button>
+      </div>
+
+      <!-- Drawer Footer Link -->
+      <div class="drawer-section drawer-footer-section">
+        <a href="/" class="drawer-external-link">💻 Switch to Full Desktop IDE Workspace →</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Notification Toast -->
+  <div id="mobile-toast" class="mobile-toast" role="status" aria-live="polite"></div>
+
+  <!-- Real Questions Data (5,478 Fresher + 249 AI) & Mobile Engine -->
+  <script src="./fresher-data.js?v=12.0"></script>
+  <script src="./ai-genai-data.js?v=12.0"></script>
+  <script src="./mobile-fresher.js?v=3.1"></script>
+
+  <!-- PWA Service Worker Registration & App Install Handler -->
+  <script>
+    // 1. Register Service Worker for Offline Study
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[DevPrep PWA] Service Worker registered with scope:', reg.scope);
+        }).catch((err) => {
+          console.warn('[DevPrep PWA] Service Worker registration failed:', err);
+        });
+      });
+    }
+
+    // 2. Mobile PWA Installation Prompt
+    let deferredPrompt = null;
+    const btnInstall = document.getElementById('btn-install-pwa');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (btnInstall) {
+        btnInstall.style.display = 'flex';
+        btnInstall.classList.add('pulse-glow');
+      }
+    });
+
+    if (btnInstall) {
+      btnInstall.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('[DevPrep PWA] User install choice:', outcome);
+          deferredPrompt = null;
+          btnInstall.style.display = 'none';
+        } else {
+          // Fallback guidance for iOS / installed state
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isIOS) {
+            alert('To install on iPhone/iPad: Tap the Share button (⎋) in Safari and tap "Add to Home Screen" (⊞).');
+          } else {
+            alert('DevPrep can be installed via your browser menu: tap the 3 dots (⋮) and select "Add to Home Screen" or "Install App".');
+          }
+        }
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      console.log('[DevPrep PWA] Successfully installed!');
+      if (btnInstall) btnInstall.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

@@ -7,6 +7,12 @@
   <meta name="description" content="Split-screen developer interview workspace. Left pane question explorer with instant search; right pane focus reader with JetBrains Mono code blocks and interactive MCQ assessment.">
   <meta name="theme-color" content="#ffffff">
 
+  <!-- PWA Icons & Manifest -->
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="alternate icon" type="image/png" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.json">
+
   <!-- Inter for Interface, JetBrains Mono for Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +27,9 @@
        ======================================================================== -->
   <header class="workspace-header">
     <div class="header-left">
+      <button id="btn-ide-hamburger" class="btn-ide-hamburger" aria-label="Toggle Question List Menu" title="Toggle Menu (☰)">
+        ☰
+      </button>
       <a href="#" class="brand-wrap" id="brand-reset" title="DevPrep — Easy Learning Portal">
         <span class="brand-spark">⚡</span>
         <span class="brand-name">DevPrep</span>
@@ -49,6 +58,11 @@
         <span>Learned:</span>
         <strong id="hud-practiced">0</strong>
       </div>
+
+      <!-- Mobile Reader Platform Link -->
+      <a href="./mobile.html" class="hud-chip mobile-mode-link" title="Open Mobile-First Reader" style="text-decoration:none; color:inherit; font-weight:600; cursor:pointer;">
+        <span>📱 Mobile</span>
+      </a>
 
       <!-- Theme Switcher -->
       <button id="btn-theme-toggle" class="btn-icon" title="Switch dark/light mode" aria-label="Toggle theme">
@@ -159,6 +173,11 @@
 
         <!-- Header: Metadata Badges & Action Buttons -->
         <div class="focus-header">
+          <div class="focus-mobile-bar" id="focus-mobile-bar">
+            <button id="btn-mobile-back" class="btn-mobile-back" aria-label="Back to Questions list">
+              ← Back to Questions
+            </button>
+          </div>
           <div class="focus-meta-row">
             <div class="focus-tags" id="focus-tags-row">
               <span class="badge badge-subject" id="focus-tag-subject">JavaScript</span>
@@ -328,5 +347,18 @@
   <script src="./fresher-data.js?v=10.0"></script>
   <script src="./ai-genai-data.js?v=12.0"></script>
   <script src="./clean-reader.js?v=12.0"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[DevPrep PWA] Service Worker registered:', reg.scope);
+        }).catch((err) => {
+          console.warn('[DevPrep PWA] Service Worker registration failed:', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

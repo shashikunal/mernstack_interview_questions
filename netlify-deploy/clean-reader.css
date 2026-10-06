@@ -2049,3 +2049,191 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Mobile Responsiveness & Smartphone Adaptive Layout (< 820px)
+   ========================================================================== */
+.focus-mobile-bar {
+  display: none;
+}
+
+.btn-ide-hamburger {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-ide-hamburger:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.btn-mobile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  color: var(--accent-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-sans);
+}
+
+.btn-mobile-back:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent-border);
+}
+
+@media (max-width: 820px) {
+  /* Header Adjustments */
+  .btn-ide-hamburger {
+    display: inline-flex;
+  }
+
+  .workspace-header {
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .cmd-search-btn {
+    max-width: 170px;
+    padding: 6px 10px;
+  }
+
+  .cmd-search-btn .kbd-badge {
+    display: none;
+  }
+
+  .hud-chip span {
+    display: none;
+  }
+
+  .mobile-mode-link {
+    display: inline-flex;
+  }
+
+  .curriculum-tabs-bar {
+    padding: 6px 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .curriculum-tab-btn {
+    white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Split Screen into Mobile Single-Pane Stack */
+  .workspace-body {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .explorer-pane {
+    width: 100% !important;
+    min-width: 100%;
+    border-right: none;
+    height: 100%;
+    display: flex;
+  }
+
+  .focus-pane {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-surface);
+    z-index: 30;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* When a question is selected on mobile, show Focus Reader pane */
+  body.mobile-reader-active .explorer-pane {
+    display: none;
+  }
+
+  body.mobile-reader-active .focus-pane {
+    display: block;
+  }
+
+  .focus-mobile-bar {
+    display: flex;
+    margin-bottom: 12px;
+  }
+
+  .focus-container {
+    padding: 16px 12px 32px;
+  }
+
+  .focus-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .focus-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .btn-focus-action {
+    padding: 6px 4px;
+    font-size: 11px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .focus-q-title {
+    font-size: 17px;
+  }
+
+  .vibe-video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vibe-prompt-compare-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .vibe-step-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cmd-modal-box {
+    width: 94vw;
+    margin: 16px auto;
+  }
+}
+

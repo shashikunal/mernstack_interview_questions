@@ -68,6 +68,7 @@
   const dom = {};
 
   function cacheDOMElements() {
+    dom.btnIdeHamburger = document.getElementById('btn-ide-hamburger');
     dom.brandReset = document.getElementById('brand-reset');
     dom.btnOpenCmd = document.getElementById('btn-open-cmd');
     dom.hudStreak = document.getElementById('hud-streak');
@@ -91,6 +92,7 @@
 
     // Right Pane (Focus Reader)
     dom.focusPane = document.getElementById('focus-pane');
+    dom.btnMobileBack = document.getElementById('btn-mobile-back');
     dom.focusTagSubject = document.getElementById('focus-tag-subject');
     dom.focusTagTopic = document.getElementById('focus-tag-topic');
     dom.focusTagDifficulty = document.getElementById('focus-tag-difficulty');
@@ -389,6 +391,11 @@
         state.selectedIndex = idx;
         renderFocusPane();
         updateExplorerActiveState();
+        if (window.innerWidth <= 820) {
+          document.body.classList.add('mobile-reader-active');
+          if (dom.focusPane) dom.focusPane.scrollTop = 0;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
 
       dom.explorerListContainer.appendChild(item);
@@ -1395,11 +1402,27 @@
       state.selectedIndex = targetIdx;
       renderFocusPane();
       updateExplorerActiveState();
+      if (window.innerWidth <= 820) {
+        document.body.classList.add('mobile-reader-active');
+        if (dom.focusPane) dom.focusPane.scrollTop = 0;
+      }
     }
   }
 
   // Setup Event Listeners
   function setupEventListeners() {
+    // Hamburger Navigation Toggle Button (Mobile IDE)
+    if (dom.btnIdeHamburger) {
+      dom.btnIdeHamburger.addEventListener('click', () => {
+        document.body.classList.toggle('mobile-reader-active');
+        if (document.body.classList.contains('mobile-reader-active')) {
+          showToast('📖 Focus Reader Pane');
+        } else {
+          showToast('📋 Questions Explorer Menu');
+        }
+      });
+    }
+
     // Top Curriculum Module Switcher (AI vs Full-Stack)
     if (dom.tabCurriculumAi) {
       dom.tabCurriculumAi.addEventListener('click', () => {
@@ -1410,8 +1433,9 @@
         updateTopicDropdown();
         syncSubjectCarousel();
         state.selectedIndex = 0;
+        document.body.classList.remove('mobile-reader-active');
         applyFilters();
-        showToast('⭐ Active: AI + Generative AI + Prompt Engineering Masterclass');
+        showToast('⭐ Active: AI + Generative AI + Prompt Engineering (249 Qs)');
       });
     }
 
@@ -1424,6 +1448,7 @@
         updateTopicDropdown();
         syncSubjectCarousel();
         state.selectedIndex = 0;
+        document.body.classList.remove('mobile-reader-active');
         applyFilters();
         showToast('💻 Active: Full-Stack MERN Question Bank (5,478 Qs)');
       });
@@ -1438,6 +1463,7 @@
         updateTopicDropdown();
         syncSubjectCarousel();
         state.selectedIndex = 0;
+        document.body.classList.remove('mobile-reader-active');
         applyFilters();
       });
     }
@@ -1446,6 +1472,7 @@
       dom.selectTopic.addEventListener('change', (e) => {
         state.selectedTopic = e.target.value;
         state.selectedIndex = 0;
+        document.body.classList.remove('mobile-reader-active');
         applyFilters();
       });
     }
@@ -1605,6 +1632,13 @@
     // 6. Navigation Buttons
     if (dom.btnNavPrev) dom.btnNavPrev.addEventListener('click', prevQuestion);
     if (dom.btnNavNext) dom.btnNavNext.addEventListener('click', nextQuestion);
+
+    // Mobile Back to Explorer List Button
+    if (dom.btnMobileBack) {
+      dom.btnMobileBack.addEventListener('click', () => {
+        document.body.classList.remove('mobile-reader-active');
+      });
+    }
 
     // 7. Command Palette Open / Close
     if (dom.btnOpenCmd) dom.btnOpenCmd.addEventListener('click', openCmdPalette);
